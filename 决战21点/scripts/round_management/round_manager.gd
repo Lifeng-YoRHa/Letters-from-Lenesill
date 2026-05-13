@@ -97,6 +97,9 @@ func start_round() -> void:
 	ai_result = null
 	current_phase = RoundPhase.DEAL
 	_combat.reset_defense()
+	_card_data.reset_expired(CardEnums.Owner.PLAYER)
+	_card_data.reset_expired(CardEnums.Owner.AI)
+	_shuffle_decks()
 	_deal_cards()
 	_advance_phase()
 

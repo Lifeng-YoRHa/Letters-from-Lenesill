@@ -65,6 +65,12 @@ func get_ai_deck() -> Array:
 	return result
 
 
+func reset_expired(owner: int) -> void:
+	for c in _instances:
+		if c.owner == owner:
+			c.expired = false
+
+
 func regenerate_ai_deck() -> void:
 	for c in _instances:
 		if c.owner == CardEnums.Owner.AI:

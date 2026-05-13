@@ -125,7 +125,7 @@ func _on_round_result(
 				enter_shop()
 
 		RoundManager.RoundResult.CONTINUE:
-			_round_manager.start_round()
+			pass  # Player clicks Start Round manually via TableUI
 
 
 func _advance_to_next_opponent() -> void:

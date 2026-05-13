@@ -137,8 +137,9 @@ func use_thick_clothes(index: int) -> Dictionary:
 	if not _validate_use(index, ItemInstance.ItemType.THICK_CLOTHES):
 		return {"success": false}
 	var item: ItemInstance = inventory[index]
-	_pending_defense += EFFECT_VALUES[ItemInstance.ItemType.THICK_CLOTHES]
-	var result: Dictionary = {"success": true, "item_type": item.item_type, "pending_defense": _pending_defense}
+	var defense_amount: int = EFFECT_VALUES[ItemInstance.ItemType.THICK_CLOTHES]
+	_combat.add_defense(CardEnums.Owner.PLAYER, defense_amount)
+	var result: Dictionary = {"success": true, "item_type": item.item_type, "defense_added": defense_amount}
 	_consume_and_emit(index, result)
 	return result
 
