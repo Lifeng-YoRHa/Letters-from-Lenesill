@@ -16,6 +16,7 @@ const SORT_TIMER_RED_THRESHOLD: int = 5
 var _combat: CombatState
 var _chips: ChipEconomy
 var _round_manager: RoundManager
+var _item_system: ItemSystem
 
 var _card_pool: Array[CardView] = []
 var _player_card_views: Array[CardView] = []
@@ -54,6 +55,16 @@ var _sort_time_remaining: int
 
 var _result_label: Label
 
+var _item_bar_container: VBoxContainer
+var _item_bar: HBoxContainer
+var _item_status_label: Label
+var _target_panel: PanelContainer
+var _target_option: OptionButton
+var _target_confirm_button: Button
+var _target_cancel_button: Button
+var _pending_item_index: int = -1
+var _pending_item_type: int = -1
+
 
 func set_phase_text(text: String) -> void:
 	_phase_label.text = text
@@ -72,10 +83,11 @@ func show_new_game_button() -> void:
 	_result_label.add_theme_color_override("font_color", Color.YELLOW)
 
 
-func initialize(combat: CombatState, chips: ChipEconomy, round_manager: RoundManager) -> void:
+func initialize(combat: CombatState, chips: ChipEconomy, round_manager: RoundManager, item_system: ItemSystem) -> void:
 	_combat = combat
 	_chips = chips
 	_round_manager = round_manager
+	_item_system = item_system
 	_connect_signals()
 	_refresh_all_state()
 
@@ -100,6 +112,8 @@ func update_cards() -> void:
 		_ai_card_views.append(view)
 
 	_update_point_total()
+	if _confirm_sort_button.visible:
+		_enable_sort_mode()
 
 
 func reveal_ai_cards() -> void:
@@ -132,6 +146,7 @@ func _build_ui() -> void:
 	_build_ai_hand_area()
 	_build_central_info_bar()
 	_build_player_hand_area()
+	_build_item_bar()
 	_build_action_bar()
 
 
@@ -209,6 +224,62 @@ func _build_player_hand_area() -> void:
 	_player_hand_area.alignment = BoxContainer.ALIGNMENT_CENTER
 	_player_hand_area.add_theme_constant_override("separation", 20)
 	_root_vbox.add_child(_player_hand_area)
+
+
+func _build_item_bar() -> void:
+	_item_bar_container = VBoxContainer.new()
+	_item_bar_container.name = "ItemBarContainer"
+	_item_bar_container.custom_minimum_size = Vector2(0, 60)
+	_item_bar_container.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_item_bar_container.add_theme_constant_override("separation", 4)
+	_item_bar_container.visible = false
+	_root_vbox.add_child(_item_bar_container)
+
+	var header := _make_label("Items (click to use during sort phase)", 13, Color(0.9, 0.85, 0.7))
+	_item_bar_container.add_child(header)
+
+	var item_row := HBoxContainer.new()
+	item_row.add_theme_constant_override("separation", 6)
+	item_row.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_item_bar_container.add_child(item_row)
+
+	_item_bar = HBoxContainer.new()
+	_item_bar.add_theme_constant_override("separation", 6)
+	_item_bar.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	item_row.add_child(_item_bar)
+
+	_target_panel = PanelContainer.new()
+	var style := StyleBoxFlat.new()
+	style.bg_color = Color(0.15, 0.12, 0.18)
+	style.set_corner_radius_all(4)
+	style.set_border_width_all(1)
+	style.border_color = Color(0.4, 0.3, 0.5)
+	_target_panel.add_theme_stylebox_override("panel", style)
+	_target_panel.visible = false
+	var target_hbox := HBoxContainer.new()
+	target_hbox.add_theme_constant_override("separation", 8)
+	_target_panel.add_child(target_hbox)
+
+	_target_option = OptionButton.new()
+	_target_option.custom_minimum_size = Vector2(200, 32)
+	target_hbox.add_child(_target_option)
+
+	_target_confirm_button = Button.new()
+	_target_confirm_button.text = "Use"
+	_target_confirm_button.custom_minimum_size = Vector2(60, 32)
+	target_hbox.add_child(_target_confirm_button)
+	_target_confirm_button.pressed.connect(_on_target_confirm)
+
+	_target_cancel_button = Button.new()
+	_target_cancel_button.text = "Cancel"
+	_target_cancel_button.custom_minimum_size = Vector2(70, 32)
+	target_hbox.add_child(_target_cancel_button)
+	_target_cancel_button.pressed.connect(_on_target_cancel)
+
+	item_row.add_child(_target_panel)
+
+	_item_status_label = _make_label("", 13, Color(0.3, 0.9, 0.3))
+	_item_bar_container.add_child(_item_status_label)
 
 
 func _build_action_bar() -> void:
@@ -336,20 +407,25 @@ func _on_phase_changed(old_phase: int, new_phase: int) -> void:
 		RoundManager.RoundPhase.DEAL:
 			_phase_label.text = "Dealing..."
 			_set_action_buttons(false, false)
+			_item_bar_container.visible = false
 		RoundManager.RoundPhase.HIT_STAND:
 			_phase_label.text = "Hit or Stand"
 			_set_action_buttons(true, true)
 		RoundManager.RoundPhase.SORT:
 			_phase_label.text = "Arrange your cards"
 			_set_action_buttons(false, false)
+			update_cards()
 			_confirm_sort_button.visible = true
 			_enable_sort_mode()
 			_start_sort_timer()
+			_refresh_item_bar()
+			_item_bar_container.visible = true
 		RoundManager.RoundPhase.RESOLUTION:
 			_phase_label.text = "Resolving..."
 			_set_action_buttons(false, false)
 			_disable_sort_mode()
 			_stop_sort_timer()
+			_item_bar_container.visible = false
 		RoundManager.RoundPhase.DEATH_CHECK:
 			_phase_label.text = "Round Over"
 			_set_action_buttons(false, false)
@@ -434,7 +510,9 @@ func _update_hp_bar_color(bar: ProgressBar, hp: int, max_hp: int) -> void:
 
 func _get_card_view() -> CardView:
 	if not _card_pool.is_empty():
-		return _card_pool.pop_back() as CardView
+		var view := _card_pool.pop_back() as CardView
+		view.enable_sort_mode(false, -1, Callable())
+		return view
 	return CardView.new()
 
 
@@ -502,10 +580,14 @@ func _disable_sort_mode() -> void:
 		view.enable_sort_mode(false, -1, Callable())
 
 
-func _on_card_swap(from: int, to: int) -> void:
-	var temp = _player_card_views[from]
-	_player_card_views[from] = _player_card_views[to]
-	_player_card_views[to] = temp
+func _on_card_swap(from_view: Variant, to_view: Variant) -> void:
+	var from_idx: int = _player_card_views.find(from_view)
+	var to_idx: int = _player_card_views.find(to_view)
+	if from_idx < 0 or to_idx < 0 or from_idx == to_idx:
+		return
+	var temp = _player_card_views[from_idx]
+	_player_card_views[from_idx] = _player_card_views[to_idx]
+	_player_card_views[to_idx] = temp
 	for view in _player_card_views:
 		_player_hand_area.remove_child(view)
 	for i in _player_card_views.size():
@@ -529,3 +611,140 @@ func _make_button(text: String) -> Button:
 	btn.add_theme_font_size_override("font_size", 16)
 	btn.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	return btn
+
+
+func _refresh_item_bar() -> void:
+	for child in _item_bar.get_children():
+		_item_bar.remove_child(child)
+		child.queue_free()
+	_target_panel.visible = false
+	_pending_item_index = -1
+	_pending_item_type = -1
+	_item_status_label.text = ""
+	if _item_system == null:
+		return
+	for i in _item_system.inventory.size():
+		var item: ItemInstance = _item_system.inventory[i]
+		var type_name: String = ItemInstance.ItemType.keys()[item.item_type]
+		var btn := Button.new()
+		btn.text = type_name
+		btn.custom_minimum_size = Vector2(130, 32)
+		btn.add_theme_font_size_override("font_size", 13)
+		btn.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+		var idx: int = i
+		btn.pressed.connect(_on_item_button_pressed.bind(idx))
+		_item_bar.add_child(btn)
+	if _item_system.inventory.is_empty():
+		var label := Label.new()
+		label.text = "No items"
+		label.add_theme_font_size_override("font_size", 13)
+		label.add_theme_color_override("font_color", Color(0.5, 0.5, 0.5))
+		_item_bar.add_child(label)
+
+
+func _on_item_button_pressed(index: int) -> void:
+	if _item_system == null:
+		return
+	if index < 0 or index >= _item_system.inventory.size():
+		return
+	var item: ItemInstance = _item_system.inventory[index]
+	match item.item_type:
+		ItemInstance.ItemType.ENERGY_DRINK:
+			var result: Dictionary = _item_system.use_energy_drink(index)
+			if result.success:
+				_item_status_label.text = "Healed %d HP! (overflow: %d)" % [result.heal, result.overflow]
+				_refresh_item_bar()
+				update_cards()
+		ItemInstance.ItemType.KNIFE:
+			var result: Dictionary = _item_system.use_knife(index)
+			if result.success:
+				_item_status_label.text = "Dealt %d damage to AI!" % result.damage
+				_refresh_item_bar()
+		ItemInstance.ItemType.XRAY_GLASSES:
+			var result: Dictionary = _item_system.use_xray_glasses(index)
+			if result.success:
+				var cards: Array = result.get("peek_cards", [])
+				if cards.is_empty():
+					_item_status_label.text = "Deck is empty!"
+				else:
+					var names: Array = []
+					for card in cards:
+						names.append("%s%s" % [CardView.RANK_LABELS.get(card.prototype.rank, "?"), CardView.SUIT_SYMBOLS.get(card.prototype.suit, "?")])
+					_item_status_label.text = "Top cards: %s" % " ".join(names)
+				_refresh_item_bar()
+		ItemInstance.ItemType.SMALL_MIRROR:
+			_enter_target_selection(index, "mirror")
+		ItemInstance.ItemType.MINI_EXPLOSIVE:
+			_enter_target_selection(index, "explosive")
+		ItemInstance.ItemType.PADLOCK:
+			_enter_target_selection(index, "padlock")
+		ItemInstance.ItemType.THICK_CLOTHES:
+			var result: Dictionary = _item_system.use_thick_clothes(index)
+			if result.success:
+				_item_status_label.text = "Thick Clothes: +10 defense queued for resolution"
+				_refresh_item_bar()
+
+
+func _enter_target_selection(item_index: int, mode: String) -> void:
+	_pending_item_index = item_index
+	_pending_item_type = item_index  # store actual index for later lookup
+	_target_option.clear()
+	match mode:
+		"mirror":
+			var ai_hand: Array = _round_manager.ai_hand
+			for i in range(1, ai_hand.size()):
+				_target_option.add_item("AI Card %d" % (i + 1), i)
+			if _target_option.item_count == 0:
+				_item_status_label.text = "No hidden AI cards to reveal!"
+				return
+		"explosive":
+			var player_hand: Array = _round_manager.player_hand
+			for i in player_hand.size():
+				var card: CardInstance = player_hand[i]
+				var suit_sym: String = CardView.SUIT_SYMBOLS.get(card.prototype.suit, "?")
+				var rank_lbl: String = CardView.RANK_LABELS.get(card.prototype.rank, "?")
+				_target_option.add_item("%s%s" % [rank_lbl, suit_sym], i)
+		"padlock":
+			var ai_hand: Array = _round_manager.ai_hand
+			for i in ai_hand.size():
+				var label_text: String = "AI Card %d" % (i + 1)
+				if i == 0:
+					label_text += " (face-up)"
+				_target_option.add_item(label_text, i)
+	_target_panel.visible = true
+	_target_panel.set_meta("mode", mode)
+
+
+func _on_target_confirm() -> void:
+	if _pending_item_index < 0:
+		return
+	var mode: String = _target_panel.get_meta("mode", "")
+	var target_id: int = _target_option.get_selected_id()
+	var result: Dictionary = {}
+	match mode:
+		"mirror":
+			result = _item_system.use_small_mirror(_pending_item_index, target_id)
+			if result.success:
+				var card: CardInstance = result.revealed_card
+				var suit_sym: String = CardView.SUIT_SYMBOLS.get(card.prototype.suit, "?")
+				var rank_lbl: String = CardView.RANK_LABELS.get(card.prototype.rank, "?")
+				_item_status_label.text = "Revealed: %s%s" % [rank_lbl, suit_sym]
+		"explosive":
+			result = _item_system.use_mini_explosive(_pending_item_index, target_id)
+			if result.success:
+				_item_status_label.text = "Card removed from hand!"
+				update_cards()
+		"padlock":
+			result = _item_system.use_padlock(_pending_item_index, target_id)
+			if result.success:
+				_item_status_label.text = "AI card locked in position!"
+	if result.get("success", false):
+		_refresh_item_bar()
+	else:
+		_item_status_label.text = "Failed: %s" % result.get("reason", "unknown")
+
+
+func _on_target_cancel() -> void:
+	_target_panel.visible = false
+	_pending_item_index = -1
+	_item_status_label.text = ""

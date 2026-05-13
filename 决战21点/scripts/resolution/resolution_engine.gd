@@ -2,9 +2,11 @@ class_name ResolutionEngine
 extends Node
 
 ## Resolution pipeline — v2: suit dispatch + stamp effects + quality dual-track + HAMMER pre-scan + gem destroy.
-## Synchronous — runs to completion in one frame.
+## Async — settles one card at a time with 1s delay between cards.
 
 signal settlement_step_completed(events: Array[SettlementEvent])
+
+const CARD_SETTLE_DELAY: float = 1.0
 
 var _combat: CombatState
 var _chips: ChipEconomy
@@ -34,19 +36,22 @@ func run_pipeline(input: PipelineInput) -> void:
 		var bust_dmg: int = _calculate_bust_damage(input.sorted_player)
 		_combat.apply_bust_damage(CardEnums.Owner.PLAYER, bust_dmg)
 		_emit_event(SettlementEvent.StepKind.BASE_VALUE, null, bust_dmg, CardEnums.Owner.PLAYER, {"bust": true})
+		_flush_events()
+		await get_tree().create_timer(CARD_SETTLE_DELAY).timeout
 	if input.ai_bust:
 		var bust_dmg: int = _calculate_bust_damage(input.sorted_ai)
 		_combat.apply_bust_damage(CardEnums.Owner.AI, bust_dmg)
 		_emit_event(SettlementEvent.StepKind.BASE_VALUE, null, bust_dmg, CardEnums.Owner.AI, {"bust": true})
+		_flush_events()
+		await get_tree().create_timer(CARD_SETTLE_DELAY).timeout
 
 	# Both bust — no settlement needed
 	if input.player_bust and input.ai_bust:
-		settlement_step_completed.emit(_event_queue.duplicate())
 		return
 
 	_phase_0c_hammer_scan(input.sorted_player, input.sorted_ai)
 
-	_run_alternating_settlement(
+	await _run_alternating_settlement(
 		input.sorted_player,
 		input.sorted_ai,
 		input.player_multipliers,
@@ -56,7 +61,12 @@ func run_pipeline(input: PipelineInput) -> void:
 		input.ai_bust
 	)
 
+
+func _flush_events() -> void:
+	if _event_queue.is_empty():
+		return
 	settlement_step_completed.emit(_event_queue.duplicate())
+	_event_queue.clear()
 
 
 func _calculate_bust_damage(hand: Array[CardInstance]) -> int:
@@ -101,13 +111,23 @@ func _run_alternating_settlement(
 
 	var max_pos: int = maxi(sorted_player.size(), sorted_ai.size())
 	for pos in range(max_pos):
+		_event_queue.clear()
+
 		if pos < first_cards.size() and not first_bust:
 			var mult: float = first_mult[pos] if pos < first_mult.size() else 1.0
 			_settle_card(first_cards[pos], mult, first_owner)
 
+		_flush_events()
+		await get_tree().create_timer(CARD_SETTLE_DELAY).timeout
+
+		_event_queue.clear()
+
 		if pos < second_cards.size() and not second_bust:
 			var mult: float = second_mult[pos] if pos < second_mult.size() else 1.0
 			_settle_card(second_cards[pos], mult, second_owner)
+
+		_flush_events()
+		await get_tree().create_timer(CARD_SETTLE_DELAY).timeout
 
 
 func _settle_card(card: CardInstance, mult: float, owner: CardEnums.Owner) -> void:

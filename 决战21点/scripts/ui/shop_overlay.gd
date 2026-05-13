@@ -10,6 +10,7 @@ var _shop: ShopSystem
 var _combat: CombatState
 var _chips: ChipEconomy
 var _card_data: CardDataModel
+var _item_system: ItemSystem
 
 var _inventory_items: Array[ShopItem] = []
 var _all_cards: Array = []
@@ -43,12 +44,16 @@ var _chip_label: Label
 var _close_button: Button
 var _status_label: Label
 
+var _item_inventory_label: Label
+var _item_buttons: Array = []
 
-func initialize(shop: ShopSystem, combat: CombatState, chips: ChipEconomy, card_data: CardDataModel) -> void:
+
+func initialize(shop: ShopSystem, combat: CombatState, chips: ChipEconomy, card_data: CardDataModel, item_system: ItemSystem) -> void:
 	_shop = shop
 	_combat = combat
 	_chips = chips
 	_card_data = card_data
+	_item_system = item_system
 
 
 func setup(inventory: Array[ShopItem], player_cards: Array) -> void:
@@ -62,6 +67,7 @@ func setup(inventory: Array[ShopItem], player_cards: Array) -> void:
 	_update_chip_label()
 	_clear_status()
 	_refresh_detail_panel()
+	_refresh_item_buttons()
 
 
 func _pick_random_cards() -> void:
@@ -191,6 +197,8 @@ func _build_services_panel(parent: Control) -> void:
 	_purify_button.pressed.connect(_on_purify_pressed)
 	_sell_button.pressed.connect(_on_sell_pressed)
 
+	_build_item_section()
+
 
 func _build_inventory_panel(parent: Control) -> void:
 	var wrapper := PanelContainer.new()
@@ -224,6 +232,34 @@ func _build_inventory_panel(parent: Control) -> void:
 	_inventory_panel.add_child(_refresh_button)
 
 	_refresh_button.pressed.connect(_on_refresh_pressed)
+
+
+func _build_item_section() -> void:
+	var header := _make_label("Consumable Items", 18, Color(0.8, 0.8, 0.9))
+	_services_panel.add_child(header)
+
+	_item_inventory_label = _make_label("Inventory: 0/5", 14, Color(0.6, 0.9, 0.6))
+	_services_panel.add_child(_item_inventory_label)
+
+	var item_info: Array = [
+		[ItemInstance.ItemType.ENERGY_DRINK, "Energy Drink (Heal 10)"],
+		[ItemInstance.ItemType.KNIFE, "Knife (10 dmg)"],
+		[ItemInstance.ItemType.XRAY_GLASSES, "X-Ray Glasses (Peek 3)"],
+		[ItemInstance.ItemType.SMALL_MIRROR, "Small Mirror (Reveal)"],
+		[ItemInstance.ItemType.MINI_EXPLOSIVE, "Mini Explosive (Remove)"],
+		[ItemInstance.ItemType.PADLOCK, "Padlock (Lock card)"],
+		[ItemInstance.ItemType.THICK_CLOTHES, "Thick Clothes (+10 Def)"],
+	]
+	_item_buttons.clear()
+	for entry in item_info:
+		var type: int = entry[0]
+		var name_label: String = entry[1]
+		var price: int = ItemSystem.PRICE_TABLE[type]
+		var btn := _make_button("%s - %d" % [name_label, price], 230)
+		btn.set_meta("item_type", type)
+		btn.pressed.connect(_on_buy_item_pressed.bind(type))
+		_item_buttons.append(btn)
+		_services_panel.add_child(btn)
 
 
 
@@ -441,6 +477,7 @@ func _on_heal_pressed() -> void:
 		_set_status("Healed %d HP for %d chips!" % [hp_amount, price], Color(0.3, 0.9, 0.3))
 		_update_chip_label()
 		_refresh_services_panel()
+		_refresh_item_buttons()
 		shop_purchase_made.emit()
 	else:
 		_set_status("Not enough chips!", Color(0.9, 0.3, 0.3))
@@ -458,6 +495,7 @@ func _on_quality_buy_pressed() -> void:
 		_refresh_card_selector()
 		_refresh_services_panel()
 		_refresh_inventory_panel()
+		_refresh_item_buttons()
 		shop_purchase_made.emit()
 	else:
 		_set_status("Cannot assign quality (invalid suit or not enough chips)!", Color(0.9, 0.3, 0.3))
@@ -473,6 +511,7 @@ func _on_purify_pressed() -> void:
 		_update_chip_label()
 		_refresh_card_selector()
 		_refresh_services_panel()
+		_refresh_item_buttons()
 		shop_purchase_made.emit()
 	else:
 		_set_status("Cannot purify (not eligible or not enough chips)!", Color(0.9, 0.3, 0.3))
@@ -490,6 +529,7 @@ func _on_sell_pressed() -> void:
 		_refresh_card_selector()
 		_refresh_services_panel()
 		_refresh_inventory_panel()
+		_refresh_item_buttons()
 		shop_purchase_made.emit()
 	else:
 		_set_status("Cannot sell this card!", Color(0.9, 0.3, 0.3))
@@ -517,6 +557,7 @@ func _on_buy_inventory_item(item: ShopItem) -> void:
 		_refresh_inventory_panel()
 		_refresh_card_selector()
 		_refresh_services_panel()
+		_refresh_item_buttons()
 		shop_purchase_made.emit()
 	elif item.kind != ShopItem.Kind.STAMP:
 		_set_status("Not enough chips!", Color(0.9, 0.3, 0.3))
@@ -536,6 +577,7 @@ func _on_refresh_pressed() -> void:
 		_refresh_services_panel()
 		_update_chip_label()
 		_set_status("Inventory refreshed!", Color(0.3, 0.9, 0.3))
+		_refresh_item_buttons()
 		shop_purchase_made.emit()
 	elif result == -1:
 		_set_status("You have already refreshed the shop!", Color(0.9, 0.3, 0.3))
@@ -553,6 +595,25 @@ func _on_card_selected(index: int) -> void:
 func _on_close_pressed() -> void:
 	visible = false
 	shop_closed.emit()
+
+
+func _refresh_item_buttons() -> void:
+	if _item_inventory_label != null:
+		_item_inventory_label.text = "Inventory: %d/5" % _item_system.inventory.size()
+	for btn in _item_buttons:
+		var type: int = btn.get_meta("item_type")
+		btn.disabled = not _item_system.can_buy_item(type)
+
+
+func _on_buy_item_pressed(item_type: int) -> void:
+	if _item_system.buy_item(item_type):
+		var type_name: String = ItemInstance.ItemType.keys()[item_type]
+		_set_status("Bought %s!" % type_name, Color(0.3, 0.9, 0.3))
+		_update_chip_label()
+		_refresh_item_buttons()
+		shop_purchase_made.emit()
+	else:
+		_set_status("Cannot buy (full or not enough chips)!", Color(0.9, 0.3, 0.3))
 
 
 # ---------------------------------------------------------------------------

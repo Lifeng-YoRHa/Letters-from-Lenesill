@@ -93,12 +93,12 @@ func transition_to(new_state: int) -> void:
 func enter_shop() -> void:
 	var bonus: int = ChipEconomy.calculate_victory_bonus(_opponent_number)
 	_chips.add_chips(bonus, ChipEconomy.ChipSource.VICTORY_BONUS)
-	transition_to(MatchState.SHOP)
 	var player_deck: Array = _card_data.get_player_deck()
 	var typed_deck: Array[CardInstance] = []
 	for card in player_deck:
 		typed_deck.append(card)
 	_shop.generate_inventory(typed_deck, _opponent_number)
+	transition_to(MatchState.SHOP)
 
 
 func exit_shop() -> void:

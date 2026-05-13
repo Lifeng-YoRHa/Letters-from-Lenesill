@@ -144,6 +144,30 @@ func confirm_sort(reordered_hand: Array) -> void:
 		player_hand.append(card)
 	_advance_phase()
 
+
+## Peek at the top N cards of the player's draw deck (for X-Ray Glasses).
+func peek_player_deck(count: int) -> Array:
+	var result: Array = []
+	for i in mini(count, _shuffled_player_deck.size()):
+		result.append(_shuffled_player_deck[i])
+	return result
+
+
+## Remove a card from the player's hand by index (for Mini Explosive).
+## Strips quality and stamp, returns card to deck bottom.
+func remove_player_card_from_hand(card_index: int) -> Dictionary:
+	if card_index < 0 or card_index >= player_hand.size():
+		return {"success": false, "reason": "invalid_index"}
+	var card: CardInstance = player_hand[card_index]
+	card.quality = CardEnums.Quality.NONE
+	card.quality_level = CardEnums.QualityLevel.III
+	card.stamp = CardEnums.Stamp.NONE
+	card.revision += 1
+	player_hand.remove_at(card_index)
+	card.expired = false
+	_shuffled_player_deck.append(card)
+	return {"success": true, "removed_card": card}
+
 ## === Private ===
 
 
@@ -219,7 +243,6 @@ func _on_phase_entered(phase: int) -> void:
 			_do_auto_sort()
 		RoundPhase.RESOLUTION:
 			_run_resolution()
-			_advance_phase()
 		RoundPhase.DEATH_CHECK:
 			_do_death_check()
 
@@ -240,9 +263,9 @@ func _run_ai_decision() -> void:
 		else:
 			ai_hand.append(card)
 			ai_result = PointCalc.calculate_hand(ai_hand)
-		if not ai_result.is_bust:
-			_run_ai_decision()
-		else:
+			if not ai_result.is_bust:
+				_run_ai_decision()
+				return
 			_ai_standing = true
 	else:
 		_ai_standing = true
@@ -281,7 +304,8 @@ func _run_resolution() -> void:
 	input.player_bust = player_result.is_bust
 	input.ai_bust = ai_result.is_bust
 
-	_resolution.run_pipeline(input)
+	await _resolution.run_pipeline(input)
+	_advance_phase()
 
 
 func _determine_settlement_first_player(

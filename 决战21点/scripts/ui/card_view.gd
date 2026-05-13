@@ -83,19 +83,19 @@ func _get_drag_data(_at: Vector2) -> Variant:
 	preview.size = Vector2(CARD_WIDTH, CARD_HEIGHT)
 	preview.color = Color(1, 1, 1, 0.3)
 	set_drag_preview(preview)
-	return {"sort_position": _sort_position}
+	return {"source_view": self}
 
 
 func _can_drop_data(_at: Vector2, data: Variant) -> bool:
-	return _sort_mode and data is Dictionary and data.has("sort_position")
+	return _sort_mode and data is Dictionary and data.has("source_view")
 
 
 func _drop_data(_at: Vector2, data: Variant) -> void:
 	if not _sort_mode:
 		return
-	var from_position: int = data["sort_position"]
-	if from_position != _sort_position and sort_swap_callback.is_valid():
-		sort_swap_callback.call(from_position, _sort_position)
+	var source: CardView = data["source_view"]
+	if source != self and sort_swap_callback.is_valid():
+		sort_swap_callback.call(source, self)
 
 
 func _build_ui() -> void:

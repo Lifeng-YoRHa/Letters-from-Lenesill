@@ -11,6 +11,7 @@ var _shop: ShopSystem
 var _match: MatchProgression
 var _ui: TableUI
 var _shop_overlay: ShopOverlay
+var _item_system: ItemSystem
 
 
 func _ready() -> void:
@@ -24,6 +25,7 @@ func _ready() -> void:
 	_match = MatchProgression.new()
 	_ui = TableUI.new()
 	_shop_overlay = ShopOverlay.new()
+	_item_system = ItemSystem.new()
 
 	add_child(_card_data)
 	add_child(_combat)
@@ -35,6 +37,7 @@ func _ready() -> void:
 	add_child(_match)
 	add_child(_ui)
 	add_child(_shop_overlay)
+	add_child(_item_system)
 
 	_card_data.initialize()
 	_combat.initialize()
@@ -44,11 +47,12 @@ func _ready() -> void:
 	_round_manager.initialize(_card_data, _combat, _chips, _resolution, _ai, -1)
 	_shop.initialize(_combat, _chips)
 	_match.initialize(_round_manager, _shop, _chips, _combat, _card_data)
-	_ui.initialize(_combat, _chips, _round_manager)
-	_shop_overlay.initialize(_shop, _combat, _chips, _card_data)
+	_item_system.initialize(_combat, _chips, _card_data, _round_manager)
+	_ui.initialize(_combat, _chips, _round_manager, _item_system)
+	_shop_overlay.initialize(_shop, _combat, _chips, _card_data, _item_system)
 
 	_ui.player_hit_requested.connect(_on_player_hit)
-	_ui.player_stand_requested.connect(_round_manager.player_stand)
+	_ui.player_stand_requested.connect(_on_player_stand)
 	_ui.player_sort_confirmed.connect(_round_manager.confirm_sort)
 	_ui.start_round_requested.connect(_on_start_round)
 	_ui.transition_requested.connect(_on_transition)
@@ -57,6 +61,7 @@ func _ready() -> void:
 	_round_manager.phase_changed.connect(_on_phase_changed_for_cards)
 	_match.match_state_changed.connect(_on_match_state_changed)
 	_shop_overlay.shop_closed.connect(_on_shop_closed)
+	_resolution.settlement_step_completed.connect(_on_settlement_step)
 
 	_match.start_new_game()
 	_ui.update_counters()
@@ -64,6 +69,11 @@ func _ready() -> void:
 
 func _on_player_hit() -> void:
 	_round_manager.player_hit()
+	_ui.update_cards()
+
+
+func _on_player_stand() -> void:
+	_round_manager.player_stand()
 	_ui.update_cards()
 
 
@@ -80,6 +90,7 @@ func _on_transition() -> void:
 
 
 func _on_new_game() -> void:
+	_item_system.clear_game()
 	_match.start_new_game()
 	_ui.update_counters()
 	_ui._refresh_all_state()
@@ -90,6 +101,8 @@ func _on_phase_changed_for_cards(old_phase: int, new_phase: int) -> void:
 		RoundManager.RoundPhase.HIT_STAND:
 			_ui.update_cards()
 		RoundManager.RoundPhase.RESOLUTION:
+			_item_system.apply_pending_defense()
+			_item_system.unlock_all_ai_cards()
 			_ui.reveal_ai_cards()
 
 
@@ -113,6 +126,11 @@ func _on_match_state_changed(new_state: int, old_state: int) -> void:
 		MatchProgression.MatchState.GAME_OVER:
 			_ui.set_phase_text("GAME OVER")
 			_ui.show_new_game_button()
+
+
+func _on_settlement_step(_events: Array) -> void:
+	_ui._on_hp_changed(CardEnums.Owner.PLAYER, _combat.player.hp, _combat.player.max_hp)
+	_ui._on_hp_changed(CardEnums.Owner.AI, _combat.ai.hp, _combat.ai.max_hp)
 
 
 func _on_shop_closed() -> void:
