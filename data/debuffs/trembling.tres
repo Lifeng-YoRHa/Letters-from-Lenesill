@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="DebuffData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/core/debuff_data.gd" id="1_dd"]
+
+[resource]
+script = ExtResource("1_dd")
+debuff_type = 3
+display_name = "颤抖"
+description = "每回合开始时，随机3种行动牌体力消耗+1"
+chapter_weights = Array[float]([10.0, 12.0, 15.0, 13.0, 20.0])
+effect_value = 1

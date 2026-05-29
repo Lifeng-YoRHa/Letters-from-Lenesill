@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="ConsumableData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/core/consumable_data.gd" id="1_cd"]
+
+[resource]
+script = ExtResource("1_cd")
+id = &"torch"
+display_name = "火把"
+size = Vector2i(1, 2)
+is_rotatable = true
+effect = 5
+base_value = 30
+stamina_cost = 2
+usable_in_combat = true
+usable_in_traversal = false
+consumes_action = true
+description = "消耗2点体力丢出，对一名敌人造成30点伤害"

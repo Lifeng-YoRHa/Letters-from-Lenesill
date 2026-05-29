@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="ConsumableData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/core/consumable_data.gd" id="1_cd"]
+
+[resource]
+script = ExtResource("1_cd")
+id = &"stone"
+display_name = "石块"
+size = Vector2i(1, 1)
+is_rotatable = false
+effect = 2
+base_value = 0
+stamina_cost = 2
+usable_in_combat = true
+usable_in_traversal = true
+consumes_action = true
+description = "消耗2点体力丢出，吸引敌人注意力，逃离当前战斗并回到上一个节点"

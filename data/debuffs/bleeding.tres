@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="DebuffData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/core/debuff_data.gd" id="1_dd"]
+
+[resource]
+script = ExtResource("1_dd")
+debuff_type = 2
+display_name = "出血"
+description = "每回合开始时，失去1点体力"
+chapter_weights = Array[float]([10.0, 15.0, 20.0, 20.0, 25.0])
+effect_value = 1

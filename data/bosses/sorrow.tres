@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="EnemyData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/core/enemy_data.gd" id="1_ed"]
+[ext_resource type="Resource" path="res://data/loot_tables/boss_sorrow.tres" id="1_lt"]
+
+[resource]
+script = ExtResource("1_ed")
+id = &"sorrow"
+display_name = "哀伤"
+enemy_type = 2
+chapter = 1
+base_hp = 80
+base_attack = 4
+special_mechanic_id = &"heal_per_turn"
+assigned_debuffs = Array[int]([8])
+loot_table = ExtResource("1_lt")
+spawn_weight = 0.0

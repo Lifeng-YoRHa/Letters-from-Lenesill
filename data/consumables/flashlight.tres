@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="ConsumableData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/core/consumable_data.gd" id="1_cd"]
+
+[resource]
+script = ExtResource("1_cd")
+id = &"flashlight"
+display_name = "手电筒"
+size = Vector2i(1, 2)
+is_rotatable = true
+effect = 3
+base_value = 2
+stamina_cost = 0
+usable_in_combat = false
+usable_in_traversal = true
+consumes_action = false
+description = "探查随机2个节点的类型"

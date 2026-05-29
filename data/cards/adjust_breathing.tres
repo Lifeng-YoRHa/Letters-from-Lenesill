@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="ActionCardData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/core/action_card_data.gd" id="1_ab"]
+
+[resource]
+script = ExtResource("1_ab")
+id = &"adjust_breathing"
+display_name = "调整呼吸"
+stamina_cost = 1
+effect = 7
+base_value = 1
+upgrade_note_id = &""
+upgrade_increment = 0
+max_upgraded_value = 0
+requires_weapon = false

@@ -1,0 +1,161 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/combat_ui/combat_interface.gd" id="1_comb"]
+
+[node name="CombatArena" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_comb")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.1, 0.1, 0.12, 1)
+
+[node name="PlayerPanel" type="VBoxContainer" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 0.0
+anchor_bottom = 0.0
+offset_left = 20.0
+offset_top = 20.0
+offset_right = 220.0
+offset_bottom = 140.0
+grow_horizontal = 1
+grow_vertical = 1
+
+[node name="PlayerTitle" type="Label" parent="PlayerPanel"]
+layout_mode = 2
+text = "Player"
+
+[node name="StaminaBar" type="ProgressBar" parent="PlayerPanel"]
+unique_name_in_owner = true
+layout_mode = 2
+custom_minimum_size = Vector2(180, 20)
+
+[node name="StaminaLabel" type="Label" parent="PlayerPanel"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "12 / 12"
+
+[node name="WeaponLabel" type="Label" parent="PlayerPanel"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Weapon: 7 ATK"
+
+[node name="EnemyPanel" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_left = 1.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 0.0
+offset_left = -220.0
+offset_top = 20.0
+offset_right = -20.0
+offset_bottom = 120.0
+grow_horizontal = 0
+grow_vertical = 1
+
+[node name="EnemyName" type="Label" parent="EnemyPanel"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Enemy"
+
+[node name="EnemyHPBar" type="ProgressBar" parent="EnemyPanel"]
+unique_name_in_owner = true
+layout_mode = 2
+custom_minimum_size = Vector2(180, 20)
+
+[node name="EnemyHPLabel" type="Label" parent="EnemyPanel"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "14 / 14"
+
+[node name="RoundLabel" type="Label" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_left = 0.5
+anchor_top = 0.0
+anchor_right = 0.5
+anchor_bottom = 0.0
+offset_left = -60.0
+offset_top = 20.0
+offset_right = 60.0
+offset_bottom = 50.0
+grow_horizontal = 0
+grow_vertical = 1
+text = "Round: 1"
+
+[node name="PhaseLabel" type="Label" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_left = 0.5
+anchor_top = 0.0
+anchor_right = 0.5
+anchor_bottom = 0.0
+offset_left = -60.0
+offset_top = 50.0
+offset_right = 60.0
+offset_bottom = 80.0
+grow_horizontal = 0
+grow_vertical = 1
+text = "SETUP"
+
+[node name="CardContainer" type="HBoxContainer" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -300.0
+offset_top = -160.0
+offset_right = 300.0
+offset_bottom = -80.0
+grow_horizontal = 0
+grow_vertical = 0
+alignment = 1
+
+[node name="EndTurnButton" type="Button" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -140.0
+offset_top = -120.0
+offset_right = -20.0
+offset_bottom = -80.0
+grow_horizontal = 0
+grow_vertical = 0
+text = "End Turn"
+
+[node name="LogLabel" type="Label" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_left = 0.0
+anchor_top = 1.0
+anchor_right = 0.0
+anchor_bottom = 1.0
+offset_left = 20.0
+offset_top = -260.0
+offset_right = 620.0
+offset_bottom = -80.0
+grow_horizontal = 1
+grow_vertical = 0

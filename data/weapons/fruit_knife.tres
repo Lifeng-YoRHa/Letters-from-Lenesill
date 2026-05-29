@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="WeaponData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/core/weapon_data.gd" id="1_wd"]
+
+[resource]
+script = ExtResource("1_wd")
+id = &"fruit_knife"
+display_name = "水果刀"
+attack = 6
+max_durability = 4
+size = Vector2i(1, 2)
+special_trait_id = &""
+unlock_chapter = 1
+description = "即使是十指不沾阳春水的家庭也会有"

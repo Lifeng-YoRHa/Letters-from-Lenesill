@@ -1,0 +1,89 @@
+[gd_resource type="Resource" script_class="LootTable" load_steps=11 format=3]
+
+[ext_resource type="Script" path="res://scripts/core/loot_table.gd" id="1_lt"]
+[ext_resource type="Script" path="res://scripts/core/loot_entry.gd" id="1_le"]
+
+[sub_resource type="Resource" id="LootEntry_gold3"]
+script = ExtResource("1_le")
+loot_type = 0
+item_id = &""
+min_quantity = 3
+max_quantity = 3
+weight = 17.0
+
+[sub_resource type="Resource" id="LootEntry_gold4"]
+script = ExtResource("1_le")
+loot_type = 0
+item_id = &""
+min_quantity = 4
+max_quantity = 4
+weight = 48.0
+
+[sub_resource type="Resource" id="LootEntry_gold5"]
+script = ExtResource("1_le")
+loot_type = 0
+item_id = &""
+min_quantity = 5
+max_quantity = 5
+weight = 20.0
+
+[sub_resource type="Resource" id="LootEntry_gold6"]
+script = ExtResource("1_le")
+loot_type = 0
+item_id = &""
+min_quantity = 6
+max_quantity = 6
+weight = 15.0
+
+[sub_resource type="Resource" id="LootEntry_stone"]
+script = ExtResource("1_le")
+loot_type = 1
+item_id = &"stone"
+min_quantity = 1
+max_quantity = 1
+weight = 17.0
+
+[sub_resource type="Resource" id="LootEntry_whetstone"]
+script = ExtResource("1_le")
+loot_type = 1
+item_id = &"whetstone"
+min_quantity = 1
+max_quantity = 1
+weight = 21.0
+
+[sub_resource type="Resource" id="LootEntry_energy_drink"]
+script = ExtResource("1_le")
+loot_type = 1
+item_id = &"energy_drink"
+min_quantity = 1
+max_quantity = 1
+weight = 31.0
+
+[sub_resource type="Resource" id="LootEntry_flashlight"]
+script = ExtResource("1_le")
+loot_type = 1
+item_id = &"flashlight"
+min_quantity = 1
+max_quantity = 1
+weight = 15.0
+
+[sub_resource type="Resource" id="LootEntry_torch"]
+script = ExtResource("1_le")
+loot_type = 1
+item_id = &"torch"
+min_quantity = 1
+max_quantity = 1
+weight = 12.0
+
+[sub_resource type="Resource" id="LootEntry_safe_house_key"]
+script = ExtResource("1_le")
+loot_type = 1
+item_id = &"safe_house_key"
+min_quantity = 1
+max_quantity = 1
+weight = 4.0
+
+[resource]
+script = ExtResource("1_lt")
+id = &"normal_combat_ch1"
+entries = Array[ExtResource("1_le")]([SubResource("LootEntry_gold3"), SubResource("LootEntry_gold4"), SubResource("LootEntry_gold5"), SubResource("LootEntry_gold6"), SubResource("LootEntry_stone"), SubResource("LootEntry_whetstone"), SubResource("LootEntry_energy_drink"), SubResource("LootEntry_flashlight"), SubResource("LootEntry_torch"), SubResource("LootEntry_safe_house_key")])

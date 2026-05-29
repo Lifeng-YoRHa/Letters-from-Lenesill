@@ -1,0 +1,136 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/map_ui/safe_house_interface.gd" id="1_safe"]
+
+[node name="SafeHouse" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_safe")
+
+[node name="DimBackground" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.7)
+
+[node name="Panel" type="Panel" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -500.0
+offset_top = -300.0
+offset_right = 500.0
+offset_bottom = 300.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TitleLabel" type="Label" parent="Panel"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -100.0
+offset_top = 16.0
+offset_right = 100.0
+offset_bottom = 48.0
+grow_horizontal = 2
+theme_override_font_sizes/font_size = 28
+text = "安全屋"
+horizontal_alignment = 1
+
+[node name="ContentContainer" type="HBoxContainer" parent="Panel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 24.0
+offset_top = 64.0
+offset_right = -24.0
+offset_bottom = -64.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 24
+alignment = 1
+
+[node name="FridgePanel" type="VBoxContainer" parent="Panel/ContentContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="FridgeTitle" type="Label" parent="Panel/ContentContainer/FridgePanel"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Fridge"
+horizontal_alignment = 1
+
+[node name="FridgeList" type="VBoxContainer" parent="Panel/ContentContainer/FridgePanel"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="PiggyBankPanel" type="VBoxContainer" parent="Panel/ContentContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="PiggyBankTitle" type="Label" parent="Panel/ContentContainer/PiggyBankPanel"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Piggy Bank"
+horizontal_alignment = 1
+
+[node name="PiggyBankInfo" type="Label" parent="Panel/ContentContainer/PiggyBankPanel"]
+layout_mode = 2
+text = "Stored: 0"
+
+[node name="AnvilPanel" type="VBoxContainer" parent="Panel/ContentContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="AnvilTitle" type="Label" parent="Panel/ContentContainer/AnvilPanel"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Anvil"
+horizontal_alignment = 1
+
+[node name="AnvilInfo" type="Label" parent="Panel/ContentContainer/AnvilPanel"]
+layout_mode = 2
+text = "Repairs left: 0"
+
+[node name="RestButton" type="Button" parent="Panel"]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -60.0
+offset_top = -56.0
+offset_right = 60.0
+offset_bottom = -24.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "Rest (-1 Key)"
+
+[node name="CloseButton" type="Button" parent="Panel"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_bottom = 1.0
+offset_left = -80.0
+offset_top = 16.0
+offset_right = -24.0
+offset_bottom = 48.0
+grow_horizontal = 0
+grow_vertical = 2
+text = "Close"
+
+[connection signal="pressed" from="Panel/CloseButton" to="." method="_on_close_pressed"]

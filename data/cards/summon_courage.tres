@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="ActionCardData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/core/action_card_data.gd" id="1_sc"]
+
+[resource]
+script = ExtResource("1_sc")
+id = &"summon_courage"
+display_name = "鼓起勇气"
+stamina_cost = 1
+effect = 6
+base_value = 2
+upgrade_note_id = &""
+upgrade_increment = 0
+max_upgraded_value = 0
+requires_weapon = false

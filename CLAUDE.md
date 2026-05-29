@@ -62,6 +62,13 @@ See `docs/COLLABORATIVE-DESIGN-PRINCIPLE.md` for full protocol and examples.
 - After any code change that moves logic between classes or changes method signatures, immediately run the related tests before considering the task done.
 - When writing smoke tests or integration tests, test one behavior at a time rather than combining assertions.
 
+## Game Design Document Rules
+
+- All gameplay rules MUST be written based on files in `C:\Users\13521\Claude-Code-Game-Studios\游戏说明书\`.
+- Before writing any GDD section that involves game mechanics, search the `游戏说明书` folder for the relevant topic file.
+- If no matching file is found, ask the user which file to reference — **do not invent rules that do not exist in the design documents**.
+- This applies to: quest mechanics, reward tables, node behaviors, combat formulas, item properties, map generation rules, and any other gameplay-affecting specification.
+
 ## Agent Delegation
 - When delegating implementation work to Task Agents, always verify the agent produced actual file output. If an agent only returns analysis/design without code, implement directly rather than re-delegating.
 - For complex multi-file implementations, prefer doing the work directly rather than delegating to a sub-agent.

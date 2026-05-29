@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="ActionCardData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/core/action_card_data.gd" id="1_flee"]
+
+[resource]
+script = ExtResource("1_flee")
+id = &"flee"
+display_name = "逃跑"
+stamina_cost = 5
+effect = 5
+base_value = 0
+upgrade_note_id = &"escape_master"
+upgrade_increment = 1
+max_upgraded_value = 3
+requires_weapon = false

@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="RelicData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/core/relic_data.gd" id="1_rd"]
+
+[resource]
+script = ExtResource("1_rd")
+id = &"heart_of_hope"
+display_name = "希望之心"
+effect_description = "进入新的一章时，获得1件随机信物"
+trigger = 3
+is_initial_choice = false
+is_once_per_adventure = false
+numeric_bonus = 1
+target_system_id = &"chapter_start_relic"

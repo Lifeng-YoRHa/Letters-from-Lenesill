@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="ActionCardData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/core/action_card_data.gd" id="1_dodge"]
+
+[resource]
+script = ExtResource("1_dodge")
+id = &"dodge"
+display_name = "闪躲"
+stamina_cost = 2
+effect = 2
+base_value = 4
+upgrade_note_id = &"sports_enthusiast"
+upgrade_increment = 1
+max_upgraded_value = 6
+requires_weapon = false

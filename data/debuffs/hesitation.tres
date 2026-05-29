@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="DebuffData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/core/debuff_data.gd" id="1_dd"]
+
+[resource]
+script = ExtResource("1_dd")
+debuff_type = 8
+display_name = "迟疑"
+description = "跳过第一个行动回合"
+chapter_weights = Array[float]([0.0, 1.0, 1.0, 3.0, 5.0])
+effect_value = 1

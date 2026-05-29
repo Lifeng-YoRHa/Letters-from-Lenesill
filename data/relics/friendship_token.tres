@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="RelicData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/core/relic_data.gd" id="1_rd"]
+
+[resource]
+script = ExtResource("1_rd")
+id = &"friendship_token"
+display_name = "友谊之证"
+effect_description = "黑市中商品售价-30%（向下取整）"
+trigger = 0
+is_initial_choice = true
+is_once_per_adventure = false
+numeric_bonus = 30
+target_system_id = &"shop_sell_price"

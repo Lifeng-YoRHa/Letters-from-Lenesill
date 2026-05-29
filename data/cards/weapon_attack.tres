@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="ActionCardData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/core/action_card_data.gd" id="1_abc12"]
+
+[resource]
+script = ExtResource("1_abc12")
+id = &"weapon_attack"
+display_name = "武器攻击"
+stamina_cost = 1
+effect = 1
+base_value = 0
+upgrade_note_id = &""
+upgrade_increment = 0
+max_upgraded_value = 0
+requires_weapon = true

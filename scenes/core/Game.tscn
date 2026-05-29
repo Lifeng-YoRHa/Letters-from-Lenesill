@@ -1,0 +1,54 @@
+[gd_scene load_steps=13 format=3]
+
+[ext_resource type="Script" path="res://scripts/game_flow/game_scene.gd" id="1_gscene"]
+[ext_resource type="Script" path="res://scripts/game_flow/game_manager.gd" id="2_gmgr"]
+[ext_resource type="Script" path="res://scripts/ui/ui_manager.gd" id="3_uimgr"]
+[ext_resource type="PackedScene" path="res://scenes/core/MainMenu.tscn" id="4_menu"]
+[ext_resource type="PackedScene" path="res://scenes/map/MapView.tscn" id="5_map"]
+[ext_resource type="PackedScene" path="res://scenes/combat/CombatArena.tscn" id="6_combat"]
+[ext_resource type="PackedScene" path="res://scenes/backpack/BackpackUI.tscn" id="7_pack"]
+[ext_resource type="PackedScene" path="res://scenes/shop/ShopOverlay.tscn" id="8_shop"]
+[ext_resource type="PackedScene" path="res://scenes/screens/EventOverlay.tscn" id="9_event"]
+[ext_resource type="PackedScene" path="res://scenes/map/SafeHouse.tscn" id="10_safe"]
+[ext_resource type="PackedScene" path="res://scenes/core/PauseMenu.tscn" id="11_pause"]
+[ext_resource type="PackedScene" path="res://scenes/screens/ChapterTransition.tscn" id="12_chap"]
+[ext_resource type="PackedScene" path="res://scenes/screens/EndingScreen.tscn" id="13_end"]
+
+[node name="Game" type="Node"]
+script = ExtResource("1_gscene")
+
+[node name="GameManager" type="Node" parent="."]
+script = ExtResource("2_gmgr")
+
+[node name="UIManager" type="CanvasLayer" parent="."]
+script = ExtResource("3_uimgr")
+
+[node name="MainMenu" parent="UIManager" instance=ExtResource("4_menu")]
+visible = false
+
+[node name="MapView" parent="UIManager" instance=ExtResource("5_map")]
+visible = false
+
+[node name="CombatArena" parent="UIManager" instance=ExtResource("6_combat")]
+visible = false
+
+[node name="BackpackUI" parent="UIManager" instance=ExtResource("7_pack")]
+visible = false
+
+[node name="ShopOverlay" parent="UIManager" instance=ExtResource("8_shop")]
+visible = false
+
+[node name="EventOverlay" parent="UIManager" instance=ExtResource("9_event")]
+visible = false
+
+[node name="SafeHouse" parent="UIManager" instance=ExtResource("10_safe")]
+visible = false
+
+[node name="PauseMenu" parent="UIManager" instance=ExtResource("11_pause")]
+visible = false
+
+[node name="ChapterTransition" parent="UIManager" instance=ExtResource("12_chap")]
+visible = false
+
+[node name="EndingScreen" parent="UIManager" instance=ExtResource("13_end")]
+visible = false

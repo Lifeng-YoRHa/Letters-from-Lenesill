@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="RelicData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/core/relic_data.gd" id="1_rd"]
+
+[resource]
+script = ExtResource("1_rd")
+id = &"torn_doll"
+display_name = "破玩偶"
+effect_description = "废墟搜刮所消耗的体力-1"
+trigger = 0
+is_initial_choice = true
+is_once_per_adventure = false
+numeric_bonus = 1
+target_system_id = &"ruins_search_cost"

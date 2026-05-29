@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="EnemyData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/core/enemy_data.gd" id="1_ed"]
+[ext_resource type="Resource" path="res://data/loot_tables/normal_combat_ch1.tres" id="1_lt"]
+
+[resource]
+script = ExtResource("1_ed")
+id = &"normal_ch1_d"
+display_name = "迟缓者"
+enemy_type = 0
+chapter = 1
+base_hp = 15
+base_attack = 1
+special_mechanic_id = &""
+assigned_debuffs = Array[int]([])
+loot_table = ExtResource("1_lt")
+spawn_weight = 10.0

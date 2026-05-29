@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="RelicData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/core/relic_data.gd" id="1_rd"]
+
+[resource]
+script = ExtResource("1_rd")
+id = &"adrenaline_needle"
+display_name = "肾上腺素针剂"
+effect_description = "仅一次：体力即将归零时，恢复10点体力并摧毁该信物"
+trigger = 2
+is_initial_choice = true
+is_once_per_adventure = true
+numeric_bonus = 10
+target_system_id = &"death_save"

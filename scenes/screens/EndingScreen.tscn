@@ -1,0 +1,81 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/ending_screen.gd" id="1_end"]
+
+[node name="EndingScreen" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_end")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.05, 0.05, 0.07, 1)
+
+[node name="TitleLabel" type="Label" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -200.0
+offset_top = 60.0
+offset_right = 200.0
+offset_bottom = 120.0
+grow_horizontal = 2
+theme_override_font_sizes/font_size = 48
+text = "结局"
+horizontal_alignment = 1
+
+[node name="NarrativeLabel" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 10
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -400.0
+offset_top = 160.0
+offset_right = 400.0
+offset_bottom = 320.0
+grow_horizontal = 2
+autowrap_mode = 3
+text = "Narrative text goes here..."
+horizontal_alignment = 1
+
+[node name="StatsLabel" type="Label" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 10
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -300.0
+offset_top = 360.0
+offset_right = 300.0
+offset_bottom = 480.0
+grow_horizontal = 2
+text = "Statistics go here..."
+horizontal_alignment = 1
+
+[node name="ReturnButton" type="Button" parent="."]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -120.0
+offset_top = -100.0
+offset_right = 120.0
+offset_bottom = -60.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "Return to Main Menu"
+
+[connection signal="pressed" from="ReturnButton" to="." method="_on_return_to_main_menu_pressed"]

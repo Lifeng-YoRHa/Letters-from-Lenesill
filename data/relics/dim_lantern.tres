@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="RelicData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/core/relic_data.gd" id="1_rd"]
+
+[resource]
+script = ExtResource("1_rd")
+id = &"dim_lantern"
+display_name = "暗淡提灯"
+effect_description = "免疫区域污染源中的debuff"
+trigger = 0
+is_initial_choice = false
+is_once_per_adventure = false
+numeric_bonus = 0
+target_system_id = &"block_boss_debuff"

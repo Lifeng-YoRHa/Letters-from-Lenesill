@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="RelicData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/core/relic_data.gd" id="1_rd"]
+
+[resource]
+script = ExtResource("1_rd")
+id = &"torn_photo"
+display_name = "破相片"
+effect_description = "完成委托任务获得的金币数量+5"
+trigger = 0
+is_initial_choice = false
+is_once_per_adventure = false
+numeric_bonus = 5
+target_system_id = &"quest_gold_bonus"
