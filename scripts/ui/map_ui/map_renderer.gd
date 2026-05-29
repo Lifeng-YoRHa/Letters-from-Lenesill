@@ -11,6 +11,7 @@ signal node_selected(node_id: StringName)
 var _map_state: MapState
 var _node_buttons: Dictionary = {}
 var _player_marker: Control
+var _connections_line: Line2D
 
 func initialize(map_state: MapState) -> void:
 	_map_state = map_state
@@ -21,31 +22,43 @@ func _render_map() -> void:
 	for child in _map_container.get_children():
 		child.queue_free()
 	_node_buttons.clear()
+	_connections_line = null
 
-	_draw_connections()
 	_create_node_buttons()
 	_create_player_marker()
+	_update_connections()
 	update_player_marker()
 
 
-func _draw_connections() -> void:
+func _update_connections() -> void:
+	if _connections_line != null:
+		_connections_line.queue_free()
+		_connections_line = null
+
 	var line := Line2D.new()
-	line.default_color = Color(0.4, 0.4, 0.45, 0.5)
-	line.width = 2
-	line.z_index = -1
-	for node in _map_state.nodes.values():
+	line.default_color = Color(0.55, 0.55, 0.6, 0.75)
+	line.width = 3
+	for node: MapNodeData in _map_state.nodes.values():
 		for conn_id in node.connections:
 			# Avoid drawing twice
 			if node.id < conn_id:
 				var neighbor := _map_state.get_node_by_id(conn_id)
 				if neighbor != null:
-					line.add_point(node.position + Vector2(20, 20))
-					line.add_point(neighbor.position + Vector2(20, 20))
+					var node_visible := node.visibility != GameEnums.MapNodeVisibility.UNEXPLORED
+					var neighbor_visible := neighbor.visibility != GameEnums.MapNodeVisibility.UNEXPLORED
+					if node_visible and neighbor_visible:
+						line.add_point(node.position + Vector2(20, 20))
+						line.add_point(neighbor.position + Vector2(20, 20))
 	_map_container.add_child(line)
+	_connections_line = line
+
+
+func refresh_connections() -> void:
+	_update_connections()
 
 
 func _create_node_buttons() -> void:
-	for node in _map_state.nodes.values():
+	for node: MapNodeData in _map_state.nodes.values():
 		var btn := Button.new()
 		btn.position = node.position
 		btn.custom_minimum_size = Vector2(40, 40)
@@ -126,7 +139,7 @@ func _node_color(visibility: GameEnums.MapNodeVisibility) -> Color:
 		GameEnums.MapNodeVisibility.UNEXPLORED:
 			return Color.TRANSPARENT
 		GameEnums.MapNodeVisibility.REVEALED:
-			return Color(0.5, 0.5, 0.55, 0.6)
+			return Color(0.65, 0.65, 0.75, 0.9)
 		GameEnums.MapNodeVisibility.VISITED:
 			return Color.WHITE
 		GameEnums.MapNodeVisibility.CLEARED:

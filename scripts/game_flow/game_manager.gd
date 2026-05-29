@@ -17,6 +17,8 @@ signal chapter_started(chapter: int)
 signal adventure_started()
 signal adventure_ended(ending_type: StringName)
 signal combat_prepared(combat_manager: CombatManager)
+signal loot_generated(gold: int, items: Array[ItemData])
+signal player_died
 
 
 # === Public references (for UI layer access) ===
@@ -178,6 +180,10 @@ func _on_player_moved(_to_node_id: StringName, _stamina_cost: int) -> void:
 
 
 func _on_node_visited(node_id: StringName, node_type: GameEnums.MapNodeType) -> void:
+	if current_stamina.current_stamina <= 0:
+		player_died.emit()
+		return
+
 	# Route to interaction system
 	node_interaction_manager.process_node_arrival(node_id)
 
@@ -346,18 +352,60 @@ func _get_enemy_data(enemy_type: GameEnums.EnemyType) -> EnemyData:
 
 func _on_combat_ended(result: GameEnums.CombatPhase) -> void:
 	current_combat_manager = null
-	_change_state(GameState.MAP_EXPLORATION)
 
 	match result:
 		GameEnums.CombatPhase.VICTORY:
 			quest_manager.on_combat_victory(current_combat_node_id)
 			node_interaction_manager.mark_node_cleared(current_combat_node_id)
-			# TODO: grant loot, check chapter boss ending
+			var loot := _generate_combat_loot()
+			loot_generated.emit(loot.gold, loot.items)
+
 		GameEnums.CombatPhase.DEFEAT:
-			# TODO: check RelicHandler.on_death_save(), if still dead handle game over
-			pass
+			var restored_stamina := relic_handler.on_death_save(current_stamina.current_stamina)
+			if restored_stamina > 0:
+				var deficit := restored_stamina - current_stamina.current_stamina
+				if deficit > 0:
+					current_stamina.restore(deficit)
+				return_to_exploration()
+			else:
+				player_died.emit()
+
 		GameEnums.CombatPhase.FLED:
-			node_interaction_manager.mark_node_cleared(current_combat_node_id)
+			if current_stamina.current_stamina <= 0:
+				var restored_stamina := relic_handler.on_death_save(current_stamina.current_stamina)
+				if restored_stamina > 0:
+					var deficit := restored_stamina - current_stamina.current_stamina
+					if deficit > 0:
+						current_stamina.restore(deficit)
+					return_to_exploration()
+				else:
+					player_died.emit()
+			else:
+				if map_state.previous_node_id != &"":
+					map_state.retreat_to_previous_node()
+				else:
+					var node := map_state.get_node_by_id(current_combat_node_id)
+					if node != null and node.visibility == GameEnums.MapNodeVisibility.VISITED:
+						node.visibility = GameEnums.MapNodeVisibility.REVEALED
+				return_to_exploration()
+
+
+func _generate_combat_loot() -> Dictionary:
+	var gold := rng.randi_range(5, 15)
+	var items: Array[ItemData] = []
+
+	var consumable_names: Array[String] = ["能量饮料", "手电筒", "火把", "磨石", "石头"]
+	var picked_name := consumable_names[rng.randi_range(0, consumable_names.size() - 1)]
+
+	var item := ItemData.new()
+	item.id = &"loot_item"
+	item.display_name = picked_name
+	item.item_type = GameEnums.ItemType.CONSUMABLE
+	item.width = 1
+	item.height = 1
+	items.append(item)
+
+	return {"gold": gold, "items": items}
 
 
 func _on_card_played(card: ActionCardData) -> void:

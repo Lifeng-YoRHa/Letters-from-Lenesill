@@ -3,6 +3,7 @@ extends RefCounted
 
 var nodes: Dictionary = {}  # StringName id -> MapNodeData
 var player_node_id: StringName
+var previous_node_id: StringName
 var current_chapter: int = 1
 
 
@@ -10,7 +11,7 @@ func initialize_from_graph(graph_nodes: Array[MapNodeData], start_id: StringName
 	nodes.clear()
 	for node in graph_nodes:
 		nodes[node.id] = node
-	player_node_id = start_id
+	visit_node(start_id)
 
 
 func get_player_node() -> MapNodeData:
@@ -42,9 +43,22 @@ func reveal_node(node_id: StringName) -> void:
 func visit_node(node_id: StringName) -> void:
 	var node := get_node_by_id(node_id)
 	if node != null:
+		if player_node_id != node_id and player_node_id != &"":
+			previous_node_id = player_node_id
 		node.visibility = GameEnums.MapNodeVisibility.VISITED
 		player_node_id = node_id
 		_reveal_adjacent(node_id)
+
+
+func retreat_to_previous_node() -> bool:
+	if previous_node_id == &"":
+		return false
+	var current := get_player_node()
+	if current != null and current.visibility == GameEnums.MapNodeVisibility.VISITED:
+		current.visibility = GameEnums.MapNodeVisibility.REVEALED
+	player_node_id = previous_node_id
+	previous_node_id = &""
+	return true
 
 
 func clear_node(node_id: StringName) -> void:

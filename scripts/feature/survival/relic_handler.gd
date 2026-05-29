@@ -153,14 +153,14 @@ func on_combat_start(enemy_data: EnemyData) -> int:
 
 func on_death_save(current_stamina: int) -> int:
 	if not _adrenaline_needle_available:
-		return current_stamina
+		return 0
 	if has_relic(&"adrenaline_needle"):
 		_adrenaline_needle_available = false
 		relic_triggered.emit(&"adrenaline_needle", "Stamina restored to 10. Relic destroyed.")
 		relic_destroyed.emit(&"adrenaline_needle")
 		remove_relic(&"adrenaline_needle")
 		return 10
-	return current_stamina
+	return 0
 
 
 func on_chapter_start() -> Array[RelicData]:

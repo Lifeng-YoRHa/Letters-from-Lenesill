@@ -1,8 +1,6 @@
 class_name MapGenerator
 extends RefCounted
 
-const VALIDATION_RETRY_LIMIT: int = 100
-
 var _rng: RandomNumberGenerator
 var _chapter: int = 1
 
@@ -13,33 +11,9 @@ func initialize(rng: RandomNumberGenerator = null) -> void:
 
 func generate(chapter: int) -> Array[MapNodeData]:
 	_chapter = chapter
-	var layer_distribution: Array[int] = _pick_variant_and_get_layers()
 	var special_slots := _get_special_slots()
 	var random_pool := _get_random_pool()
-
-	for attempt in range(VALIDATION_RETRY_LIMIT):
-		var nodes := _build_nodes(layer_distribution, special_slots, random_pool.duplicate())
-		var connections_ok := _build_connections(nodes, layer_distribution, special_slots)
-		if connections_ok and _validate_graph(nodes):
-			_assign_coordinates(nodes, layer_distribution)
-			return nodes
-
-	# Fallback: minimally connected tree
-	return _build_fallback_tree(layer_distribution, special_slots, random_pool)
-
-
-func _pick_variant_and_get_layers() -> Array[int]:
-	var variants = [
-		[5, 6, 4, 6, 5, 5, 3],   # Free Graph
-		[6, 6, 5, 5, 4, 4, 4],   # Funnel Strangulation
-		[5, 5, 5, 5, 5, 5, 4],   # Loop Maze
-	]
-	var idx := _rng.randi_range(0, variants.size() - 1)
-	var raw: Array = variants[idx]
-	var result: Array[int] = []
-	for v in raw:
-		result.append(v)
-	return result
+	return _build_chapter1_ver1(special_slots, random_pool)
 
 
 func _get_special_slots() -> Dictionary:
@@ -74,9 +48,6 @@ func _build_nodes(layers: Array[int], special_slots: Dictionary, random_pool: Ar
 		shuffled_pool[j] = tmp
 
 	var pool_idx := 0
-	var total_slots := 0
-	for layer_size in layers:
-		total_slots += layer_size
 
 	# Create START node
 	var start_node := MapNodeData.new()
@@ -88,7 +59,6 @@ func _build_nodes(layers: Array[int], special_slots: Dictionary, random_pool: Ar
 	nodes.append(start_node)
 
 	# Create layer nodes
-	var slot_counter := 0
 	for layer_idx in range(layers.size()):
 		var layer_num := layer_idx + 1
 		var layer_size := layers[layer_idx]
@@ -109,7 +79,6 @@ func _build_nodes(layers: Array[int], special_slots: Dictionary, random_pool: Ar
 					node.node_type = GameEnums.MapNodeType.ROAD
 
 			nodes.append(node)
-			slot_counter += 1
 
 	# Create BOSS node
 	var boss_node := MapNodeData.new()
@@ -120,60 +89,6 @@ func _build_nodes(layers: Array[int], special_slots: Dictionary, random_pool: Ar
 	nodes.append(boss_node)
 
 	return nodes
-
-
-func _build_connections(nodes: Array[MapNodeData], _layers: Array[int], _special_slots: Dictionary) -> bool:
-	var node_map := _index_nodes(nodes)
-
-	# Connect START to all Layer 1 nodes
-	for node in nodes:
-		if node.layer == 1:
-			_add_bidirectional(node_map, &"START", node.id)
-
-	# Connect all Layer 7 nodes to BOSS (assuming 7 layers for Ch1)
-	var last_layer := 0
-	for node in nodes:
-		last_layer = maxi(last_layer, node.layer)
-	for node in nodes:
-		if node.layer == last_layer:
-			_add_bidirectional(node_map, node.id, &"BOSS")
-
-	# Build random connections between adjacent layers and same layer
-	var max_layer := last_layer
-	for layer in range(1, max_layer):
-		var current_layer_nodes := _get_nodes_in_layer(nodes, layer)
-		var next_layer_nodes := _get_nodes_in_layer(nodes, layer + 1)
-
-		# Ensure each node in current layer has at least one forward connection
-		for node in current_layer_nodes:
-			var has_forward := false
-			for conn_id in node.connections:
-				var conn := node_map.get(conn_id) as MapNodeData
-				if conn != null and conn.layer > node.layer:
-					has_forward = true
-					break
-			if not has_forward and next_layer_nodes.size() > 0:
-				var target := next_layer_nodes[_rng.randi_range(0, next_layer_nodes.size() - 1)]
-				_add_bidirectional(node_map, node.id, target.id)
-
-		# Add some same-layer connections
-		if current_layer_nodes.size() >= 2:
-			var same_layer_count := mini(current_layer_nodes.size() / 2, 3)
-			for _i in range(same_layer_count):
-				var a := current_layer_nodes[_rng.randi_range(0, current_layer_nodes.size() - 1)]
-				var b := current_layer_nodes[_rng.randi_range(0, current_layer_nodes.size() - 1)]
-				if a.id != b.id:
-					_add_bidirectional(node_map, a.id, b.id)
-
-		# Add some cross-layer jumps (layer i to i+2)
-		if layer + 2 <= max_layer:
-			var jump_targets := _get_nodes_in_layer(nodes, layer + 2)
-			if jump_targets.size() > 0 and current_layer_nodes.size() > 0:
-				var source := current_layer_nodes[_rng.randi_range(0, current_layer_nodes.size() - 1)]
-				var target := jump_targets[_rng.randi_range(0, jump_targets.size() - 1)]
-				_add_bidirectional(node_map, source.id, target.id)
-
-	return true
 
 
 func _add_bidirectional(node_map: Dictionary, a: StringName, b: StringName) -> void:
@@ -202,54 +117,11 @@ func _get_nodes_in_layer(nodes: Array[MapNodeData], layer: int) -> Array[MapNode
 	return result
 
 
-func _validate_graph(nodes: Array[MapNodeData]) -> bool:
-	var node_map := _index_nodes(nodes)
-
-	# Check START can reach BOSS
-	var visited: Dictionary = {&"START": true}
-	var queue: Array[StringName] = [&"START"]
-	var front := 0
-	var found_boss := false
-	while front < queue.size():
-		var current_id := queue[front]
-		front += 1
-		if current_id == &"BOSS":
-			found_boss = true
-			break
-		var current := node_map.get(current_id) as MapNodeData
-		if current == null:
-			continue
-		for conn_id in current.connections:
-			if not visited.has(conn_id):
-				visited[conn_id] = true
-				queue.append(conn_id)
-
-	if not found_boss:
-		return false
-
-	# Check dead-end ratio
-	var dead_end_count := 0
-	var intermediate_count := 0
-	for node in nodes:
-		if node.id == &"START" or node.id == &"BOSS":
-			continue
-		intermediate_count += 1
-		if node.connections.size() == 1:
-			dead_end_count += 1
-
-	if intermediate_count > 0:
-		var dead_ratio := float(dead_end_count) / intermediate_count
-		if dead_ratio < 0.15 or dead_ratio > 0.30:
-			return false
-
-	return true
-
-
 func _assign_coordinates(nodes: Array[MapNodeData], layers: Array[int]) -> void:
-	var screen_left_margin := 80.0
-	var horizontal_spacing := 140.0
-	var top_margin := 60.0
-	var available_height := 600.0  # Approximate for 720p
+	var screen_left_margin := 140.0
+	var horizontal_spacing := 220.0
+	var top_margin := 20.0
+	var available_height := 1260.0
 
 	for node in nodes:
 		if node.id == &"START":
@@ -280,27 +152,56 @@ func _assign_coordinates(nodes: Array[MapNodeData], layers: Array[int]) -> void:
 		node.position = Vector2(x_base + x_jitter, y_uniform + y_jitter)
 
 
-func _build_fallback_tree(layers: Array[int], special_slots: Dictionary, random_pool: Array[GameEnums.MapNodeType]) -> Array[MapNodeData]:
+# === Template Builders ===
+
+func _build_chapter1_ver1(special_slots: Dictionary, random_pool: Array[GameEnums.MapNodeType]) -> Array[MapNodeData]:
+	var layers: Array[int] = [5, 6, 4, 6, 5, 5, 3]
 	var nodes := _build_nodes(layers, special_slots, random_pool)
 	var node_map := _index_nodes(nodes)
-	var max_layer := 0
-	for node in nodes:
-		max_layer = maxi(max_layer, node.layer)
 
-	# Minimal tree: connect each layer to the next in sequence
-	for layer in range(1, max_layer):
-		var current := _get_nodes_in_layer(nodes, layer)
-		var nxt := _get_nodes_in_layer(nodes, layer + 1)
-		if current.size() > 0 and nxt.size() > 0:
-			_add_bidirectional(node_map, current[0].id, nxt[0].id)
-
-	# Connect START and BOSS
-	var layer1 := _get_nodes_in_layer(nodes, 1)
-	if layer1.size() > 0:
-		_add_bidirectional(node_map, &"START", layer1[0].id)
-	var last_layer_nodes := _get_nodes_in_layer(nodes, max_layer)
-	if last_layer_nodes.size() > 0:
-		_add_bidirectional(node_map, last_layer_nodes[0].id, &"BOSS")
+	# Connections from design/gdd/detailed_map/Chapter1-Ver1.md
+	_add_bidirectional(node_map, &"START", &"L1_1")
+	_add_bidirectional(node_map, &"START", &"L1_3")
+	_add_bidirectional(node_map, &"START", &"L1_5")
+	_add_bidirectional(node_map, &"L1_1", &"L2_1")
+	_add_bidirectional(node_map, &"L1_1", &"L2_2")
+	_add_bidirectional(node_map, &"L1_2", &"L2_3")
+	_add_bidirectional(node_map, &"L1_4", &"L1_5")
+	_add_bidirectional(node_map, &"L1_5", &"L2_3")
+	_add_bidirectional(node_map, &"L1_5", &"L2_5")
+	_add_bidirectional(node_map, &"L2_1", &"L3_1")
+	_add_bidirectional(node_map, &"L2_1", &"L4_6")
+	_add_bidirectional(node_map, &"L2_3", &"L2_4")
+	_add_bidirectional(node_map, &"L2_3", &"L3_1")
+	_add_bidirectional(node_map, &"L2_4", &"L3_4")
+	_add_bidirectional(node_map, &"L2_6", &"L3_4")
+	_add_bidirectional(node_map, &"L3_1", &"L3_2")
+	_add_bidirectional(node_map, &"L3_1", &"L4_3")
+	_add_bidirectional(node_map, &"L3_2", &"L4_2")
+	_add_bidirectional(node_map, &"L3_2", &"L4_4")
+	_add_bidirectional(node_map, &"L3_3", &"L3_4")
+	_add_bidirectional(node_map, &"L3_3", &"L4_3")
+	_add_bidirectional(node_map, &"L4_1", &"L5_1")
+	_add_bidirectional(node_map, &"L4_2", &"L5_1")
+	_add_bidirectional(node_map, &"L4_4", &"L4_5")
+	_add_bidirectional(node_map, &"L4_5", &"L5_5")
+	_add_bidirectional(node_map, &"L4_6", &"L5_5")
+	_add_bidirectional(node_map, &"L5_1", &"L6_2")
+	_add_bidirectional(node_map, &"L5_2", &"L5_3")
+	_add_bidirectional(node_map, &"L5_2", &"L6_3")
+	_add_bidirectional(node_map, &"L5_3", &"L4_5")
+	_add_bidirectional(node_map, &"L5_4", &"L5_5")
+	_add_bidirectional(node_map, &"L5_4", &"L6_1")
+	_add_bidirectional(node_map, &"L5_5", &"L4_6")
+	_add_bidirectional(node_map, &"L6_1", &"L6_2")
+	_add_bidirectional(node_map, &"L6_1", &"L7_2")
+	_add_bidirectional(node_map, &"L6_2", &"L7_1")
+	_add_bidirectional(node_map, &"L6_3", &"L6_4")
+	_add_bidirectional(node_map, &"L6_3", &"L7_3")
+	_add_bidirectional(node_map, &"L6_4", &"L7_2")
+	_add_bidirectional(node_map, &"L6_5", &"L7_2")
+	_add_bidirectional(node_map, &"L7_1", &"BOSS")
+	_add_bidirectional(node_map, &"L7_3", &"BOSS")
 
 	_assign_coordinates(nodes, layers)
 	return nodes

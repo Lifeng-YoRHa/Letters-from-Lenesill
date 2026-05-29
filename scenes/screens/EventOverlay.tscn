@@ -49,6 +49,7 @@ text = "突发事件"
 horizontal_alignment = 1
 
 [node name="DescriptionLabel" type="Label" parent="Panel"]
+unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 10
 anchor_left = 0.5
@@ -62,6 +63,7 @@ autowrap_mode = 3
 text = "Event description goes here..."
 
 [node name="ChoiceContainer" type="VBoxContainer" parent="Panel"]
+unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 12
 anchor_top = 1.0
