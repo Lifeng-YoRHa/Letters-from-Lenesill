@@ -29,6 +29,7 @@ func _connect_menu_signals() -> void:
 		main_menu.continue_pressed.connect(_on_continue_pressed)
 		main_menu.survivor_notes_pressed.connect(_on_survivor_notes_pressed)
 		main_menu.settings_pressed.connect(_on_settings_pressed)
+		main_menu.exit_game_pressed.connect(_on_exit_game_pressed)
 	_refresh_main_menu_resume()
 
 
@@ -65,6 +66,10 @@ func _on_settings_pressed() -> void:
 	pass
 
 
+func _on_exit_game_pressed() -> void:
+	get_tree().quit()
+
+
 func _on_pause_save_pressed() -> void:
 	var save_slot_screen := _ui_manager.get_screen("SaveSlotScreen") as SaveSlotScreen
 	if save_slot_screen != null:
@@ -76,6 +81,8 @@ func _connect_save_slot_signals() -> void:
 	var save_slot_screen := _ui_manager.get_screen("SaveSlotScreen") as SaveSlotScreen
 	if save_slot_screen != null:
 		save_slot_screen.slot_selected.connect(_on_save_slot_selected)
+		save_slot_screen.slot_continue_requested.connect(_on_slot_continue_requested)
+		save_slot_screen.slot_delete_requested.connect(_on_slot_delete_requested)
 		save_slot_screen.back_pressed.connect(_on_save_slot_back)
 
 
@@ -88,11 +95,28 @@ func _on_save_slot_selected(slot_index: int) -> void:
 			_ui_manager.show_overlay("PauseMenu")
 		else:
 			push_warning("Failed to save adventure to slot %d" % slot_index)
-	else:
-		var loaded := _game_manager.load_adventure(slot_index)
-		if not loaded:
-			push_warning("Failed to load adventure from slot %d" % slot_index)
-			# TODO: show error dialog to player
+
+
+func _on_slot_continue_requested(slot_index: int) -> void:
+	var loaded := _game_manager.load_adventure(slot_index)
+	if not loaded:
+		push_warning("Failed to load adventure from slot %d" % slot_index)
+		# TODO: show error dialog to player
+
+
+func _on_slot_delete_requested(slot_index: int) -> void:
+	_game_manager.save_load_manager.delete_slot(slot_index)
+	var save_slot_screen := _ui_manager.get_screen("SaveSlotScreen") as SaveSlotScreen
+	if save_slot_screen != null:
+		save_slot_screen.initialize(_game_manager.save_load_manager)
+	var has_any_save := false
+	for i in range(SaveLoadManager.SAVE_SLOT_COUNT):
+		if _game_manager.save_load_manager.has_save(i):
+			has_any_save = true
+			break
+	if not has_any_save:
+		_ui_manager.show_screen("MainMenu")
+		_refresh_main_menu_resume()
 
 
 func _on_save_slot_back() -> void:

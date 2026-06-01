@@ -67,6 +67,10 @@ text = "Survivor Notes"
 layout_mode = 2
 text = "Settings"
 
+[node name="ExitGameButton" type="Button" parent="MenuContainer"]
+layout_mode = 2
+text = "Exit Game"
+
 [node name="VersionLabel" type="Label" parent="."]
 layout_mode = 1
 anchors_preset = 7
@@ -88,3 +92,4 @@ horizontal_alignment = 1
 [connection signal="pressed" from="MenuContainer/ContinueButton" to="." method="_on_continue_pressed"]
 [connection signal="pressed" from="MenuContainer/SurvivorNotesButton" to="." method="_on_survivor_notes_pressed"]
 [connection signal="pressed" from="MenuContainer/SettingsButton" to="." method="_on_settings_pressed"]
+[connection signal="pressed" from="MenuContainer/ExitGameButton" to="." method="_on_exit_game_pressed"]

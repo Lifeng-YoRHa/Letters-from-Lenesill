@@ -2,6 +2,8 @@ class_name SaveSlotScreen
 extends Control
 
 signal slot_selected(slot_index: int)
+signal slot_continue_requested(slot_index: int)
+signal slot_delete_requested(slot_index: int)
 signal back_pressed
 
 enum Mode {
@@ -15,9 +17,15 @@ enum Mode {
 @onready var _slot_1_button: Button = %Slot1Button
 @onready var _slot_2_button: Button = %Slot2Button
 @onready var _title_label: Label = $TitleLabel
+@onready var _confirm_panel: Control = $ConfirmPanel
+@onready var _confirm_info_label: Label = $ConfirmPanel/CenterContainer/PanelContainer/VBoxContainer/InfoLabel
+@onready var _continue_button: Button = $ConfirmPanel/CenterContainer/PanelContainer/VBoxContainer/ButtonRow/ContinueButton
+@onready var _delete_button: Button = $ConfirmPanel/CenterContainer/PanelContainer/VBoxContainer/ButtonRow/DeleteButton
+@onready var _cancel_button: Button = $ConfirmPanel/CenterContainer/PanelContainer/VBoxContainer/ButtonRow/CancelButton
 
 var _slot_buttons: Array[Button] = []
 var _save_load_manager: SaveLoadManager = null
+var _current_selected_slot: int = -1
 
 
 func _ready() -> void:
@@ -65,15 +73,54 @@ func _update_slot_button(index: int, info: Dictionary) -> void:
 
 
 func _on_slot_0_pressed() -> void:
-	slot_selected.emit(0)
+	_open_confirm_for_slot(0)
 
 
 func _on_slot_1_pressed() -> void:
-	slot_selected.emit(1)
+	_open_confirm_for_slot(1)
 
 
 func _on_slot_2_pressed() -> void:
-	slot_selected.emit(2)
+	_open_confirm_for_slot(2)
+
+
+func _open_confirm_for_slot(slot_index: int) -> void:
+	if mode == Mode.SAVE:
+		slot_selected.emit(slot_index)
+		return
+
+	_current_selected_slot = slot_index
+	var statuses := _save_load_manager.get_all_slot_status()
+	var info: Dictionary = statuses[slot_index] if slot_index < statuses.size() else {"has_save": false}
+	var has_save: bool = info.get("has_save", false)
+	if not has_save:
+		return
+
+	var last_saved: int = info.get("last_saved_at", 0)
+	var datetime := Time.get_datetime_string_from_unix_time(last_saved) if last_saved > 0 else "未知时间"
+	_confirm_info_label.text = "槽位 %d — %s\n\n要做什么？" % [slot_index + 1, datetime]
+	_confirm_panel.visible = true
+
+
+func _hide_confirm_panel() -> void:
+	_confirm_panel.visible = false
+	_current_selected_slot = -1
+
+
+func _on_continue_pressed() -> void:
+	if _current_selected_slot >= 0:
+		slot_continue_requested.emit(_current_selected_slot)
+	_hide_confirm_panel()
+
+
+func _on_delete_pressed() -> void:
+	if _current_selected_slot >= 0:
+		slot_delete_requested.emit(_current_selected_slot)
+	_hide_confirm_panel()
+
+
+func _on_cancel_pressed() -> void:
+	_hide_confirm_panel()
 
 
 func _on_back_pressed() -> void:

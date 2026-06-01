@@ -5,6 +5,7 @@ signal new_adventure_pressed
 signal continue_pressed
 signal survivor_notes_pressed
 signal settings_pressed
+signal exit_game_pressed
 
 @onready var _continue_button: Button = %ContinueButton
 
@@ -31,3 +32,7 @@ func _on_survivor_notes_pressed() -> void:
 
 func _on_settings_pressed() -> void:
 	settings_pressed.emit()
+
+
+func _on_exit_game_pressed() -> void:
+	exit_game_pressed.emit()

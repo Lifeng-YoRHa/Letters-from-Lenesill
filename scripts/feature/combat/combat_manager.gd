@@ -161,6 +161,8 @@ func resolve_enemy_turn() -> void:
 			var raw_dmg := action.damage_to_player
 			var final_dmg := _damage_calculator.calculate_enemy_damage(raw_dmg, _combat_state)
 			apply_damage_to_player(final_dmg)
+			if _combat_state.dodge_active:
+				_combat_state.set_dodge_active(false)
 			if not _is_active:
 				return
 
