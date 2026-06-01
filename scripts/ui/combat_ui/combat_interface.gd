@@ -7,9 +7,20 @@ extends Control
 @export var weapon_attack_power: int = 7
 @export var activated_card_count: int = 3
 
+const ITEM_COLORS := {
+	GameEnums.ItemType.WEAPON: Color(0.75, 0.35, 0.35),
+	GameEnums.ItemType.CONSUMABLE: Color(0.35, 0.7, 0.4),
+	GameEnums.ItemType.RELIC: Color(0.9, 0.75, 0.25),
+	GameEnums.ItemType.BACKPACK: Color(0.35, 0.55, 0.8),
+	GameEnums.ItemType.GOLD: Color(0.9, 0.8, 0.2),
+}
+
+const POCKET_CELL_SIZE := 40
+
 var _stamina: Stamina
 var _combat_manager: CombatManager
 var _enemy_data: EnemyData
+var _backpack_manager: BackpackManager
 
 @onready var _stamina_bar: ProgressBar = %StaminaBar
 @onready var _stamina_label: Label = %StaminaLabel
@@ -22,6 +33,8 @@ var _enemy_data: EnemyData
 @onready var _log_label: Label = %LogLabel
 @onready var _round_label: Label = %RoundLabel
 @onready var _phase_label: Label = %PhaseLabel
+@onready var _pocket_a_container: Control = %PocketA
+@onready var _pocket_b_container: Control = %PocketB
 
 
 func _ready() -> void:
@@ -36,6 +49,7 @@ func initialize(combat_manager: CombatManager) -> void:
 	_combat_manager = combat_manager
 	_enemy_data = combat_manager.combat_state.enemy_data
 	_stamina = combat_manager.player_stamina
+	_backpack_manager = combat_manager.backpack_manager
 
 
 func start() -> void:
@@ -57,7 +71,7 @@ func _setup_test_combat() -> void:
 
 	var deck := _make_test_deck()
 	_combat_manager = CombatManager.new()
-	_combat_manager.initialize(_enemy_data, GameEnums.EnemyType.NORMAL, _stamina, deck, null, null, activated_card_count)
+	_combat_manager.initialize(_enemy_data, GameEnums.EnemyType.NORMAL, _stamina, deck, null, null, null, activated_card_count)
 
 
 func _make_test_deck() -> Array[ActionCardData]:
@@ -151,6 +165,7 @@ func _update_ui() -> void:
 	_update_enemy_hp_display(_combat_manager.combat_state.enemy_current_hp)
 	_phase_label.text = _phase_name(_combat_manager.combat_state.combat_phase)
 	_weapon_label.text = "Weapon: %d ATK" % weapon_attack_power
+	_render_pockets()
 
 
 func _update_stamina_display(current: int) -> void:
@@ -301,3 +316,108 @@ func _on_round_started(round_number: int) -> void:
 
 func _on_stamina_changed(new_value: int, _old_value: int) -> void:
 	_update_stamina_display(new_value)
+
+
+func _render_pockets() -> void:
+	if _backpack_manager == null:
+		return
+	_render_pocket(_pocket_a_container, _backpack_manager.pocket_a)
+	_render_pocket(_pocket_b_container, _backpack_manager.pocket_b)
+
+
+func _render_pocket(container: Control, grid: BackpackGrid) -> void:
+	for child in container.get_children():
+		child.queue_free()
+
+	var dims := grid.get_grid_dimensions()
+	container.custom_minimum_size = Vector2(dims.x * POCKET_CELL_SIZE, dims.y * POCKET_CELL_SIZE)
+
+	for item in grid.get_items():
+		var pos := grid.get_item_position(item)
+		if pos.is_empty():
+			continue
+
+		var item_dims := item.get_dimensions(pos.rotated)
+		var panel := Panel.new()
+		panel.position = Vector2(pos.x * POCKET_CELL_SIZE, pos.y * POCKET_CELL_SIZE)
+		panel.size = Vector2(item_dims.x * POCKET_CELL_SIZE, item_dims.y * POCKET_CELL_SIZE)
+		panel.mouse_filter = Control.MOUSE_FILTER_STOP
+
+		var color: Color = ITEM_COLORS.get(item.item_type, Color(0.5, 0.5, 0.5))
+		var style := StyleBoxFlat.new()
+		style.bg_color = color
+		style.border_color = Color(color.r * 0.7, color.g * 0.7, color.b * 0.7)
+		style.border_width_left = 2
+		style.border_width_top = 2
+		style.border_width_right = 2
+		style.border_width_bottom = 2
+		panel.add_theme_stylebox_override("panel", style)
+
+		var label := Label.new()
+		label.text = _abbreviate(item.display_name)
+		label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+		label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		label.clip_text = true
+		label.custom_minimum_size = panel.size
+		label.size = panel.size
+		label.add_theme_font_size_override("font_size", 10)
+		panel.add_child(label)
+
+		panel.tooltip_text = "%s\n%s" % [item.display_name, item.description]
+		panel.gui_input.connect(func(event: InputEvent) -> void: _on_pocket_item_clicked(event, item, grid))
+		container.add_child(panel)
+
+
+func _on_pocket_item_clicked(event: InputEvent, item: ItemData, grid: BackpackGrid) -> void:
+	if not (event is InputEventMouseButton):
+		return
+	var mouse_event := event as InputEventMouseButton
+	if not mouse_event.pressed or mouse_event.button_index != MOUSE_BUTTON_LEFT:
+		return
+	if _combat_manager == null:
+		return
+	if _combat_manager.combat_state.combat_phase != GameEnums.CombatPhase.PLAYER_TURN:
+		return
+	if item.item_type != GameEnums.ItemType.CONSUMABLE:
+		_log("Only consumables can be used in combat!")
+		return
+	if not _combat_manager.consume_action():
+		_log("No actions remaining!")
+		return
+
+	_apply_consumable_effect(item)
+	grid.remove(item)
+	if _backpack_manager != null:
+		_backpack_manager.item_removed.emit(item)
+	_combat_manager.check_defeat_if_no_victory()
+	_update_ui()
+
+
+func _apply_consumable_effect(item: ItemData) -> void:
+	match item.id:
+		&"energy_drink":
+			_stamina.restore(7)
+			_log("Used Energy Drink: restored 7 stamina")
+		&"stone":
+			_stamina.deduct(2)
+			_log("Used Stone: spent 2 stamina to flee")
+			_combat_manager.flee()
+		&"whetstone":
+			_log("Whetstone: weapon repair not yet implemented")
+		&"torch":
+			_stamina.deduct(2)
+			_combat_manager.deal_damage_to_enemy(30)
+			_log("Used Torch: spent 2 stamina, dealt 30 damage")
+		&"flashlight":
+			_log("Flashlight cannot be used in combat")
+		&"safe_house_key":
+			_log("Safe House Key cannot be used in combat")
+		_:
+			_log("Unknown consumable effect")
+
+
+func _abbreviate(name: String) -> String:
+	if name.length() <= 8:
+		return name
+	return name.substr(0, 7) + "…"

@@ -198,7 +198,8 @@ func purchase(slot_index: int) -> bool:
 	var price := get_final_buy_price(slot_index)
 
 	_backpack_manager.remove_gold(price)
-	_backpack_manager.add_item(slot.item)
+	var purchased_item: ItemData = slot.item.duplicate()
+	_backpack_manager.add_item(purchased_item)
 	slot.quantity -= 1
 
 	item_purchased.emit(slot.item, price)

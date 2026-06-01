@@ -39,7 +39,7 @@ func _make_manager(
 	rng: RandomNumberGenerator = null
 ) -> CombatManager:
 	var manager := CombatManager.new()
-	manager.initialize(enemy, encounter_type, stamina, deck, enemy_ai, damage_calc, activated_count, rng)
+	manager.initialize(enemy, encounter_type, stamina, deck, null, enemy_ai, damage_calc, activated_count, rng)
 	return manager
 
 

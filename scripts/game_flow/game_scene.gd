@@ -162,6 +162,13 @@ func _connect_overlay_signals() -> void:
 	var backpack := _ui_manager.get_overlay("BackpackUI") as BackpackInterface
 	if backpack != null:
 		backpack.closed.connect(_on_overlay_closed)
+		backpack.item_use_requested.connect(_on_backpack_item_use_requested)
+
+
+func _on_backpack_item_use_requested(item: ItemData, _grid: BackpackGrid) -> void:
+	var ok := _game_manager.use_item_in_backpack(item)
+	if not ok:
+		pass
 
 
 func _unhandled_input(event: InputEvent) -> void:

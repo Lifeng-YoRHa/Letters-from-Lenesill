@@ -25,6 +25,7 @@ enum ItemType {
 	CONSUMABLE,
 	RELIC,
 	BACKPACK,
+	GOLD,
 }
 
 

@@ -19,10 +19,33 @@ var current_backpack_type: StringName = &"satchel"
 
 const MAX_GOLD: int = 99
 
+var _gold_item: ItemData = null
+
 
 func initialize() -> void:
 	_setup_backpack(current_backpack_type)
 	_setup_pockets()
+	_place_gold_item()
+
+
+func _create_gold_item() -> ItemData:
+	var item := ItemData.new()
+	item.id = &"gold"
+	item.display_name = "金币"
+	item.item_type = GameEnums.ItemType.GOLD
+	item.width = 1
+	item.height = 1
+	return item
+
+
+func _place_gold_item() -> void:
+	if _gold_item == null:
+		_gold_item = _create_gold_item()
+	for grid in get_all_storage_grids():
+		var placement := grid.find_placement(_gold_item)
+		if not placement.is_empty():
+			grid.place(_gold_item, placement.x, placement.y, placement.rotated)
+			return
 
 
 func _setup_backpack(type: StringName) -> void:
@@ -65,8 +88,10 @@ func reset() -> void:
 	equipped_weapon = null
 	gold_count = 0
 	current_backpack_type = &"satchel"
+	_gold_item = null
 	_setup_backpack(current_backpack_type)
 	_setup_pockets()
+	_place_gold_item()
 
 
 func get_all_grids() -> Array[BackpackGrid]:
@@ -105,6 +130,8 @@ func add_item(item: ItemData) -> bool:
 
 
 func remove_item(item: ItemData) -> bool:
+	if item == _gold_item:
+		return false
 	if equipped_weapon == item:
 		equipped_weapon = null
 		weapon_unequipped.emit(item)
@@ -162,6 +189,8 @@ func get_total_items() -> Array[ItemData]:
 	var seen := {}
 	for grid in get_all_storage_grids():
 		for item in grid.get_items():
+			if item == _gold_item:
+				continue
 			if not seen.has(item):
 				seen[item] = true
 				result.append(item)
@@ -176,6 +205,8 @@ func swap_backpack(new_type: StringName) -> Array[ItemData]:
 	current_backpack_type = new_type
 	_setup_backpack(new_type)
 	backpack_changed.emit(new_type)
+
+	_place_gold_item()
 
 	var organizer := ItemOrganizer.new()
 	var discarded := organizer.auto_arrange(old_items, self)

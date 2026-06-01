@@ -20,6 +20,8 @@ var player_stamina: Stamina:
 	get:
 		return _player_stamina
 
+var backpack_manager: BackpackManager = null
+
 var _combat_state: CombatState
 var _player_stamina: Stamina
 var _enemy_ai: EnemyAI
@@ -35,6 +37,7 @@ func initialize(
 	encounter_type: GameEnums.EnemyType,
 	stamina: Stamina,
 	full_deck: Array[ActionCardData],
+	p_backpack_manager: BackpackManager = null,
 	enemy_ai: EnemyAI = null,
 	damage_calculator: DamageCalculator = null,
 	activated_card_count: int = 3,
@@ -43,6 +46,7 @@ func initialize(
 	_combat_state = CombatState.new()
 	_combat_state.initialize(enemy, encounter_type)
 	_player_stamina = stamina
+	backpack_manager = p_backpack_manager
 	_enemy_ai = enemy_ai if enemy_ai != null else EnemyAI.new()
 	_damage_calculator = damage_calculator if damage_calculator != null else DamageCalculator.new()
 	_full_deck = full_deck.duplicate()

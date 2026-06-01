@@ -239,6 +239,8 @@ func _serialize_pocket_items() -> Array[Dictionary]:
 func _serialize_grid_items(grid: BackpackGrid, grid_type: StringName) -> Array[Dictionary]:
 	var result: Array[Dictionary] = []
 	for item in grid.get_items():
+		if item.id == &"gold":
+			continue
 		var pos := grid.get_item_position(item)
 		result.append({
 			"item": item,
@@ -323,6 +325,7 @@ func _restore_adventure_state(state: AdventureStateResource) -> void:
 	backpack_manager.reset()
 	backpack_manager.current_backpack_type = state.backpack_type
 	backpack_manager._setup_backpack(state.backpack_type)
+	backpack_manager._place_gold_item()
 	backpack_manager.gold_count = state.gold
 
 	var placed_count := 0
@@ -505,7 +508,7 @@ func _start_combat(node_id: StringName, enemy: EnemyData, enemy_type: GameEnums.
 	current_combat_node_id = node_id
 	var deck := _create_default_deck()
 	current_combat_manager = CombatManager.new()
-	current_combat_manager.initialize(enemy, enemy_type, current_stamina, deck, null, null, 3, rng)
+	current_combat_manager.initialize(enemy, enemy_type, current_stamina, deck, backpack_manager, null, null, 3, rng)
 	current_combat_manager.card_played.connect(_on_card_played)
 	current_combat_manager.combat_ended.connect(_on_combat_ended)
 	combat_prepared.emit(current_combat_manager)
@@ -531,6 +534,40 @@ func _on_shop_opened(node_id: StringName) -> void:
 	shop_manager.ensure_stock_for_node(node_id, current_chapter, has_lost_letter_here, 5)
 	_change_state(GameState.SHOP)
 	# TODO: open shop UI overlay
+
+
+func use_item_in_backpack(item: ItemData) -> bool:
+	if item.item_type != GameEnums.ItemType.CONSUMABLE:
+		return false
+	match item.id:
+		&"energy_drink":
+			var bonus := survivor_notes.get_energy_drink_bonus()
+			current_stamina.restore(7 + bonus)
+			backpack_manager.remove_item(item)
+			return true
+		&"flashlight":
+			_use_flashlight_in_backpack()
+			backpack_manager.remove_item(item)
+			return true
+		&"stone", &"torch":
+			return false
+		&"whetstone":
+			return false
+		&"safe_house_key":
+			return false
+	return false
+
+
+func _use_flashlight_in_backpack() -> void:
+	var hidden_nodes: Array[MapNodeData] = []
+	for n in map_state.nodes.values():
+		var node := n as MapNodeData
+		if node.visibility == GameEnums.MapNodeVisibility.UNEXPLORED:
+			hidden_nodes.append(node)
+	var reveal_count := 2 + survivor_notes.get_flashlight_reveal_bonus()
+	hidden_nodes.shuffle()
+	for i in range(mini(reveal_count, hidden_nodes.size())):
+		hidden_nodes[i].visibility = GameEnums.MapNodeVisibility.REVEALED
 
 
 func _consume_safe_house_key() -> bool:
@@ -724,11 +761,17 @@ func _generate_combat_loot() -> Dictionary:
 	var gold := rng.randi_range(5, 15)
 	var items: Array[ItemData] = []
 
-	var consumable_names: Array[String] = ["能量饮料", "手电筒", "火把", "磨刀石", "石头"]
-	var picked_name := consumable_names[rng.randi_range(0, consumable_names.size() - 1)]
+	var consumable_pool: Dictionary = {
+		"能量饮料": &"energy_drink",
+		"手电筒": &"flashlight",
+		"火把": &"torch",
+		"磨刀石": &"whetstone",
+		"石头": &"stone",
+	}
+	var picked_name: String = consumable_pool.keys()[rng.randi_range(0, consumable_pool.size() - 1)]
 
 	var item := ItemData.new()
-	item.id = &"loot_item"
+	item.id = consumable_pool[picked_name]
 	item.display_name = picked_name
 	item.item_type = GameEnums.ItemType.CONSUMABLE
 	item.width = 1

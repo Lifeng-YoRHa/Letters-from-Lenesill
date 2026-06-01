@@ -16,7 +16,11 @@ const _PRIORITY_ORDER: Array[StringName] = [
 
 
 func auto_arrange(items: Array[ItemData], backpack_manager: BackpackManager) -> Array[ItemData]:
-	var sorted := _sort_by_priority(items)
+	var filtered: Array[ItemData] = []
+	for item in items:
+		if item.id != &"gold":
+			filtered.append(item)
+	var sorted := _sort_by_priority(filtered)
 	var discarded: Array[ItemData] = []
 
 	for item in sorted:

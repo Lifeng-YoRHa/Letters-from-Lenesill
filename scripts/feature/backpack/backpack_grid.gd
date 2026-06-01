@@ -30,6 +30,19 @@ func can_fit(item: ItemData, x: int, y: int, rotated: bool = false) -> bool:
 	return true
 
 
+func can_fit_excluding(item: ItemData, x: int, y: int, excluded_item: ItemData, rotated: bool = false) -> bool:
+	var dims := item.get_dimensions(rotated)
+	if x < 0 or y < 0 or x + dims.x > _grid_width or y + dims.y > _grid_height:
+		return false
+	for dy in range(dims.y):
+		for dx in range(dims.x):
+			var row: Array = _cells[y + dy]
+			var cell: Variant = row[x + dx]
+			if cell != null and cell != excluded_item:
+				return false
+	return true
+
+
 func place(item: ItemData, x: int, y: int, rotated: bool = false) -> bool:
 	if not can_fit(item, x, y, rotated):
 		return false
@@ -67,7 +80,7 @@ func get_items() -> Array[ItemData]:
 	var result: Array[ItemData] = []
 	var seen := {}
 	for row in _cells:
-		for cell in row:
+		for cell: Variant in row:
 			if cell is ItemData and not seen.has(cell):
 				seen[cell] = true
 				result.append(cell)
@@ -85,7 +98,7 @@ func get_capacity() -> int:
 func get_used_cells() -> int:
 	var count := 0
 	for row in _cells:
-		for cell in row:
+		for cell: Variant in row:
 			if cell != null:
 				count += 1
 	return count
@@ -96,6 +109,22 @@ func get_item_position(item: ItemData) -> Dictionary:
 	if pos.is_empty():
 		return {}
 	return {"x": pos.x, "y": pos.y, "rotated": pos.rotated}
+
+
+func rotate_item(item: ItemData) -> bool:
+	if not item.rotatable:
+		return false
+	var pos = _item_positions.get(item)
+	if pos == null:
+		return false
+	var new_rotated: bool = not pos.rotated
+	remove(item)
+	if can_fit(item, pos.x, pos.y, new_rotated):
+		place(item, pos.x, pos.y, new_rotated)
+		return true
+	# 失败则恢复原位
+	place(item, pos.x, pos.y, pos.rotated)
+	return false
 
 
 func get_grid_dimensions() -> Vector2i:
