@@ -49,20 +49,21 @@ text = "黑市"
 horizontal_alignment = 1
 
 [node name="GoldLabel" type="Label" parent="Panel"]
+unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 1
 anchor_left = 1.0
 anchor_bottom = 1.0
-offset_left = -160.0
+offset_left = -220.0
 offset_top = 16.0
-offset_right = -24.0
+offset_right = -90.0
 offset_bottom = 48.0
 grow_horizontal = 0
 grow_vertical = 2
-text = "Gold: --"
+text = "💰 --"
 horizontal_alignment = 2
 
-[node name="StockGrid" type="GridContainer" parent="Panel"]
+[node name="StockGrid" type="VBoxContainer" parent="Panel"]
 unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 9
@@ -70,9 +71,69 @@ anchor_bottom = 1.0
 offset_left = 24.0
 offset_top = 64.0
 offset_right = 324.0
-offset_bottom = -24.0
+offset_bottom = -176.0
 grow_vertical = 2
-columns = 1
+theme_override_constants/separation = 8
+
+[node name="ShopDetailPanel" type="Panel" parent="Panel"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 0
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 24.0
+offset_top = -160.0
+offset_right = 324.0
+offset_bottom = -24.0
+grow_vertical = 0
+visible = false
+
+[node name="ShopDetailName" type="Label" parent="Panel/ShopDetailPanel"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 8.0
+offset_top = 8.0
+offset_right = -8.0
+offset_bottom = 32.0
+
+[node name="ShopDetailDesc" type="Label" parent="Panel/ShopDetailPanel"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 8.0
+offset_top = 36.0
+offset_right = -8.0
+offset_bottom = 60.0
+theme_override_font_sizes/font_size = 12
+
+[node name="ShopDetailPrice" type="Label" parent="Panel/ShopDetailPanel"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 8.0
+offset_top = 64.0
+offset_right = -8.0
+offset_bottom = 88.0
+
+[node name="BuyButton" type="Button" parent="Panel/ShopDetailPanel"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -50.0
+offset_top = -40.0
+offset_right = 50.0
+offset_bottom = -8.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "购买"
 
 [node name="SellPanel" type="VBoxContainer" parent="Panel"]
 layout_mode = 1
@@ -89,7 +150,70 @@ grow_vertical = 2
 
 [node name="SellLabel" type="Label" parent="Panel/SellPanel"]
 layout_mode = 2
-text = "Sell"
+text = "出售"
+
+[node name="InventoryScroll" type="ScrollContainer" parent="Panel/SellPanel"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="InventoryList" type="VBoxContainer" parent="Panel/SellPanel/InventoryScroll"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="SellDetailPanel" type="Panel" parent="Panel/SellPanel"]
+unique_name_in_owner = true
+layout_mode = 2
+visible = false
+custom_minimum_size = Vector2(0, 130)
+
+[node name="SellDetailName" type="Label" parent="Panel/SellPanel/SellDetailPanel"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 8.0
+offset_top = 8.0
+offset_right = -8.0
+offset_bottom = 32.0
+
+[node name="SellDetailDesc" type="Label" parent="Panel/SellPanel/SellDetailPanel"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 8.0
+offset_top = 36.0
+offset_right = -8.0
+offset_bottom = 60.0
+theme_override_font_sizes/font_size = 12
+
+[node name="SellDetailPrice" type="Label" parent="Panel/SellPanel/SellDetailPanel"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 8.0
+offset_top = 64.0
+offset_right = -8.0
+offset_bottom = 88.0
+
+[node name="SellButton" type="Button" parent="Panel/SellPanel/SellDetailPanel"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -50.0
+offset_top = -40.0
+offset_right = 50.0
+offset_bottom = -8.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "出售"
 
 [node name="CloseButton" type="Button" parent="Panel"]
 unique_name_in_owner = true
@@ -103,6 +227,6 @@ offset_right = -24.0
 offset_bottom = 48.0
 grow_horizontal = 0
 grow_vertical = 2
-text = "Close"
+text = "离开"
 
 [connection signal="pressed" from="Panel/CloseButton" to="." method="_on_close_pressed"]

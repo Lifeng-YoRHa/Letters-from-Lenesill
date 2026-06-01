@@ -116,7 +116,7 @@ func purchase_lost_letter_from_shop() -> void:
 func _grant_lost_letter() -> void:
 	var letter := ItemData.new()
 	letter.id = &"lost_letter"
-	letter.display_name = "Lost Letter"
+	letter.display_name = "遗失信件"
 	letter.item_type = GameEnums.ItemType.CONSUMABLE
 	letter.width = 1
 	letter.height = 1
@@ -147,7 +147,7 @@ func complete_quest(primary_reward: StringName, secondary_reward: StringName) ->
 	# Grant Survivor's Letter
 	var s_letter := ItemData.new()
 	s_letter.id = &"survivors_letter"
-	s_letter.display_name = "Survivor's Letter"
+	s_letter.display_name = "幸存者的信件"
 	s_letter.item_type = GameEnums.ItemType.CONSUMABLE
 	s_letter.width = 1
 	s_letter.height = 1

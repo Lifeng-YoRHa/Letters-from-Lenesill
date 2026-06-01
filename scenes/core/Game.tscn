@@ -14,6 +14,7 @@
 [ext_resource type="PackedScene" path="res://scenes/screens/ChapterTransition.tscn" id="12_chap"]
 [ext_resource type="PackedScene" path="res://scenes/screens/EndingScreen.tscn" id="13_end"]
 [ext_resource type="PackedScene" path="res://scenes/screens/LootScreen.tscn" id="14_loot"]
+[ext_resource type="PackedScene" path="res://scenes/screens/SaveSlotScreen.tscn" id="15_save"]
 
 [node name="Game" type="Node"]
 script = ExtResource("1_gscene")
@@ -55,4 +56,7 @@ visible = false
 visible = false
 
 [node name="LootScreen" parent="UIManager" instance=ExtResource("14_loot")]
+visible = false
+
+[node name="SaveSlotScreen" parent="UIManager" instance=ExtResource("15_save")]
 visible = false

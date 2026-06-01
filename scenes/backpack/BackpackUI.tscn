@@ -48,75 +48,65 @@ theme_override_font_sizes/font_size = 28
 text = "Backpack"
 horizontal_alignment = 1
 
-[node name="BackpackGrid" type="GridContainer" parent="Panel"]
+[node name="ContentHBox" type="HBoxContainer" parent="Panel"]
 layout_mode = 1
-anchors_preset = 9
-anchor_bottom = 1.0
-offset_left = 24.0
-offset_top = 64.0
-offset_right = 324.0
-offset_bottom = -24.0
-grow_vertical = 2
-columns = 4
-
-[node name="PocketContainer" type="VBoxContainer" parent="Panel"]
-layout_mode = 1
-anchors_preset = 11
-anchor_left = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = -324.0
-offset_top = 64.0
-offset_right = -24.0
-offset_bottom = -80.0
-grow_horizontal = 0
-grow_vertical = 2
-
-[node name="Pocket1Label" type="Label" parent="Panel/PocketContainer"]
-layout_mode = 2
-text = "Pocket 1"
-
-[node name="Pocket1Grid" type="GridContainer" parent="Panel/PocketContainer"]
-layout_mode = 2
-columns = 2
-
-[node name="Pocket2Label" type="Label" parent="Panel/PocketContainer"]
-layout_mode = 2
-text = "Pocket 2"
-
-[node name="Pocket2Grid" type="GridContainer" parent="Panel/PocketContainer"]
-layout_mode = 2
-columns = 2
-
-[node name="StatsPanel" type="VBoxContainer" parent="Panel"]
-layout_mode = 1
-anchors_preset = 12
-anchor_top = 1.0
+anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = 24.0
-offset_top = -72.0
+offset_top = 64.0
 offset_right = -24.0
 offset_bottom = -24.0
 grow_horizontal = 2
-grow_vertical = 0
-
-[node name="StatsLabel" type="Label" parent="Panel/StatsPanel"]
-layout_mode = 2
-text = "Max Stamina: -- | Gold: --"
-
-[node name="CloseButton" type="Button" parent="Panel"]
-unique_name_in_owner = true
-layout_mode = 1
-anchors_preset = 1
-anchor_left = 1.0
-anchor_bottom = 1.0
-offset_left = -80.0
-offset_top = 16.0
-offset_right = -24.0
-offset_bottom = 48.0
-grow_horizontal = 0
 grow_vertical = 2
-text = "Close"
+theme_override_constants/separation = 24
 
-[connection signal="pressed" from="Panel/CloseButton" to="." method="_on_close_pressed"]
+[node name="LeftVBox" type="VBoxContainer" parent="Panel/ContentHBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 12
+
+[node name="PrimaryGridContainer" type="Control" parent="Panel/ContentHBox/LeftVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="SecondaryContainer" type="HBoxContainer" parent="Panel/ContentHBox/LeftVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="RightVBox" type="VBoxContainer" parent="Panel/ContentHBox"]
+layout_mode = 2
+custom_minimum_size = Vector2(200, 0)
+size_flags_vertical = 3
+theme_override_constants/separation = 12
+
+[node name="WeaponLabel" type="Label" parent="Panel/ContentHBox/RightVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Weapon: None"
+
+[node name="GoldLabel" type="Label" parent="Panel/ContentHBox/RightVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Gold: 0"
+
+[node name="PocketATitle" type="Label" parent="Panel/ContentHBox/RightVBox"]
+layout_mode = 2
+text = "Pocket A"
+
+[node name="PocketAContainer" type="Control" parent="Panel/ContentHBox/RightVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+custom_minimum_size = Vector2(80, 80)
+
+[node name="PocketBTitle" type="Label" parent="Panel/ContentHBox/RightVBox"]
+layout_mode = 2
+text = "Pocket B"
+
+[node name="PocketBContainer" type="Control" parent="Panel/ContentHBox/RightVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+custom_minimum_size = Vector2(80, 80)

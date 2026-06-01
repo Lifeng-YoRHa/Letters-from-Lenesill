@@ -8,15 +8,13 @@ signal settings_pressed
 
 @onready var _continue_button: Button = %ContinueButton
 
-func _ready() -> void:
-	var has_save := _has_save_data()
-	_continue_button.visible = has_save
-	_continue_button.disabled = not has_save
+func set_resume_available(available: bool) -> void:
+	_continue_button.visible = available
+	_continue_button.disabled = not available
 
 
 func _has_save_data() -> bool:
-	# TODO: check SaveLoadManager for existing saves
-	return false
+	return _continue_button.visible
 
 
 func _on_new_adventure_pressed() -> void:

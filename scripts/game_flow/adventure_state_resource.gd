@@ -3,6 +3,7 @@ extends Resource
 
 @export var chapter: int = 1
 @export var player_node_id: StringName = &""
+@export var previous_node_id: StringName = &""
 @export var nodes: Array[MapNodeData] = []
 @export var combat_snapshot: Dictionary = {}
 @export var stamina_current: int = 0
@@ -22,5 +23,6 @@ extends Resource
 @export var shop_stock: Array[Dictionary] = []
 @export var event_assignments: Dictionary = {}
 @export var ruins_search_counters: Dictionary = {}
+@export var safe_house_states: Array[Dictionary] = []
 @export var boss_hp: int = 0
 @export var boss_emergency_heal_used: bool = false

@@ -61,6 +61,14 @@ func _setup_pockets() -> void:
 	pocket_b = _create_grid(1, 2)
 
 
+func reset() -> void:
+	equipped_weapon = null
+	gold_count = 0
+	current_backpack_type = &"satchel"
+	_setup_backpack(current_backpack_type)
+	_setup_pockets()
+
+
 func get_all_grids() -> Array[BackpackGrid]:
 	var result: Array[BackpackGrid] = [primary_grid]
 	result.append_array(secondary_grids)

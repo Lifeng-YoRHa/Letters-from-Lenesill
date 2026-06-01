@@ -74,6 +74,7 @@ text = "Fridge"
 horizontal_alignment = 1
 
 [node name="FridgeList" type="VBoxContainer" parent="Panel/ContentContainer/FridgePanel"]
+unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
 
@@ -88,6 +89,7 @@ text = "Piggy Bank"
 horizontal_alignment = 1
 
 [node name="PiggyBankInfo" type="Label" parent="Panel/ContentContainer/PiggyBankPanel"]
+unique_name_in_owner = true
 layout_mode = 2
 text = "Stored: 0"
 
@@ -102,23 +104,25 @@ text = "Anvil"
 horizontal_alignment = 1
 
 [node name="AnvilInfo" type="Label" parent="Panel/ContentContainer/AnvilPanel"]
+unique_name_in_owner = true
 layout_mode = 2
 text = "Repairs left: 0"
 
 [node name="RestButton" type="Button" parent="Panel"]
+unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 7
 anchor_left = 0.5
 anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
-offset_left = -60.0
+offset_left = -100.0
 offset_top = -56.0
-offset_right = 60.0
+offset_right = 100.0
 offset_bottom = -24.0
 grow_horizontal = 2
 grow_vertical = 0
-text = "Rest (-1 Key)"
+text = "休息（恢复全部体力）"
 
 [node name="CloseButton" type="Button" parent="Panel"]
 unique_name_in_owner = true

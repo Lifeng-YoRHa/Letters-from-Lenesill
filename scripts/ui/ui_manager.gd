@@ -15,7 +15,7 @@ func _discover_children() -> void:
 	for child in get_children():
 		var name := child.name
 		if child is Control or child is CanvasLayer:
-			if name.ends_with("Overlay") or name in ["SafeHouse", "ChapterTransition", "EndingScreen", "PauseMenu", "CombatArena", "LootScreen"]:
+			if name.ends_with("Overlay") or name in ["SafeHouse", "ChapterTransition", "EndingScreen", "PauseMenu", "CombatArena", "LootScreen", "BackpackUI"]:
 				_overlays[name] = child
 				child.visible = false
 			else:

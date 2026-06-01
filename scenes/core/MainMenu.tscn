@@ -57,7 +57,7 @@ text = "New Adventure"
 [node name="ContinueButton" type="Button" parent="MenuContainer"]
 unique_name_in_owner = true
 layout_mode = 2
-text = "Continue"
+text = "Resume Adventure"
 
 [node name="SurvivorNotesButton" type="Button" parent="MenuContainer"]
 layout_mode = 2

@@ -3,6 +3,7 @@
 [ext_resource type="Script" path="res://scripts/ui/pause_menu.gd" id="1_pause"]
 
 [node name="PauseMenu" type="Control"]
+process_mode = 3
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -68,6 +69,10 @@ alignment = 1
 layout_mode = 2
 text = "Resume"
 
+[node name="SaveButton" type="Button" parent="Panel/MenuContainer"]
+layout_mode = 2
+text = "Save"
+
 [node name="SurvivorNotesButton" type="Button" parent="Panel/MenuContainer"]
 layout_mode = 2
 text = "Survivor Notes"
@@ -81,6 +86,7 @@ layout_mode = 2
 text = "Return to Main Menu"
 
 [connection signal="pressed" from="Panel/MenuContainer/ResumeButton" to="." method="_on_resume_pressed"]
+[connection signal="pressed" from="Panel/MenuContainer/SaveButton" to="." method="_on_save_pressed"]
 [connection signal="pressed" from="Panel/MenuContainer/SurvivorNotesButton" to="." method="_on_survivor_notes_pressed"]
 [connection signal="pressed" from="Panel/MenuContainer/SettingsButton" to="." method="_on_settings_pressed"]
 [connection signal="pressed" from="Panel/MenuContainer/ReturnButton" to="." method="_on_return_to_main_menu_pressed"]

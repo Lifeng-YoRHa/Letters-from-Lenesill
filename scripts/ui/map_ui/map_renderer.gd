@@ -11,7 +11,7 @@ signal node_selected(node_id: StringName)
 var _map_state: MapState
 var _node_buttons: Dictionary = {}
 var _player_marker: Control
-var _connections_line: Line2D
+var _connection_lines: Array[Line2D] = []
 
 func initialize(map_state: MapState) -> void:
 	_map_state = map_state
@@ -22,7 +22,9 @@ func _render_map() -> void:
 	for child in _map_container.get_children():
 		child.queue_free()
 	_node_buttons.clear()
-	_connections_line = null
+	for old_line in _connection_lines:
+		old_line.queue_free()
+	_connection_lines.clear()
 
 	_create_node_buttons()
 	_create_player_marker()
@@ -31,26 +33,72 @@ func _render_map() -> void:
 
 
 func _update_connections() -> void:
-	if _connections_line != null:
-		_connections_line.queue_free()
-		_connections_line = null
+	for old_line in _connection_lines:
+		old_line.queue_free()
+	_connection_lines.clear()
 
-	var line := Line2D.new()
-	line.default_color = Color(0.55, 0.55, 0.6, 0.75)
-	line.width = 3
+	var player_node := _map_state.get_player_node()
+	var player_id := player_node.id if player_node != null else &""
+
 	for node: MapNodeData in _map_state.nodes.values():
 		for conn_id in node.connections:
-			# Avoid drawing twice
-			if node.id < conn_id:
-				var neighbor := _map_state.get_node_by_id(conn_id)
-				if neighbor != null:
-					var node_visible := node.visibility != GameEnums.MapNodeVisibility.UNEXPLORED
-					var neighbor_visible := neighbor.visibility != GameEnums.MapNodeVisibility.UNEXPLORED
-					if node_visible and neighbor_visible:
-						line.add_point(node.position + Vector2(20, 20))
-						line.add_point(neighbor.position + Vector2(20, 20))
-	_map_container.add_child(line)
-	_connections_line = line
+			if not (node.id < conn_id):
+				continue
+
+			var neighbor := _map_state.get_node_by_id(conn_id)
+			if neighbor == null:
+				continue
+
+			var node_visible := node.visibility != GameEnums.MapNodeVisibility.UNEXPLORED
+			var neighbor_visible := neighbor.visibility != GameEnums.MapNodeVisibility.UNEXPLORED
+			if not node_visible or not neighbor_visible:
+				continue
+
+			var node_visited := node.visibility == GameEnums.MapNodeVisibility.VISITED or node.visibility == GameEnums.MapNodeVisibility.CLEARED
+			var neighbor_visited := neighbor.visibility == GameEnums.MapNodeVisibility.VISITED or neighbor.visibility == GameEnums.MapNodeVisibility.CLEARED
+			var both_visited := node_visited and neighbor_visited
+			var is_player_connection := node.id == player_id or conn_id == player_id
+
+			if not both_visited and not is_player_connection:
+				continue
+
+			var line := Line2D.new()
+			line.default_color = Color(0.5, 0.5, 0.55, 0.35)
+			line.width = 1.5
+			line.antialiased = true
+
+			var p0 := node.position + Vector2(20, 20)
+			var p2 := neighbor.position + Vector2(20, 20)
+			var points := _bezier_points(p0, p2, node.layer, neighbor.layer, node.id < conn_id)
+			for pt in points:
+				line.add_point(pt)
+
+			_map_container.add_child(line)
+			_connection_lines.append(line)
+
+
+func _bezier_points(p0: Vector2, p2: Vector2, layer_a: int, layer_b: int, flip: bool) -> Array[Vector2]:
+	var mid := (p0 + p2) * 0.5
+	var diff := p2 - p0
+	var layer_diff := absi(layer_a - layer_b)
+	var offset := float(layer_diff) * 20.0 + 10.0
+
+	var perp := Vector2(-diff.y, diff.x).normalized()
+	if perp == Vector2.ZERO:
+		perp = Vector2(0, 1)
+	if flip:
+		perp = -perp
+
+	var p1 := mid + perp * offset
+
+	var points: Array[Vector2] = []
+	var segments := 16
+	for i in range(segments + 1):
+		var t := float(i) / segments
+		var omt := 1.0 - t
+		var pt := p0 * omt * omt + p1 * 2.0 * omt * t + p2 * t * t
+		points.append(pt)
+	return points
 
 
 func refresh_connections() -> void:

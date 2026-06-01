@@ -89,3 +89,14 @@ func get_used_cells() -> int:
 			if cell != null:
 				count += 1
 	return count
+
+
+func get_item_position(item: ItemData) -> Dictionary:
+	var pos: Dictionary = _item_positions.get(item, {})
+	if pos.is_empty():
+		return {}
+	return {"x": pos.x, "y": pos.y, "rotated": pos.rotated}
+
+
+func get_grid_dimensions() -> Vector2i:
+	return Vector2i(_grid_width, _grid_height)

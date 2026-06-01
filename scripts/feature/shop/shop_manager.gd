@@ -19,6 +19,8 @@ class ShopSlot:
 		sell_price = p_sell
 
 var slots: Array[ShopSlot] = []
+var current_node_id: StringName = &""
+var _stock_by_node: Dictionary = {}
 var current_chapter: int = 1
 var _rng: RandomNumberGenerator
 var _relic_handler: RelicHandler
@@ -33,12 +35,12 @@ func initialize(rng: RandomNumberGenerator, relic_handler: RelicHandler, backpac
 
 func generate_stock(chapter: int, has_lost_letter_quest: bool = false, lost_letter_price: int = 0) -> void:
 	current_chapter = chapter
-	slots.clear()
+	slots = []
 
 	# Fixed slots 1-3: Energy Drink, Stone, Whetstone
-	var energy_drink := _create_consumable(&"energy_drink", "Energy Drink", 1, 1, GameEnums.ConsumableEffect.RESTORE_STAMINA)
-	var stone := _create_consumable(&"stone", "Stone", 1, 1, GameEnums.ConsumableEffect.FLEE_COMBAT)
-	var whetstone := _create_consumable(&"whetstone", "Whetstone", 1, 1, GameEnums.ConsumableEffect.RESTORE_WEAPON_DURABILITY)
+	var energy_drink := _create_consumable(&"energy_drink", "能量饮料", 1, 1, GameEnums.ConsumableEffect.RESTORE_STAMINA)
+	var stone := _create_consumable(&"stone", "石块", 1, 1, GameEnums.ConsumableEffect.FLEE_COMBAT)
+	var whetstone := _create_consumable(&"whetstone", "磨刀石", 1, 1, GameEnums.ConsumableEffect.RESTORE_WEAPON_DURABILITY)
 
 	var ed_price := _roll_price(chapter, [3, 4], [4, 5], [5, 6], [6, 7], [7, 8])
 	var stone_price := _roll_price(chapter, [2, 3], [3, 4], [4, 5], [5, 6], [6, 7])
@@ -72,13 +74,22 @@ func generate_stock(chapter: int, has_lost_letter_quest: bool = false, lost_lett
 	if has_lost_letter_quest:
 		var lost_letter := ItemData.new()
 		lost_letter.id = &"lost_letter"
-		lost_letter.display_name = "Lost Letter"
+		lost_letter.display_name = "遗失信件"
 		lost_letter.item_type = GameEnums.ItemType.CONSUMABLE
 		lost_letter.width = 1
 		lost_letter.height = 1
 		var quest_slot := ShopSlot.new(lost_letter, 1, lost_letter_price, 0)
 		quest_slot.is_fixed = true
 		slots.append(quest_slot)
+
+
+func ensure_stock_for_node(node_id: StringName, chapter: int, has_lost_letter_quest: bool = false, lost_letter_price: int = 0) -> void:
+	current_node_id = node_id
+	if _stock_by_node.has(node_id):
+		slots = _stock_by_node[node_id]
+		return
+	generate_stock(chapter, has_lost_letter_quest, lost_letter_price)
+	_stock_by_node[node_id] = slots
 
 
 func _create_consumable(id: StringName, name: String, w: int, h: int, effect: GameEnums.ConsumableEffect) -> ItemData:
@@ -108,7 +119,7 @@ func _generate_variable_slot_4(chapter: int) -> ShopSlot:
 	var roll := _rng.randf()
 	if roll < 0.60:
 		# Torch
-		var torch := _create_consumable(&"torch", "Torch", 1, 2, GameEnums.ConsumableEffect.DEAL_DAMAGE)
+		var torch := _create_consumable(&"torch", "火把", 1, 2, GameEnums.ConsumableEffect.DEAL_DAMAGE)
 		torch.rotatable = true
 		var qty := _rng.randi_range(1, 2)
 		var price := _roll_price(chapter, [6, 7], [7, 8], [9, 10], [10, 11], [12, 13])
@@ -117,7 +128,7 @@ func _generate_variable_slot_4(chapter: int) -> ShopSlot:
 		# Relic placeholder
 		var relic := ItemData.new()
 		relic.id = &"relic_placeholder"
-		relic.display_name = "Relic"
+		relic.display_name = "遗物"
 		relic.item_type = GameEnums.ItemType.RELIC
 		var price := _rng.randi_range(25, 30) + (chapter - 1) * 2
 		return ShopSlot.new(relic, 1, price, 12)
@@ -125,7 +136,7 @@ func _generate_variable_slot_4(chapter: int) -> ShopSlot:
 		# Weapon placeholder
 		var weapon := ItemData.new()
 		weapon.id = &"weapon_placeholder"
-		weapon.display_name = "Weapon"
+		weapon.display_name = "武器"
 		weapon.item_type = GameEnums.ItemType.WEAPON
 		var price := 20 + chapter * 6
 		return ShopSlot.new(weapon, 1, price, 10)
@@ -135,14 +146,14 @@ func _generate_variable_slot_5(chapter: int) -> ShopSlot:
 	var roll := _rng.randf()
 	if roll < 0.60:
 		# Flashlight
-		var flashlight := _create_consumable(&"flashlight", "Flashlight", 1, 2, GameEnums.ConsumableEffect.REVEAL_NODES)
+		var flashlight := _create_consumable(&"flashlight", "手电筒", 1, 2, GameEnums.ConsumableEffect.REVEAL_NODES)
 		flashlight.rotatable = true
 		var qty := _rng.randi_range(1, 2)
 		var price := _roll_price(chapter, [5, 6], [6, 7], [8, 9], [9, 10], [10, 11])
 		return ShopSlot.new(flashlight, qty, price, 3)
 	elif roll < 0.90:
 		# Safe House Key
-		var key := _create_consumable(&"safe_house_key", "Safe House Key", 1, 1, GameEnums.ConsumableEffect.OPEN_SAFE_HOUSE)
+		var key := _create_consumable(&"safe_house_key", "安全屋房卡", 1, 1, GameEnums.ConsumableEffect.OPEN_SAFE_HOUSE)
 		var price_range: Array[int] = [12, 13, 14, 15]
 		var price: int = price_range[_rng.randi_range(0, price_range.size() - 1)] + (chapter - 1) * 2
 		return ShopSlot.new(key, _rng.randi_range(1, 2), price, 8)
@@ -150,7 +161,7 @@ func _generate_variable_slot_5(chapter: int) -> ShopSlot:
 		# Backpack placeholder
 		var backpack := ItemData.new()
 		backpack.id = &"backpack_placeholder"
-		backpack.display_name = "Backpack"
+		backpack.display_name = "背包"
 		backpack.item_type = GameEnums.ItemType.BACKPACK
 		var price := 20 + chapter * 4
 		return ShopSlot.new(backpack, 1, price, 0)

@@ -34,7 +34,7 @@ func save_slot(slot_index: int, adventure_state: AdventureStateResource, meta_st
 	slot.meta_layer = meta_state
 	slot.checksum = _calculate_checksum(adventure_state, meta_state)
 
-	var bytes := var_to_bytes(slot)
+	var bytes := var_to_bytes_with_objects(slot)
 	if bytes.size() > SAVE_MAX_SIZE_BYTES:
 		save_failed.emit(slot_index, "Save file exceeds maximum size.")
 		return false
@@ -61,37 +61,54 @@ func save_slot(slot_index: int, adventure_state: AdventureStateResource, meta_st
 
 func load_slot(slot_index: int) -> SaveSlotResource:
 	if slot_index < 0 or slot_index >= SAVE_SLOT_COUNT:
-		load_failed.emit(slot_index, "Invalid slot index.")
+		var msg := "Invalid slot index."
+		print("LOAD_SLOT FAIL [", slot_index, "]: ", msg)
+		load_failed.emit(slot_index, msg)
 		return null
 
 	var path := get_save_path(slot_index)
+	print("LOAD_SLOT [", slot_index, "]: path=", path)
 	if not FileAccess.file_exists(path):
-		load_failed.emit(slot_index, "Save file does not exist.")
+		var msg := "Save file does not exist."
+		print("LOAD_SLOT FAIL [", slot_index, "]: ", msg)
+		load_failed.emit(slot_index, msg)
 		return null
 
 	var file: FileAccess = FileAccess.open(path, FileAccess.READ)
 	if file == null:
-		load_failed.emit(slot_index, "Failed to open save file: %s" % FileAccess.get_open_error())
+		var msg := "Failed to open save file: %s" % FileAccess.get_open_error()
+		print("LOAD_SLOT FAIL [", slot_index, "]: ", msg)
+		load_failed.emit(slot_index, msg)
 		return null
 
 	var bytes: PackedByteArray = file.get_buffer(file.get_length())
 	file.close()
+	print("LOAD_SLOT [", slot_index, "]: file_size=", bytes.size())
 
-	var variant: Variant = bytes_to_var(bytes)
+	var variant: Variant = bytes_to_var_with_objects(bytes)
+	print("LOAD_SLOT [", slot_index, "]: variant type=", typeof(variant), " is SaveSlotResource?=", variant is SaveSlotResource)
 	if not variant is SaveSlotResource:
-		load_failed.emit(slot_index, "Invalid save file format.")
+		var msg := "Invalid save file format."
+		print("LOAD_SLOT FAIL [", slot_index, "]: ", msg, " (typeof=", typeof(variant), ")")
+		load_failed.emit(slot_index, msg)
 		return null
 
 	var slot := variant as SaveSlotResource
+	print("LOAD_SLOT [", slot_index, "]: version=", slot.version, " expected=", SAVE_VERSION, " checksum=", slot.checksum)
 	if slot.version != SAVE_VERSION:
-		load_failed.emit(slot_index, "Save version mismatch: expected %d, got %d." % [SAVE_VERSION, slot.version])
+		var msg := "Save version mismatch: expected %d, got %d." % [SAVE_VERSION, slot.version]
+		print("LOAD_SLOT FAIL [", slot_index, "]: ", msg)
+		load_failed.emit(slot_index, msg)
 		return null
 
 	var expected_checksum := _calculate_checksum(slot.adventure_layer, slot.meta_layer)
 	if slot.checksum != expected_checksum:
-		load_failed.emit(slot_index, "Checksum mismatch. Save file may be corrupted.")
+		var msg := "Checksum mismatch. Save file may be corrupted."
+		print("LOAD_SLOT FAIL [", slot_index, "]: ", msg, " expected=", expected_checksum, " got=", slot.checksum)
+		load_failed.emit(slot_index, msg)
 		return null
 
+	print("LOAD_SLOT OK [", slot_index, "]")
 	load_completed.emit(slot_index)
 	return slot
 
@@ -138,8 +155,8 @@ func _on_auto_save_timeout() -> void:
 
 
 func _calculate_checksum(adventure_state: AdventureStateResource, meta_state: MetaStateResource) -> int:
-	var adv_bytes := var_to_bytes(adventure_state) if adventure_state != null else PackedByteArray()
-	var meta_bytes := var_to_bytes(meta_state) if meta_state != null else PackedByteArray()
+	var adv_bytes := var_to_bytes_with_objects(adventure_state) if adventure_state != null else PackedByteArray()
+	var meta_bytes := var_to_bytes_with_objects(meta_state) if meta_state != null else PackedByteArray()
 	var adv_hash := _hash_bytes(adv_bytes)
 	var meta_hash := _hash_bytes(meta_bytes)
 	return (adv_hash ^ meta_hash) & 0x7FFFFFFF

@@ -1311,3 +1311,2173 @@ design/gdd/game-concept-babel.md
 design/gdd/reviews/item-system-review-log.md
 ---
 
+## Session End: 20260529_180237
+### Commits
+d053f8d Add Godot project scaffold, UI scenes, and scene-switching flow
+---
+
+## Session End: 20260529_233322
+### Commits
+d053f8d Add Godot project scaffold, UI scenes, and scene-switching flow
+### Uncommitted Changes
+production/session-logs/agent-audit.log
+production/session-logs/session-log.md
+---
+
+## Session End: 20260529_234419
+### Commits
+d053f8d Add Godot project scaffold, UI scenes, and scene-switching flow
+### Uncommitted Changes
+production/session-logs/agent-audit.log
+production/session-logs/session-log.md
+scenes/core/Game.tscn
+scenes/map/SafeHouse.tscn
+scenes/screens/EventOverlay.tscn
+scenes/shop/ShopOverlay.tscn
+scripts/game_flow/game_manager.gd
+scripts/game_flow/game_scene.gd
+scripts/ui/ending_screen.gd
+scripts/ui/event_ui/event_interface.gd
+scripts/ui/map_ui/safe_house_interface.gd
+scripts/ui/shop_ui/shop_interface.gd
+scripts/ui/ui_manager.gd
+---
+
+## Session End: 20260529_234756
+### Commits
+d053f8d Add Godot project scaffold, UI scenes, and scene-switching flow
+### Uncommitted Changes
+production/session-logs/agent-audit.log
+production/session-logs/session-log.md
+scenes/core/Game.tscn
+scenes/map/SafeHouse.tscn
+scenes/screens/EventOverlay.tscn
+scenes/shop/ShopOverlay.tscn
+scripts/game_flow/game_manager.gd
+scripts/game_flow/game_scene.gd
+scripts/ui/ending_screen.gd
+scripts/ui/event_ui/event_interface.gd
+scripts/ui/map_ui/safe_house_interface.gd
+scripts/ui/shop_ui/shop_interface.gd
+scripts/ui/ui_manager.gd
+---
+
+## Session End: 20260529_234902
+### Commits
+d053f8d Add Godot project scaffold, UI scenes, and scene-switching flow
+### Uncommitted Changes
+production/session-logs/agent-audit.log
+production/session-logs/session-log.md
+scenes/core/Game.tscn
+scenes/map/SafeHouse.tscn
+scenes/screens/EventOverlay.tscn
+scenes/shop/ShopOverlay.tscn
+scripts/game_flow/game_manager.gd
+scripts/game_flow/game_scene.gd
+scripts/ui/ending_screen.gd
+scripts/ui/event_ui/event_interface.gd
+scripts/ui/map_ui/safe_house_interface.gd
+scripts/ui/shop_ui/shop_interface.gd
+scripts/ui/ui_manager.gd
+---
+
+## Session End: 20260529_235508
+### Commits
+d053f8d Add Godot project scaffold, UI scenes, and scene-switching flow
+### Uncommitted Changes
+production/session-logs/agent-audit.log
+production/session-logs/compaction-log.txt
+production/session-logs/session-log.md
+scenes/core/Game.tscn
+scenes/map/SafeHouse.tscn
+scenes/screens/EventOverlay.tscn
+scenes/shop/ShopOverlay.tscn
+scripts/core/map_state.gd
+scripts/game_flow/game_manager.gd
+scripts/game_flow/game_scene.gd
+scripts/ui/ending_screen.gd
+scripts/ui/event_ui/event_interface.gd
+scripts/ui/map_ui/safe_house_interface.gd
+scripts/ui/shop_ui/shop_interface.gd
+scripts/ui/ui_manager.gd
+---
+
+## Session End: 20260529_235956
+### Commits
+d053f8d Add Godot project scaffold, UI scenes, and scene-switching flow
+### Uncommitted Changes
+production/session-logs/agent-audit.log
+production/session-logs/compaction-log.txt
+production/session-logs/session-log.md
+scenes/core/Game.tscn
+scenes/map/SafeHouse.tscn
+scenes/screens/EventOverlay.tscn
+scenes/shop/ShopOverlay.tscn
+scripts/core/map_state.gd
+scripts/feature/survival/relic_handler.gd
+scripts/game_flow/game_manager.gd
+scripts/game_flow/game_scene.gd
+scripts/ui/ending_screen.gd
+scripts/ui/event_ui/event_interface.gd
+scripts/ui/map_ui/safe_house_interface.gd
+scripts/ui/shop_ui/shop_interface.gd
+scripts/ui/ui_manager.gd
+---
+
+## Session End: 20260530_000607
+### Commits
+d053f8d Add Godot project scaffold, UI scenes, and scene-switching flow
+### Uncommitted Changes
+production/session-logs/agent-audit.log
+production/session-logs/compaction-log.txt
+production/session-logs/session-log.md
+scenes/core/Game.tscn
+scenes/map/SafeHouse.tscn
+scenes/screens/EventOverlay.tscn
+scenes/shop/ShopOverlay.tscn
+scripts/core/map_state.gd
+scripts/feature/survival/relic_handler.gd
+scripts/game_flow/game_manager.gd
+scripts/game_flow/game_scene.gd
+scripts/ui/ending_screen.gd
+scripts/ui/event_ui/event_interface.gd
+scripts/ui/map_ui/map_renderer.gd
+scripts/ui/map_ui/safe_house_interface.gd
+scripts/ui/shop_ui/shop_interface.gd
+scripts/ui/ui_manager.gd
+---
+
+## Session End: 20260530_001640
+### Commits
+d053f8d Add Godot project scaffold, UI scenes, and scene-switching flow
+### Uncommitted Changes
+production/session-logs/agent-audit.log
+production/session-logs/compaction-log.txt
+production/session-logs/session-log.md
+scenes/core/Game.tscn
+scenes/map/SafeHouse.tscn
+scenes/screens/EventOverlay.tscn
+scenes/shop/ShopOverlay.tscn
+scripts/core/map_state.gd
+scripts/feature/survival/relic_handler.gd
+scripts/game_flow/game_manager.gd
+scripts/game_flow/game_scene.gd
+scripts/ui/ending_screen.gd
+scripts/ui/event_ui/event_interface.gd
+scripts/ui/map_ui/map_renderer.gd
+scripts/ui/map_ui/safe_house_interface.gd
+scripts/ui/shop_ui/shop_interface.gd
+scripts/ui/ui_manager.gd
+---
+
+## Session End: 20260530_001832
+### Commits
+d053f8d Add Godot project scaffold, UI scenes, and scene-switching flow
+### Uncommitted Changes
+production/session-logs/agent-audit.log
+production/session-logs/compaction-log.txt
+production/session-logs/session-log.md
+scenes/core/Game.tscn
+scenes/map/SafeHouse.tscn
+scenes/screens/EventOverlay.tscn
+scenes/shop/ShopOverlay.tscn
+scripts/core/map_state.gd
+scripts/feature/survival/relic_handler.gd
+scripts/game_flow/game_manager.gd
+scripts/game_flow/game_scene.gd
+scripts/ui/ending_screen.gd
+scripts/ui/event_ui/event_interface.gd
+scripts/ui/map_ui/map_renderer.gd
+scripts/ui/map_ui/safe_house_interface.gd
+scripts/ui/shop_ui/shop_interface.gd
+scripts/ui/ui_manager.gd
+---
+
+## Session End: 20260530_002333
+### Commits
+d053f8d Add Godot project scaffold, UI scenes, and scene-switching flow
+### Uncommitted Changes
+production/session-logs/agent-audit.log
+production/session-logs/compaction-log.txt
+production/session-logs/session-log.md
+scenes/core/Game.tscn
+scenes/map/SafeHouse.tscn
+scenes/screens/EventOverlay.tscn
+scenes/shop/ShopOverlay.tscn
+scripts/core/map_state.gd
+scripts/feature/survival/relic_handler.gd
+scripts/game_flow/game_manager.gd
+scripts/game_flow/game_scene.gd
+scripts/ui/ending_screen.gd
+scripts/ui/event_ui/event_interface.gd
+scripts/ui/map_ui/map_renderer.gd
+scripts/ui/map_ui/safe_house_interface.gd
+scripts/ui/shop_ui/shop_interface.gd
+scripts/ui/ui_manager.gd
+---
+
+## Session End: 20260530_003050
+### Commits
+d053f8d Add Godot project scaffold, UI scenes, and scene-switching flow
+### Uncommitted Changes
+production/session-logs/agent-audit.log
+production/session-logs/compaction-log.txt
+production/session-logs/session-log.md
+scenes/core/Game.tscn
+scenes/map/SafeHouse.tscn
+scenes/screens/EventOverlay.tscn
+scenes/shop/ShopOverlay.tscn
+scripts/core/map_state.gd
+scripts/feature/map/map_generator.gd
+scripts/feature/survival/relic_handler.gd
+scripts/game_flow/game_manager.gd
+scripts/game_flow/game_scene.gd
+scripts/ui/ending_screen.gd
+scripts/ui/event_ui/event_interface.gd
+scripts/ui/map_ui/map_renderer.gd
+scripts/ui/map_ui/safe_house_interface.gd
+scripts/ui/shop_ui/shop_interface.gd
+scripts/ui/ui_manager.gd
+---
+
+## Session End: 20260530_003448
+### Commits
+d053f8d Add Godot project scaffold, UI scenes, and scene-switching flow
+### Uncommitted Changes
+production/session-logs/agent-audit.log
+production/session-logs/compaction-log.txt
+production/session-logs/session-log.md
+scenes/core/Game.tscn
+scenes/map/SafeHouse.tscn
+scenes/screens/EventOverlay.tscn
+scenes/shop/ShopOverlay.tscn
+scripts/core/map_state.gd
+scripts/feature/map/map_generator.gd
+scripts/feature/survival/relic_handler.gd
+scripts/game_flow/game_manager.gd
+scripts/game_flow/game_scene.gd
+scripts/ui/ending_screen.gd
+scripts/ui/event_ui/event_interface.gd
+scripts/ui/map_ui/map_renderer.gd
+scripts/ui/map_ui/safe_house_interface.gd
+scripts/ui/shop_ui/shop_interface.gd
+scripts/ui/ui_manager.gd
+---
+
+## Session End: 20260530_004949
+### Commits
+d053f8d Add Godot project scaffold, UI scenes, and scene-switching flow
+### Uncommitted Changes
+production/session-logs/agent-audit.log
+production/session-logs/compaction-log.txt
+production/session-logs/session-log.md
+scenes/core/Game.tscn
+scenes/map/SafeHouse.tscn
+scenes/screens/EventOverlay.tscn
+scenes/shop/ShopOverlay.tscn
+scripts/core/map_state.gd
+scripts/feature/map/map_generator.gd
+scripts/feature/survival/relic_handler.gd
+scripts/game_flow/game_manager.gd
+scripts/game_flow/game_scene.gd
+scripts/ui/ending_screen.gd
+scripts/ui/event_ui/event_interface.gd
+scripts/ui/map_ui/map_renderer.gd
+scripts/ui/map_ui/safe_house_interface.gd
+scripts/ui/shop_ui/shop_interface.gd
+scripts/ui/ui_manager.gd
+---
+
+## Session End: 20260530_005750
+### Commits
+d053f8d Add Godot project scaffold, UI scenes, and scene-switching flow
+### Uncommitted Changes
+production/session-logs/agent-audit.log
+production/session-logs/compaction-log.txt
+production/session-logs/session-log.md
+scenes/core/Game.tscn
+scenes/map/SafeHouse.tscn
+scenes/screens/EventOverlay.tscn
+scenes/shop/ShopOverlay.tscn
+scripts/core/map_state.gd
+scripts/feature/map/map_generator.gd
+scripts/feature/survival/relic_handler.gd
+scripts/game_flow/game_manager.gd
+scripts/game_flow/game_scene.gd
+scripts/ui/ending_screen.gd
+scripts/ui/event_ui/event_interface.gd
+scripts/ui/map_ui/map_renderer.gd
+scripts/ui/map_ui/safe_house_interface.gd
+scripts/ui/shop_ui/shop_interface.gd
+scripts/ui/ui_manager.gd
+---
+
+## Session End: 20260530_010135
+### Commits
+d053f8d Add Godot project scaffold, UI scenes, and scene-switching flow
+### Uncommitted Changes
+production/session-logs/agent-audit.log
+production/session-logs/compaction-log.txt
+production/session-logs/session-log.md
+scenes/core/Game.tscn
+scenes/map/SafeHouse.tscn
+scenes/screens/EventOverlay.tscn
+scenes/shop/ShopOverlay.tscn
+scripts/core/map_state.gd
+scripts/feature/map/map_generator.gd
+scripts/feature/survival/relic_handler.gd
+scripts/game_flow/game_manager.gd
+scripts/game_flow/game_scene.gd
+scripts/ui/ending_screen.gd
+scripts/ui/event_ui/event_interface.gd
+scripts/ui/map_ui/map_renderer.gd
+scripts/ui/map_ui/safe_house_interface.gd
+scripts/ui/shop_ui/shop_interface.gd
+scripts/ui/ui_manager.gd
+---
+
+## Session End: 20260530_010723
+### Commits
+d053f8d Add Godot project scaffold, UI scenes, and scene-switching flow
+### Uncommitted Changes
+production/session-logs/agent-audit.log
+production/session-logs/compaction-log.txt
+production/session-logs/session-log.md
+scenes/core/Game.tscn
+scenes/map/SafeHouse.tscn
+scenes/screens/EventOverlay.tscn
+scenes/shop/ShopOverlay.tscn
+scripts/core/map_state.gd
+scripts/feature/map/map_generator.gd
+scripts/feature/survival/relic_handler.gd
+scripts/game_flow/game_manager.gd
+scripts/game_flow/game_scene.gd
+scripts/ui/ending_screen.gd
+scripts/ui/event_ui/event_interface.gd
+scripts/ui/map_ui/map_renderer.gd
+scripts/ui/map_ui/safe_house_interface.gd
+scripts/ui/shop_ui/shop_interface.gd
+scripts/ui/ui_manager.gd
+---
+
+## Session End: 20260530_011843
+### Commits
+d053f8d Add Godot project scaffold, UI scenes, and scene-switching flow
+### Uncommitted Changes
+production/session-logs/agent-audit.log
+production/session-logs/compaction-log.txt
+production/session-logs/session-log.md
+scenes/core/Game.tscn
+scenes/map/SafeHouse.tscn
+scenes/screens/EventOverlay.tscn
+scenes/shop/ShopOverlay.tscn
+scripts/core/map_state.gd
+scripts/feature/map/map_generator.gd
+scripts/feature/survival/relic_handler.gd
+scripts/game_flow/game_manager.gd
+scripts/game_flow/game_scene.gd
+scripts/ui/ending_screen.gd
+scripts/ui/event_ui/event_interface.gd
+scripts/ui/map_ui/map_renderer.gd
+scripts/ui/map_ui/safe_house_interface.gd
+scripts/ui/shop_ui/shop_interface.gd
+scripts/ui/ui_manager.gd
+---
+
+## Session End: 20260530_012034
+### Commits
+d053f8d Add Godot project scaffold, UI scenes, and scene-switching flow
+### Uncommitted Changes
+production/session-logs/agent-audit.log
+production/session-logs/compaction-log.txt
+production/session-logs/session-log.md
+scenes/core/Game.tscn
+scenes/map/SafeHouse.tscn
+scenes/screens/EventOverlay.tscn
+scenes/shop/ShopOverlay.tscn
+scripts/core/map_state.gd
+scripts/feature/map/map_generator.gd
+scripts/feature/survival/relic_handler.gd
+scripts/game_flow/game_manager.gd
+scripts/game_flow/game_scene.gd
+scripts/ui/ending_screen.gd
+scripts/ui/event_ui/event_interface.gd
+scripts/ui/map_ui/map_renderer.gd
+scripts/ui/map_ui/safe_house_interface.gd
+scripts/ui/shop_ui/shop_interface.gd
+scripts/ui/ui_manager.gd
+---
+
+## Session End: 20260530_012522
+### Commits
+d053f8d Add Godot project scaffold, UI scenes, and scene-switching flow
+### Uncommitted Changes
+production/session-logs/agent-audit.log
+production/session-logs/compaction-log.txt
+production/session-logs/session-log.md
+scenes/core/Game.tscn
+scenes/map/SafeHouse.tscn
+scenes/screens/EventOverlay.tscn
+scenes/shop/ShopOverlay.tscn
+scripts/core/map_state.gd
+scripts/feature/map/map_generator.gd
+scripts/feature/survival/relic_handler.gd
+scripts/game_flow/game_manager.gd
+scripts/game_flow/game_scene.gd
+scripts/ui/ending_screen.gd
+scripts/ui/event_ui/event_interface.gd
+scripts/ui/map_ui/map_renderer.gd
+scripts/ui/map_ui/safe_house_interface.gd
+scripts/ui/shop_ui/shop_interface.gd
+scripts/ui/ui_manager.gd
+---
+
+## Session End: 20260530_013254
+### Commits
+d053f8d Add Godot project scaffold, UI scenes, and scene-switching flow
+### Uncommitted Changes
+production/session-logs/agent-audit.log
+production/session-logs/compaction-log.txt
+production/session-logs/session-log.md
+scenes/core/Game.tscn
+scenes/map/SafeHouse.tscn
+scenes/screens/EventOverlay.tscn
+scenes/shop/ShopOverlay.tscn
+scripts/core/map_state.gd
+scripts/feature/map/map_generator.gd
+scripts/feature/survival/relic_handler.gd
+scripts/game_flow/game_manager.gd
+scripts/game_flow/game_scene.gd
+scripts/ui/ending_screen.gd
+scripts/ui/event_ui/event_interface.gd
+scripts/ui/map_ui/map_renderer.gd
+scripts/ui/map_ui/safe_house_interface.gd
+scripts/ui/shop_ui/shop_interface.gd
+scripts/ui/ui_manager.gd
+---
+
+## Session End: 20260530_014013
+### Commits
+d053f8d Add Godot project scaffold, UI scenes, and scene-switching flow
+### Uncommitted Changes
+production/session-logs/agent-audit.log
+production/session-logs/compaction-log.txt
+production/session-logs/session-log.md
+scenes/core/Game.tscn
+scenes/map/SafeHouse.tscn
+scenes/screens/EventOverlay.tscn
+scenes/shop/ShopOverlay.tscn
+scripts/core/map_state.gd
+scripts/feature/map/map_generator.gd
+scripts/feature/survival/relic_handler.gd
+scripts/game_flow/game_manager.gd
+scripts/game_flow/game_scene.gd
+scripts/ui/ending_screen.gd
+scripts/ui/event_ui/event_interface.gd
+scripts/ui/map_ui/map_renderer.gd
+scripts/ui/map_ui/safe_house_interface.gd
+scripts/ui/shop_ui/shop_interface.gd
+scripts/ui/ui_manager.gd
+---
+
+## Session End: 20260530_014345
+### Commits
+d053f8d Add Godot project scaffold, UI scenes, and scene-switching flow
+### Uncommitted Changes
+production/session-logs/agent-audit.log
+production/session-logs/compaction-log.txt
+production/session-logs/session-log.md
+scenes/core/Game.tscn
+scenes/map/SafeHouse.tscn
+scenes/screens/EventOverlay.tscn
+scenes/shop/ShopOverlay.tscn
+scripts/core/map_state.gd
+scripts/feature/map/map_generator.gd
+scripts/feature/survival/relic_handler.gd
+scripts/game_flow/game_manager.gd
+scripts/game_flow/game_scene.gd
+scripts/ui/ending_screen.gd
+scripts/ui/event_ui/event_interface.gd
+scripts/ui/map_ui/map_renderer.gd
+scripts/ui/map_ui/safe_house_interface.gd
+scripts/ui/shop_ui/shop_interface.gd
+scripts/ui/ui_manager.gd
+---
+
+## Session End: 20260530_014952
+### Commits
+d053f8d Add Godot project scaffold, UI scenes, and scene-switching flow
+### Uncommitted Changes
+production/session-logs/agent-audit.log
+production/session-logs/compaction-log.txt
+production/session-logs/session-log.md
+scenes/core/Game.tscn
+scenes/map/SafeHouse.tscn
+scenes/screens/EventOverlay.tscn
+scenes/shop/ShopOverlay.tscn
+scripts/core/map_state.gd
+scripts/feature/map/map_generator.gd
+scripts/feature/survival/relic_handler.gd
+scripts/game_flow/game_manager.gd
+scripts/game_flow/game_scene.gd
+scripts/ui/ending_screen.gd
+scripts/ui/event_ui/event_interface.gd
+scripts/ui/map_ui/map_renderer.gd
+scripts/ui/map_ui/safe_house_interface.gd
+scripts/ui/shop_ui/shop_interface.gd
+scripts/ui/ui_manager.gd
+---
+
+## Session End: 20260530_015550
+### Commits
+d053f8d Add Godot project scaffold, UI scenes, and scene-switching flow
+### Uncommitted Changes
+production/session-logs/agent-audit.log
+production/session-logs/compaction-log.txt
+production/session-logs/session-log.md
+scenes/core/Game.tscn
+scenes/map/SafeHouse.tscn
+scenes/screens/EventOverlay.tscn
+scenes/shop/ShopOverlay.tscn
+scripts/core/map_state.gd
+scripts/feature/map/map_generator.gd
+scripts/feature/survival/relic_handler.gd
+scripts/game_flow/game_manager.gd
+scripts/game_flow/game_scene.gd
+scripts/ui/ending_screen.gd
+scripts/ui/event_ui/event_interface.gd
+scripts/ui/map_ui/map_renderer.gd
+scripts/ui/map_ui/safe_house_interface.gd
+scripts/ui/shop_ui/shop_interface.gd
+scripts/ui/ui_manager.gd
+---
+
+## Session End: 20260530_015720
+### Commits
+d053f8d Add Godot project scaffold, UI scenes, and scene-switching flow
+### Uncommitted Changes
+production/session-logs/agent-audit.log
+production/session-logs/compaction-log.txt
+production/session-logs/session-log.md
+scenes/core/Game.tscn
+scenes/map/SafeHouse.tscn
+scenes/screens/EventOverlay.tscn
+scenes/shop/ShopOverlay.tscn
+scripts/core/map_state.gd
+scripts/feature/map/map_generator.gd
+scripts/feature/survival/relic_handler.gd
+scripts/game_flow/game_manager.gd
+scripts/game_flow/game_scene.gd
+scripts/ui/ending_screen.gd
+scripts/ui/event_ui/event_interface.gd
+scripts/ui/map_ui/map_renderer.gd
+scripts/ui/map_ui/safe_house_interface.gd
+scripts/ui/shop_ui/shop_interface.gd
+scripts/ui/ui_manager.gd
+---
+
+## Session End: 20260530_015941
+### Commits
+5e824a5 Replace procedural map with Chapter1-Ver1 template, add retreat/loot/death flow, and stamina-collapse guard
+d053f8d Add Godot project scaffold, UI scenes, and scene-switching flow
+### Uncommitted Changes
+production/session-logs/agent-audit.log
+production/session-logs/compaction-log.txt
+production/session-logs/session-log.md
+---
+
+## Session End: 20260530_123417
+### Uncommitted Changes
+design/gdd/detailed_map/chapter1-map-funnel.md
+design/gdd/detailed_map/chapter1-map-generation-rules.md
+design/gdd/detailed_map/chapter1-map-loop.md
+production/session-logs/agent-audit.log
+production/session-logs/compaction-log.txt
+production/session-logs/session-log.md
+scripts/feature/map/map_generator.gd
+---
+
+## Session End: 20260530_154634
+### Uncommitted Changes
+design/gdd/detailed_map/chapter1-map-funnel.md
+design/gdd/detailed_map/chapter1-map-generation-rules.md
+design/gdd/detailed_map/chapter1-map-loop.md
+production/session-logs/agent-audit.log
+production/session-logs/compaction-log.txt
+production/session-logs/session-log.md
+scripts/feature/map/map_generator.gd
+---
+
+## Session End: 20260530_154937
+### Uncommitted Changes
+design/gdd/detailed_map/chapter1-map-funnel.md
+design/gdd/detailed_map/chapter1-map-generation-rules.md
+design/gdd/detailed_map/chapter1-map-loop.md
+production/session-logs/agent-audit.log
+production/session-logs/compaction-log.txt
+production/session-logs/session-log.md
+scripts/feature/map/map_generator.gd
+scripts/ui/map_ui/map_renderer.gd
+---
+
+## Session End: 20260530_155244
+### Uncommitted Changes
+design/gdd/detailed_map/chapter1-map-funnel.md
+design/gdd/detailed_map/chapter1-map-generation-rules.md
+design/gdd/detailed_map/chapter1-map-loop.md
+production/session-logs/agent-audit.log
+production/session-logs/compaction-log.txt
+production/session-logs/session-log.md
+scripts/feature/map/map_generator.gd
+scripts/ui/map_ui/map_renderer.gd
+---
+
+## Session End: 20260530_155447
+### Uncommitted Changes
+design/gdd/detailed_map/chapter1-map-funnel.md
+design/gdd/detailed_map/chapter1-map-generation-rules.md
+design/gdd/detailed_map/chapter1-map-loop.md
+production/session-logs/agent-audit.log
+production/session-logs/compaction-log.txt
+production/session-logs/session-log.md
+scripts/feature/map/map_generator.gd
+scripts/ui/map_ui/map_renderer.gd
+---
+
+## Session End: 20260530_155610
+### Uncommitted Changes
+design/gdd/detailed_map/chapter1-map-funnel.md
+design/gdd/detailed_map/chapter1-map-generation-rules.md
+design/gdd/detailed_map/chapter1-map-loop.md
+production/session-logs/agent-audit.log
+production/session-logs/compaction-log.txt
+production/session-logs/session-log.md
+scripts/feature/map/map_generator.gd
+scripts/ui/map_ui/map_renderer.gd
+---
+
+## Session End: 20260530_160527
+### Uncommitted Changes
+design/gdd/detailed_map/chapter1-map-funnel.md
+design/gdd/detailed_map/chapter1-map-generation-rules.md
+design/gdd/detailed_map/chapter1-map-loop.md
+production/session-logs/agent-audit.log
+production/session-logs/compaction-log.txt
+production/session-logs/session-log.md
+scenes/backpack/BackpackUI.tscn
+scripts/feature/backpack/backpack_grid.gd
+scripts/feature/map/map_generator.gd
+scripts/game_flow/game_scene.gd
+scripts/ui/backpack_ui/backpack_interface.gd
+scripts/ui/map_ui/map_renderer.gd
+scripts/ui/ui_manager.gd
+---
+
+## Session End: 20260530_160703
+### Uncommitted Changes
+design/gdd/detailed_map/chapter1-map-funnel.md
+design/gdd/detailed_map/chapter1-map-generation-rules.md
+design/gdd/detailed_map/chapter1-map-loop.md
+production/session-logs/agent-audit.log
+production/session-logs/compaction-log.txt
+production/session-logs/session-log.md
+scenes/backpack/BackpackUI.tscn
+scripts/feature/backpack/backpack_grid.gd
+scripts/feature/map/map_generator.gd
+scripts/game_flow/game_scene.gd
+scripts/ui/backpack_ui/backpack_interface.gd
+scripts/ui/map_ui/map_renderer.gd
+scripts/ui/ui_manager.gd
+---
+
+## Session End: 20260530_161047
+### Uncommitted Changes
+design/gdd/detailed_map/chapter1-map-funnel.md
+design/gdd/detailed_map/chapter1-map-generation-rules.md
+design/gdd/detailed_map/chapter1-map-loop.md
+production/session-logs/agent-audit.log
+production/session-logs/compaction-log.txt
+production/session-logs/session-log.md
+scenes/backpack/BackpackUI.tscn
+scripts/feature/backpack/backpack_grid.gd
+scripts/feature/map/map_generator.gd
+scripts/game_flow/game_scene.gd
+scripts/ui/backpack_ui/backpack_interface.gd
+scripts/ui/map_ui/map_renderer.gd
+scripts/ui/ui_manager.gd
+---
+
+## Session End: 20260530_161337
+### Uncommitted Changes
+design/gdd/detailed_map/chapter1-map-funnel.md
+design/gdd/detailed_map/chapter1-map-generation-rules.md
+design/gdd/detailed_map/chapter1-map-loop.md
+production/session-logs/agent-audit.log
+production/session-logs/compaction-log.txt
+production/session-logs/session-log.md
+scenes/backpack/BackpackUI.tscn
+scripts/feature/backpack/backpack_grid.gd
+scripts/feature/map/map_generator.gd
+scripts/game_flow/game_scene.gd
+scripts/ui/backpack_ui/backpack_interface.gd
+scripts/ui/map_ui/map_renderer.gd
+scripts/ui/ui_manager.gd
+---
+
+## Session End: 20260530_161927
+### Uncommitted Changes
+design/gdd/detailed_map/chapter1-map-funnel.md
+design/gdd/detailed_map/chapter1-map-generation-rules.md
+design/gdd/detailed_map/chapter1-map-loop.md
+production/session-logs/agent-audit.log
+production/session-logs/compaction-log.txt
+production/session-logs/session-log.md
+scenes/backpack/BackpackUI.tscn
+scripts/feature/backpack/backpack_grid.gd
+scripts/feature/backpack/backpack_manager.gd
+scripts/feature/map/map_generator.gd
+scripts/game_flow/game_manager.gd
+scripts/game_flow/game_scene.gd
+scripts/ui/backpack_ui/backpack_interface.gd
+scripts/ui/map_ui/map_renderer.gd
+scripts/ui/ui_manager.gd
+---
+
+## Session End: 20260530_162236
+### Uncommitted Changes
+design/gdd/detailed_map/chapter1-map-funnel.md
+design/gdd/detailed_map/chapter1-map-generation-rules.md
+design/gdd/detailed_map/chapter1-map-loop.md
+production/session-logs/agent-audit.log
+production/session-logs/compaction-log.txt
+production/session-logs/session-log.md
+scenes/backpack/BackpackUI.tscn
+scripts/feature/backpack/backpack_grid.gd
+scripts/feature/backpack/backpack_manager.gd
+scripts/feature/map/map_generator.gd
+scripts/game_flow/game_manager.gd
+scripts/game_flow/game_scene.gd
+scripts/ui/backpack_ui/backpack_interface.gd
+scripts/ui/map_ui/map_renderer.gd
+scripts/ui/ui_manager.gd
+---
+
+## Session End: 20260530_231731
+### Uncommitted Changes
+design/gdd/detailed_map/chapter1-map-funnel.md
+design/gdd/detailed_map/chapter1-map-generation-rules.md
+design/gdd/detailed_map/chapter1-map-loop.md
+production/session-logs/agent-audit.log
+production/session-logs/compaction-log.txt
+production/session-logs/session-log.md
+scenes/backpack/BackpackUI.tscn
+scripts/feature/backpack/backpack_grid.gd
+scripts/feature/backpack/backpack_manager.gd
+scripts/feature/map/map_generator.gd
+scripts/game_flow/game_manager.gd
+scripts/game_flow/game_scene.gd
+scripts/ui/backpack_ui/backpack_interface.gd
+scripts/ui/map_ui/map_renderer.gd
+scripts/ui/ui_manager.gd
+---
+
+## Session End: 20260531_003707
+### Uncommitted Changes
+design/gdd/detailed_map/chapter1-map-funnel.md
+design/gdd/detailed_map/chapter1-map-generation-rules.md
+design/gdd/detailed_map/chapter1-map-loop.md
+production/session-logs/agent-audit.log
+production/session-logs/compaction-log.txt
+production/session-logs/session-log.md
+scenes/backpack/BackpackUI.tscn
+scenes/map/SafeHouse.tscn
+scripts/feature/backpack/backpack_grid.gd
+scripts/feature/backpack/backpack_manager.gd
+scripts/feature/map/map_generator.gd
+scripts/feature/map/node_interaction_manager.gd
+scripts/game_flow/game_manager.gd
+scripts/game_flow/game_scene.gd
+scripts/ui/backpack_ui/backpack_interface.gd
+scripts/ui/map_ui/map_renderer.gd
+scripts/ui/map_ui/safe_house_interface.gd
+scripts/ui/ui_manager.gd
+---
+
+## Session End: 20260531_005026
+### Uncommitted Changes
+design/gdd/detailed_map/chapter1-map-funnel.md
+design/gdd/detailed_map/chapter1-map-generation-rules.md
+design/gdd/detailed_map/chapter1-map-loop.md
+production/session-logs/agent-audit.log
+production/session-logs/compaction-log.txt
+production/session-logs/session-log.md
+scenes/backpack/BackpackUI.tscn
+scenes/map/SafeHouse.tscn
+scripts/feature/backpack/backpack_grid.gd
+scripts/feature/backpack/backpack_manager.gd
+scripts/feature/map/map_generator.gd
+scripts/feature/map/node_interaction_manager.gd
+scripts/game_flow/game_manager.gd
+scripts/game_flow/game_scene.gd
+scripts/ui/backpack_ui/backpack_interface.gd
+scripts/ui/map_ui/map_renderer.gd
+scripts/ui/map_ui/safe_house_interface.gd
+scripts/ui/ui_manager.gd
+---
+
+## Session End: 20260531_005412
+### Uncommitted Changes
+design/gdd/detailed_map/chapter1-map-funnel.md
+design/gdd/detailed_map/chapter1-map-generation-rules.md
+design/gdd/detailed_map/chapter1-map-loop.md
+production/session-logs/agent-audit.log
+production/session-logs/compaction-log.txt
+production/session-logs/session-log.md
+scenes/backpack/BackpackUI.tscn
+scenes/map/SafeHouse.tscn
+scripts/feature/backpack/backpack_grid.gd
+scripts/feature/backpack/backpack_manager.gd
+scripts/feature/map/map_generator.gd
+scripts/feature/map/node_interaction_manager.gd
+scripts/game_flow/game_manager.gd
+scripts/game_flow/game_scene.gd
+scripts/ui/backpack_ui/backpack_interface.gd
+scripts/ui/map_ui/map_renderer.gd
+scripts/ui/map_ui/safe_house_interface.gd
+scripts/ui/ui_manager.gd
+---
+
+## Session End: 20260531_005800
+### Uncommitted Changes
+design/gdd/detailed_map/chapter1-map-funnel.md
+design/gdd/detailed_map/chapter1-map-generation-rules.md
+design/gdd/detailed_map/chapter1-map-loop.md
+production/session-logs/agent-audit.log
+production/session-logs/compaction-log.txt
+production/session-logs/session-log.md
+scenes/backpack/BackpackUI.tscn
+scenes/map/SafeHouse.tscn
+scripts/feature/backpack/backpack_grid.gd
+scripts/feature/backpack/backpack_manager.gd
+scripts/feature/map/map_generator.gd
+scripts/feature/map/node_interaction_manager.gd
+scripts/game_flow/game_manager.gd
+scripts/game_flow/game_scene.gd
+scripts/ui/backpack_ui/backpack_interface.gd
+scripts/ui/map_ui/map_renderer.gd
+scripts/ui/map_ui/safe_house_interface.gd
+scripts/ui/ui_manager.gd
+---
+
+## Session End: 20260531_005946
+### Uncommitted Changes
+design/gdd/detailed_map/chapter1-map-funnel.md
+design/gdd/detailed_map/chapter1-map-generation-rules.md
+design/gdd/detailed_map/chapter1-map-loop.md
+production/session-logs/agent-audit.log
+production/session-logs/compaction-log.txt
+production/session-logs/session-log.md
+scenes/backpack/BackpackUI.tscn
+scenes/map/SafeHouse.tscn
+scripts/feature/backpack/backpack_grid.gd
+scripts/feature/backpack/backpack_manager.gd
+scripts/feature/map/map_generator.gd
+scripts/feature/map/node_interaction_manager.gd
+scripts/game_flow/game_manager.gd
+scripts/game_flow/game_scene.gd
+scripts/ui/backpack_ui/backpack_interface.gd
+scripts/ui/map_ui/map_renderer.gd
+scripts/ui/map_ui/safe_house_interface.gd
+scripts/ui/ui_manager.gd
+---
+
+## Session End: 20260531_010707
+### Uncommitted Changes
+design/gdd/detailed_map/chapter1-map-funnel.md
+design/gdd/detailed_map/chapter1-map-generation-rules.md
+design/gdd/detailed_map/chapter1-map-loop.md
+production/session-logs/agent-audit.log
+production/session-logs/compaction-log.txt
+production/session-logs/session-log.md
+scenes/backpack/BackpackUI.tscn
+scenes/map/SafeHouse.tscn
+scripts/feature/backpack/backpack_grid.gd
+scripts/feature/backpack/backpack_manager.gd
+scripts/feature/map/map_generator.gd
+scripts/feature/map/node_interaction_manager.gd
+scripts/game_flow/game_manager.gd
+scripts/game_flow/game_scene.gd
+scripts/ui/backpack_ui/backpack_interface.gd
+scripts/ui/map_ui/map_renderer.gd
+scripts/ui/map_ui/safe_house_interface.gd
+scripts/ui/ui_manager.gd
+---
+
+## Session End: 20260531_010840
+### Uncommitted Changes
+design/gdd/detailed_map/chapter1-map-funnel.md
+design/gdd/detailed_map/chapter1-map-generation-rules.md
+design/gdd/detailed_map/chapter1-map-loop.md
+production/session-logs/agent-audit.log
+production/session-logs/compaction-log.txt
+production/session-logs/session-log.md
+scenes/backpack/BackpackUI.tscn
+scenes/map/SafeHouse.tscn
+scripts/feature/backpack/backpack_grid.gd
+scripts/feature/backpack/backpack_manager.gd
+scripts/feature/map/map_generator.gd
+scripts/feature/map/node_interaction_manager.gd
+scripts/game_flow/game_manager.gd
+scripts/game_flow/game_scene.gd
+scripts/ui/backpack_ui/backpack_interface.gd
+scripts/ui/map_ui/map_renderer.gd
+scripts/ui/map_ui/safe_house_interface.gd
+scripts/ui/ui_manager.gd
+---
+
+## Session End: 20260531_011255
+### Uncommitted Changes
+design/gdd/detailed_map/chapter1-map-funnel.md
+design/gdd/detailed_map/chapter1-map-generation-rules.md
+design/gdd/detailed_map/chapter1-map-loop.md
+production/session-logs/agent-audit.log
+production/session-logs/compaction-log.txt
+production/session-logs/session-log.md
+scenes/backpack/BackpackUI.tscn
+scenes/map/SafeHouse.tscn
+scripts/feature/backpack/backpack_grid.gd
+scripts/feature/backpack/backpack_manager.gd
+scripts/feature/map/map_generator.gd
+scripts/feature/map/node_interaction_manager.gd
+scripts/game_flow/game_manager.gd
+scripts/game_flow/game_scene.gd
+scripts/ui/backpack_ui/backpack_interface.gd
+scripts/ui/map_ui/map_renderer.gd
+scripts/ui/map_ui/safe_house_interface.gd
+scripts/ui/ui_manager.gd
+---
+
+## Session End: 20260531_011525
+### Uncommitted Changes
+design/gdd/detailed_map/chapter1-map-funnel.md
+design/gdd/detailed_map/chapter1-map-generation-rules.md
+design/gdd/detailed_map/chapter1-map-loop.md
+production/session-logs/agent-audit.log
+production/session-logs/compaction-log.txt
+production/session-logs/session-log.md
+scenes/backpack/BackpackUI.tscn
+scenes/map/SafeHouse.tscn
+scripts/feature/backpack/backpack_grid.gd
+scripts/feature/backpack/backpack_manager.gd
+scripts/feature/map/map_generator.gd
+scripts/feature/map/node_interaction_manager.gd
+scripts/game_flow/game_manager.gd
+scripts/game_flow/game_scene.gd
+scripts/ui/backpack_ui/backpack_interface.gd
+scripts/ui/map_ui/map_renderer.gd
+scripts/ui/map_ui/safe_house_interface.gd
+scripts/ui/ui_manager.gd
+---
+
+## Session End: 20260531_223944
+### Uncommitted Changes
+design/gdd/detailed_map/chapter1-map-funnel.md
+design/gdd/detailed_map/chapter1-map-generation-rules.md
+design/gdd/detailed_map/chapter1-map-loop.md
+production/session-logs/agent-audit.log
+production/session-logs/compaction-log.txt
+production/session-logs/session-log.md
+scenes/backpack/BackpackUI.tscn
+scenes/map/SafeHouse.tscn
+scripts/feature/backpack/backpack_grid.gd
+scripts/feature/backpack/backpack_manager.gd
+scripts/feature/map/map_generator.gd
+scripts/feature/map/node_interaction_manager.gd
+scripts/game_flow/game_manager.gd
+scripts/game_flow/game_scene.gd
+scripts/ui/backpack_ui/backpack_interface.gd
+scripts/ui/map_ui/map_renderer.gd
+scripts/ui/map_ui/safe_house_interface.gd
+scripts/ui/ui_manager.gd
+---
+
+## Session End: 20260531_230618
+### Uncommitted Changes
+design/gdd/detailed_map/chapter1-map-funnel.md
+design/gdd/detailed_map/chapter1-map-generation-rules.md
+design/gdd/detailed_map/chapter1-map-loop.md
+production/session-logs/agent-audit.log
+production/session-logs/compaction-log.txt
+production/session-logs/session-log.md
+scenes/backpack/BackpackUI.tscn
+scenes/map/SafeHouse.tscn
+scenes/shop/ShopOverlay.tscn
+scripts/feature/backpack/backpack_grid.gd
+scripts/feature/backpack/backpack_manager.gd
+scripts/feature/map/map_generator.gd
+scripts/feature/map/node_interaction_manager.gd
+scripts/game_flow/game_manager.gd
+scripts/game_flow/game_scene.gd
+scripts/ui/backpack_ui/backpack_interface.gd
+scripts/ui/map_ui/map_renderer.gd
+scripts/ui/map_ui/safe_house_interface.gd
+scripts/ui/shop_ui/shop_interface.gd
+scripts/ui/ui_manager.gd
+---
+
+## Session End: 20260531_231141
+### Uncommitted Changes
+design/gdd/detailed_map/chapter1-map-funnel.md
+design/gdd/detailed_map/chapter1-map-generation-rules.md
+design/gdd/detailed_map/chapter1-map-loop.md
+production/session-logs/agent-audit.log
+production/session-logs/compaction-log.txt
+production/session-logs/session-log.md
+scenes/backpack/BackpackUI.tscn
+scenes/map/SafeHouse.tscn
+scenes/shop/ShopOverlay.tscn
+scripts/feature/backpack/backpack_grid.gd
+scripts/feature/backpack/backpack_manager.gd
+scripts/feature/map/map_generator.gd
+scripts/feature/map/node_interaction_manager.gd
+scripts/game_flow/game_manager.gd
+scripts/game_flow/game_scene.gd
+scripts/ui/backpack_ui/backpack_interface.gd
+scripts/ui/map_ui/map_renderer.gd
+scripts/ui/map_ui/safe_house_interface.gd
+scripts/ui/shop_ui/shop_interface.gd
+scripts/ui/ui_manager.gd
+---
+
+## Session End: 20260531_232016
+### Uncommitted Changes
+design/gdd/detailed_map/chapter1-map-funnel.md
+design/gdd/detailed_map/chapter1-map-generation-rules.md
+design/gdd/detailed_map/chapter1-map-loop.md
+production/session-logs/agent-audit.log
+production/session-logs/compaction-log.txt
+production/session-logs/session-log.md
+scenes/backpack/BackpackUI.tscn
+scenes/map/SafeHouse.tscn
+scenes/shop/ShopOverlay.tscn
+scripts/feature/backpack/backpack_grid.gd
+scripts/feature/backpack/backpack_manager.gd
+scripts/feature/map/map_generator.gd
+scripts/feature/map/node_interaction_manager.gd
+scripts/feature/shop/shop_manager.gd
+scripts/game_flow/game_manager.gd
+scripts/game_flow/game_scene.gd
+scripts/ui/backpack_ui/backpack_interface.gd
+scripts/ui/map_ui/map_renderer.gd
+scripts/ui/map_ui/safe_house_interface.gd
+scripts/ui/shop_ui/shop_interface.gd
+scripts/ui/ui_manager.gd
+---
+
+## Session End: 20260531_233144
+### Uncommitted Changes
+design/gdd/detailed_map/chapter1-map-funnel.md
+design/gdd/detailed_map/chapter1-map-generation-rules.md
+design/gdd/detailed_map/chapter1-map-loop.md
+production/session-logs/agent-audit.log
+production/session-logs/compaction-log.txt
+production/session-logs/session-log.md
+scenes/backpack/BackpackUI.tscn
+scenes/map/SafeHouse.tscn
+scenes/shop/ShopOverlay.tscn
+scripts/feature/backpack/backpack_grid.gd
+scripts/feature/backpack/backpack_manager.gd
+scripts/feature/map/map_generator.gd
+scripts/feature/map/node_interaction_manager.gd
+scripts/feature/shop/shop_manager.gd
+scripts/game_flow/game_manager.gd
+scripts/game_flow/game_scene.gd
+scripts/ui/backpack_ui/backpack_interface.gd
+scripts/ui/map_ui/map_renderer.gd
+scripts/ui/map_ui/safe_house_interface.gd
+scripts/ui/shop_ui/shop_interface.gd
+scripts/ui/ui_manager.gd
+---
+
+## Session End: 20260531_235319
+### Uncommitted Changes
+design/gdd/detailed_map/chapter1-map-funnel.md
+design/gdd/detailed_map/chapter1-map-generation-rules.md
+design/gdd/detailed_map/chapter1-map-loop.md
+production/session-logs/agent-audit.log
+production/session-logs/compaction-log.txt
+production/session-logs/session-log.md
+scenes/backpack/BackpackUI.tscn
+scenes/map/SafeHouse.tscn
+scenes/shop/ShopOverlay.tscn
+scripts/feature/backpack/backpack_grid.gd
+scripts/feature/backpack/backpack_manager.gd
+scripts/feature/map/map_generator.gd
+scripts/feature/map/node_interaction_manager.gd
+scripts/feature/shop/shop_manager.gd
+scripts/game_flow/game_manager.gd
+scripts/game_flow/game_scene.gd
+scripts/ui/backpack_ui/backpack_interface.gd
+scripts/ui/map_ui/map_renderer.gd
+scripts/ui/map_ui/safe_house_interface.gd
+scripts/ui/shop_ui/shop_interface.gd
+scripts/ui/ui_manager.gd
+---
+
+## Session End: 20260601_000246
+### Uncommitted Changes
+design/gdd/detailed_map/chapter1-map-funnel.md
+design/gdd/detailed_map/chapter1-map-generation-rules.md
+design/gdd/detailed_map/chapter1-map-loop.md
+production/session-logs/agent-audit.log
+production/session-logs/compaction-log.txt
+production/session-logs/session-log.md
+scenes/backpack/BackpackUI.tscn
+scenes/map/SafeHouse.tscn
+scenes/shop/ShopOverlay.tscn
+scripts/feature/backpack/backpack_grid.gd
+scripts/feature/backpack/backpack_manager.gd
+scripts/feature/map/map_generator.gd
+scripts/feature/map/node_interaction_manager.gd
+scripts/feature/shop/shop_manager.gd
+scripts/game_flow/game_manager.gd
+scripts/game_flow/game_scene.gd
+scripts/ui/backpack_ui/backpack_interface.gd
+scripts/ui/map_ui/map_renderer.gd
+scripts/ui/map_ui/safe_house_interface.gd
+scripts/ui/shop_ui/shop_interface.gd
+scripts/ui/ui_manager.gd
+---
+
+## Session End: 20260601_000409
+### Uncommitted Changes
+design/gdd/detailed_map/chapter1-map-funnel.md
+design/gdd/detailed_map/chapter1-map-generation-rules.md
+design/gdd/detailed_map/chapter1-map-loop.md
+production/session-logs/agent-audit.log
+production/session-logs/compaction-log.txt
+production/session-logs/session-log.md
+scenes/backpack/BackpackUI.tscn
+scenes/map/SafeHouse.tscn
+scenes/shop/ShopOverlay.tscn
+scripts/feature/backpack/backpack_grid.gd
+scripts/feature/backpack/backpack_manager.gd
+scripts/feature/map/map_generator.gd
+scripts/feature/map/node_interaction_manager.gd
+scripts/feature/shop/shop_manager.gd
+scripts/game_flow/game_manager.gd
+scripts/game_flow/game_scene.gd
+scripts/ui/backpack_ui/backpack_interface.gd
+scripts/ui/map_ui/map_renderer.gd
+scripts/ui/map_ui/safe_house_interface.gd
+scripts/ui/shop_ui/shop_interface.gd
+scripts/ui/ui_manager.gd
+---
+
+## Session End: 20260601_000636
+### Uncommitted Changes
+design/gdd/detailed_map/chapter1-map-funnel.md
+design/gdd/detailed_map/chapter1-map-generation-rules.md
+design/gdd/detailed_map/chapter1-map-loop.md
+production/session-logs/agent-audit.log
+production/session-logs/compaction-log.txt
+production/session-logs/session-log.md
+scenes/backpack/BackpackUI.tscn
+scenes/map/SafeHouse.tscn
+scenes/shop/ShopOverlay.tscn
+scripts/feature/backpack/backpack_grid.gd
+scripts/feature/backpack/backpack_manager.gd
+scripts/feature/events/event_manager.gd
+scripts/feature/map/map_generator.gd
+scripts/feature/map/node_interaction_manager.gd
+scripts/feature/shop/shop_manager.gd
+scripts/game_flow/game_manager.gd
+scripts/game_flow/game_scene.gd
+scripts/ui/backpack_ui/backpack_interface.gd
+scripts/ui/map_ui/map_renderer.gd
+scripts/ui/map_ui/safe_house_interface.gd
+scripts/ui/shop_ui/shop_interface.gd
+scripts/ui/ui_manager.gd
+---
+
+## Session End: 20260601_000838
+### Uncommitted Changes
+design/gdd/detailed_map/chapter1-map-funnel.md
+design/gdd/detailed_map/chapter1-map-generation-rules.md
+design/gdd/detailed_map/chapter1-map-loop.md
+production/session-logs/agent-audit.log
+production/session-logs/compaction-log.txt
+production/session-logs/session-log.md
+scenes/backpack/BackpackUI.tscn
+scenes/map/SafeHouse.tscn
+scenes/shop/ShopOverlay.tscn
+scripts/feature/backpack/backpack_grid.gd
+scripts/feature/backpack/backpack_manager.gd
+scripts/feature/events/event_manager.gd
+scripts/feature/events/quest_manager.gd
+scripts/feature/map/map_generator.gd
+scripts/feature/map/node_interaction_manager.gd
+scripts/feature/shop/shop_manager.gd
+scripts/game_flow/game_manager.gd
+scripts/game_flow/game_scene.gd
+scripts/ui/backpack_ui/backpack_interface.gd
+scripts/ui/map_ui/map_renderer.gd
+scripts/ui/map_ui/safe_house_interface.gd
+scripts/ui/shop_ui/shop_interface.gd
+scripts/ui/ui_manager.gd
+---
+
+## Session End: 20260601_073723
+### Uncommitted Changes
+design/gdd/detailed_map/chapter1-map-funnel.md
+design/gdd/detailed_map/chapter1-map-generation-rules.md
+design/gdd/detailed_map/chapter1-map-loop.md
+production/session-logs/agent-audit.log
+production/session-logs/compaction-log.txt
+production/session-logs/session-log.md
+scenes/backpack/BackpackUI.tscn
+scenes/map/SafeHouse.tscn
+scenes/shop/ShopOverlay.tscn
+scripts/feature/backpack/backpack_grid.gd
+scripts/feature/backpack/backpack_manager.gd
+scripts/feature/events/event_manager.gd
+scripts/feature/events/quest_manager.gd
+scripts/feature/map/map_generator.gd
+scripts/feature/map/node_interaction_manager.gd
+scripts/feature/shop/shop_manager.gd
+scripts/game_flow/game_manager.gd
+scripts/game_flow/game_scene.gd
+scripts/ui/backpack_ui/backpack_interface.gd
+scripts/ui/map_ui/map_renderer.gd
+scripts/ui/map_ui/safe_house_interface.gd
+scripts/ui/shop_ui/shop_interface.gd
+scripts/ui/ui_manager.gd
+---
+
+## Session End: 20260601_085253
+### Uncommitted Changes
+design/gdd/detailed_map/chapter1-map-funnel.md
+design/gdd/detailed_map/chapter1-map-generation-rules.md
+design/gdd/detailed_map/chapter1-map-loop.md
+production/session-logs/agent-audit.log
+production/session-logs/compaction-log.txt
+production/session-logs/session-log.md
+scenes/backpack/BackpackUI.tscn
+scenes/map/SafeHouse.tscn
+scenes/shop/ShopOverlay.tscn
+scripts/feature/backpack/backpack_grid.gd
+scripts/feature/backpack/backpack_manager.gd
+scripts/feature/events/event_manager.gd
+scripts/feature/events/quest_manager.gd
+scripts/feature/map/map_generator.gd
+scripts/feature/map/node_interaction_manager.gd
+scripts/feature/shop/shop_manager.gd
+scripts/game_flow/game_manager.gd
+scripts/game_flow/game_scene.gd
+scripts/ui/backpack_ui/backpack_interface.gd
+scripts/ui/map_ui/map_renderer.gd
+scripts/ui/map_ui/safe_house_interface.gd
+scripts/ui/shop_ui/shop_interface.gd
+scripts/ui/ui_manager.gd
+---
+
+## Session End: 20260601_085831
+### Uncommitted Changes
+design/gdd/detailed_map/chapter1-map-funnel.md
+design/gdd/detailed_map/chapter1-map-generation-rules.md
+design/gdd/detailed_map/chapter1-map-loop.md
+production/session-logs/agent-audit.log
+production/session-logs/compaction-log.txt
+production/session-logs/session-log.md
+scenes/backpack/BackpackUI.tscn
+scenes/map/SafeHouse.tscn
+scenes/shop/ShopOverlay.tscn
+scripts/feature/backpack/backpack_grid.gd
+scripts/feature/backpack/backpack_manager.gd
+scripts/feature/events/event_manager.gd
+scripts/feature/events/quest_manager.gd
+scripts/feature/map/map_generator.gd
+scripts/feature/map/node_interaction_manager.gd
+scripts/feature/shop/shop_manager.gd
+scripts/game_flow/game_manager.gd
+scripts/game_flow/game_scene.gd
+scripts/ui/backpack_ui/backpack_interface.gd
+scripts/ui/map_ui/map_renderer.gd
+scripts/ui/map_ui/safe_house_interface.gd
+scripts/ui/shop_ui/shop_interface.gd
+scripts/ui/ui_manager.gd
+---
+
+## Session End: 20260601_092802
+### Uncommitted Changes
+design/gdd/detailed_map/chapter1-map-funnel.md
+design/gdd/detailed_map/chapter1-map-generation-rules.md
+design/gdd/detailed_map/chapter1-map-loop.md
+production/session-logs/agent-audit.log
+production/session-logs/compaction-log.txt
+production/session-logs/session-log.md
+scenes/backpack/BackpackUI.tscn
+scenes/map/SafeHouse.tscn
+scenes/shop/ShopOverlay.tscn
+scripts/feature/backpack/backpack_grid.gd
+scripts/feature/backpack/backpack_manager.gd
+scripts/feature/events/event_manager.gd
+scripts/feature/events/quest_manager.gd
+scripts/feature/map/map_generator.gd
+scripts/feature/map/node_interaction_manager.gd
+scripts/feature/shop/shop_manager.gd
+scripts/game_flow/game_manager.gd
+scripts/game_flow/game_scene.gd
+scripts/ui/backpack_ui/backpack_interface.gd
+scripts/ui/map_ui/map_renderer.gd
+scripts/ui/map_ui/safe_house_interface.gd
+scripts/ui/shop_ui/shop_interface.gd
+scripts/ui/ui_manager.gd
+---
+
+## Session End: 20260601_092945
+### Uncommitted Changes
+design/gdd/detailed_map/chapter1-map-funnel.md
+design/gdd/detailed_map/chapter1-map-generation-rules.md
+design/gdd/detailed_map/chapter1-map-loop.md
+production/session-logs/agent-audit.log
+production/session-logs/compaction-log.txt
+production/session-logs/session-log.md
+scenes/backpack/BackpackUI.tscn
+scenes/map/SafeHouse.tscn
+scenes/shop/ShopOverlay.tscn
+scripts/feature/backpack/backpack_grid.gd
+scripts/feature/backpack/backpack_manager.gd
+scripts/feature/events/event_manager.gd
+scripts/feature/events/quest_manager.gd
+scripts/feature/map/map_generator.gd
+scripts/feature/map/node_interaction_manager.gd
+scripts/feature/shop/shop_manager.gd
+scripts/game_flow/game_manager.gd
+scripts/game_flow/game_scene.gd
+scripts/ui/backpack_ui/backpack_interface.gd
+scripts/ui/map_ui/map_renderer.gd
+scripts/ui/map_ui/safe_house_interface.gd
+scripts/ui/shop_ui/shop_interface.gd
+scripts/ui/ui_manager.gd
+---
+
+## Session End: 20260601_103135
+### Uncommitted Changes
+design/gdd/detailed_map/chapter1-map-funnel.md
+design/gdd/detailed_map/chapter1-map-generation-rules.md
+design/gdd/detailed_map/chapter1-map-loop.md
+production/session-logs/agent-audit.log
+production/session-logs/compaction-log.txt
+production/session-logs/session-log.md
+scenes/backpack/BackpackUI.tscn
+scenes/map/SafeHouse.tscn
+scenes/shop/ShopOverlay.tscn
+scripts/feature/backpack/backpack_grid.gd
+scripts/feature/backpack/backpack_manager.gd
+scripts/feature/events/event_manager.gd
+scripts/feature/events/quest_manager.gd
+scripts/feature/map/map_generator.gd
+scripts/feature/map/node_interaction_manager.gd
+scripts/feature/shop/shop_manager.gd
+scripts/game_flow/game_manager.gd
+scripts/game_flow/game_scene.gd
+scripts/ui/backpack_ui/backpack_interface.gd
+scripts/ui/map_ui/map_renderer.gd
+scripts/ui/map_ui/safe_house_interface.gd
+scripts/ui/shop_ui/shop_interface.gd
+scripts/ui/ui_manager.gd
+---
+
+## Session End: 20260601_103911
+### Uncommitted Changes
+design/gdd/detailed_map/chapter1-map-funnel.md
+design/gdd/detailed_map/chapter1-map-generation-rules.md
+design/gdd/detailed_map/chapter1-map-loop.md
+production/session-logs/agent-audit.log
+production/session-logs/compaction-log.txt
+production/session-logs/session-log.md
+scenes/backpack/BackpackUI.tscn
+scenes/core/PauseMenu.tscn
+scenes/map/SafeHouse.tscn
+scenes/shop/ShopOverlay.tscn
+scripts/feature/backpack/backpack_grid.gd
+scripts/feature/backpack/backpack_manager.gd
+scripts/feature/events/event_manager.gd
+scripts/feature/events/quest_manager.gd
+scripts/feature/map/map_generator.gd
+scripts/feature/map/node_interaction_manager.gd
+scripts/feature/shop/shop_manager.gd
+scripts/game_flow/game_manager.gd
+scripts/game_flow/game_scene.gd
+scripts/ui/backpack_ui/backpack_interface.gd
+scripts/ui/map_ui/map_renderer.gd
+scripts/ui/map_ui/safe_house_interface.gd
+scripts/ui/pause_menu.gd
+scripts/ui/shop_ui/shop_interface.gd
+scripts/ui/ui_manager.gd
+---
+
+## Session End: 20260601_110026
+### Uncommitted Changes
+design/gdd/detailed_map/chapter1-map-funnel.md
+design/gdd/detailed_map/chapter1-map-generation-rules.md
+design/gdd/detailed_map/chapter1-map-loop.md
+production/session-logs/agent-audit.log
+production/session-logs/compaction-log.txt
+production/session-logs/session-log.md
+scenes/backpack/BackpackUI.tscn
+scenes/core/Game.tscn
+scenes/core/MainMenu.tscn
+scenes/core/PauseMenu.tscn
+scenes/map/SafeHouse.tscn
+scenes/shop/ShopOverlay.tscn
+scripts/feature/backpack/backpack_grid.gd
+scripts/feature/backpack/backpack_manager.gd
+scripts/feature/events/event_manager.gd
+scripts/feature/events/quest_manager.gd
+scripts/feature/map/map_generator.gd
+scripts/feature/map/node_interaction_manager.gd
+scripts/feature/shop/shop_manager.gd
+scripts/game_flow/game_manager.gd
+scripts/game_flow/game_scene.gd
+scripts/ui/backpack_ui/backpack_interface.gd
+scripts/ui/main_menu.gd
+scripts/ui/map_ui/map_renderer.gd
+scripts/ui/map_ui/safe_house_interface.gd
+scripts/ui/pause_menu.gd
+scripts/ui/shop_ui/shop_interface.gd
+scripts/ui/ui_manager.gd
+---
+
+## Session End: 20260601_154344
+### Uncommitted Changes
+design/gdd/detailed_map/chapter1-map-funnel.md
+design/gdd/detailed_map/chapter1-map-generation-rules.md
+design/gdd/detailed_map/chapter1-map-loop.md
+production/session-logs/agent-audit.log
+production/session-logs/compaction-log.txt
+production/session-logs/session-log.md
+scenes/backpack/BackpackUI.tscn
+scenes/core/Game.tscn
+scenes/core/MainMenu.tscn
+scenes/core/PauseMenu.tscn
+scenes/map/SafeHouse.tscn
+scenes/shop/ShopOverlay.tscn
+scripts/feature/backpack/backpack_grid.gd
+scripts/feature/backpack/backpack_manager.gd
+scripts/feature/events/event_manager.gd
+scripts/feature/events/quest_manager.gd
+scripts/feature/map/map_generator.gd
+scripts/feature/map/node_interaction_manager.gd
+scripts/feature/shop/shop_manager.gd
+scripts/game_flow/game_manager.gd
+scripts/game_flow/game_scene.gd
+scripts/ui/backpack_ui/backpack_interface.gd
+scripts/ui/main_menu.gd
+scripts/ui/map_ui/map_renderer.gd
+scripts/ui/map_ui/safe_house_interface.gd
+scripts/ui/pause_menu.gd
+scripts/ui/shop_ui/shop_interface.gd
+scripts/ui/ui_manager.gd
+---
+
+## Session End: 20260601_154618
+### Uncommitted Changes
+design/gdd/detailed_map/chapter1-map-funnel.md
+design/gdd/detailed_map/chapter1-map-generation-rules.md
+design/gdd/detailed_map/chapter1-map-loop.md
+production/session-logs/agent-audit.log
+production/session-logs/compaction-log.txt
+production/session-logs/session-log.md
+scenes/backpack/BackpackUI.tscn
+scenes/core/Game.tscn
+scenes/core/MainMenu.tscn
+scenes/core/PauseMenu.tscn
+scenes/map/SafeHouse.tscn
+scenes/shop/ShopOverlay.tscn
+scripts/feature/backpack/backpack_grid.gd
+scripts/feature/backpack/backpack_manager.gd
+scripts/feature/events/event_manager.gd
+scripts/feature/events/quest_manager.gd
+scripts/feature/map/map_generator.gd
+scripts/feature/map/node_interaction_manager.gd
+scripts/feature/shop/shop_manager.gd
+scripts/game_flow/game_manager.gd
+scripts/game_flow/game_scene.gd
+scripts/ui/backpack_ui/backpack_interface.gd
+scripts/ui/main_menu.gd
+scripts/ui/map_ui/map_renderer.gd
+scripts/ui/map_ui/safe_house_interface.gd
+scripts/ui/pause_menu.gd
+scripts/ui/shop_ui/shop_interface.gd
+scripts/ui/ui_manager.gd
+---
+
+## Session End: 20260601_160815
+### Uncommitted Changes
+design/gdd/detailed_map/chapter1-map-funnel.md
+design/gdd/detailed_map/chapter1-map-generation-rules.md
+design/gdd/detailed_map/chapter1-map-loop.md
+production/session-logs/agent-audit.log
+production/session-logs/compaction-log.txt
+production/session-logs/session-log.md
+scenes/backpack/BackpackUI.tscn
+scenes/core/Game.tscn
+scenes/core/MainMenu.tscn
+scenes/core/PauseMenu.tscn
+scenes/map/SafeHouse.tscn
+scenes/shop/ShopOverlay.tscn
+scripts/feature/backpack/backpack_grid.gd
+scripts/feature/backpack/backpack_manager.gd
+scripts/feature/events/event_manager.gd
+scripts/feature/events/quest_manager.gd
+scripts/feature/map/map_generator.gd
+scripts/feature/map/node_interaction_manager.gd
+scripts/feature/shop/shop_manager.gd
+scripts/game_flow/game_manager.gd
+scripts/game_flow/game_scene.gd
+scripts/ui/backpack_ui/backpack_interface.gd
+scripts/ui/main_menu.gd
+scripts/ui/map_ui/map_renderer.gd
+scripts/ui/map_ui/safe_house_interface.gd
+scripts/ui/pause_menu.gd
+scripts/ui/shop_ui/shop_interface.gd
+scripts/ui/ui_manager.gd
+---
+
+## Session End: 20260601_165556
+### Uncommitted Changes
+design/gdd/detailed_map/chapter1-map-funnel.md
+design/gdd/detailed_map/chapter1-map-generation-rules.md
+design/gdd/detailed_map/chapter1-map-loop.md
+production/session-logs/agent-audit.log
+production/session-logs/compaction-log.txt
+production/session-logs/session-log.md
+scenes/backpack/BackpackUI.tscn
+scenes/core/Game.tscn
+scenes/core/MainMenu.tscn
+scenes/core/PauseMenu.tscn
+scenes/map/SafeHouse.tscn
+scenes/shop/ShopOverlay.tscn
+scripts/feature/backpack/backpack_grid.gd
+scripts/feature/backpack/backpack_manager.gd
+scripts/feature/events/event_manager.gd
+scripts/feature/events/quest_manager.gd
+scripts/feature/map/map_generator.gd
+scripts/feature/map/node_interaction_manager.gd
+scripts/feature/shop/shop_manager.gd
+scripts/game_flow/game_manager.gd
+scripts/game_flow/game_scene.gd
+scripts/ui/backpack_ui/backpack_interface.gd
+scripts/ui/main_menu.gd
+scripts/ui/map_ui/map_renderer.gd
+scripts/ui/map_ui/safe_house_interface.gd
+scripts/ui/pause_menu.gd
+scripts/ui/shop_ui/shop_interface.gd
+scripts/ui/ui_manager.gd
+---
+
+## Session End: 20260601_165808
+### Uncommitted Changes
+design/gdd/detailed_map/chapter1-map-funnel.md
+design/gdd/detailed_map/chapter1-map-generation-rules.md
+design/gdd/detailed_map/chapter1-map-loop.md
+production/session-logs/agent-audit.log
+production/session-logs/compaction-log.txt
+production/session-logs/session-log.md
+scenes/backpack/BackpackUI.tscn
+scenes/core/Game.tscn
+scenes/core/MainMenu.tscn
+scenes/core/PauseMenu.tscn
+scenes/map/SafeHouse.tscn
+scenes/shop/ShopOverlay.tscn
+scripts/feature/backpack/backpack_grid.gd
+scripts/feature/backpack/backpack_manager.gd
+scripts/feature/events/event_manager.gd
+scripts/feature/events/quest_manager.gd
+scripts/feature/map/map_generator.gd
+scripts/feature/map/node_interaction_manager.gd
+scripts/feature/shop/shop_manager.gd
+scripts/game_flow/game_manager.gd
+scripts/game_flow/game_scene.gd
+scripts/ui/backpack_ui/backpack_interface.gd
+scripts/ui/main_menu.gd
+scripts/ui/map_ui/map_renderer.gd
+scripts/ui/map_ui/safe_house_interface.gd
+scripts/ui/pause_menu.gd
+scripts/ui/shop_ui/shop_interface.gd
+scripts/ui/ui_manager.gd
+---
+
+## Session End: 20260601_171054
+### Uncommitted Changes
+design/gdd/detailed_map/chapter1-map-funnel.md
+design/gdd/detailed_map/chapter1-map-generation-rules.md
+design/gdd/detailed_map/chapter1-map-loop.md
+production/session-logs/agent-audit.log
+production/session-logs/compaction-log.txt
+production/session-logs/session-log.md
+scenes/backpack/BackpackUI.tscn
+scenes/core/Game.tscn
+scenes/core/MainMenu.tscn
+scenes/core/PauseMenu.tscn
+scenes/map/SafeHouse.tscn
+scenes/shop/ShopOverlay.tscn
+scripts/feature/backpack/backpack_grid.gd
+scripts/feature/backpack/backpack_manager.gd
+scripts/feature/events/event_manager.gd
+scripts/feature/events/quest_manager.gd
+scripts/feature/map/map_generator.gd
+scripts/feature/map/node_interaction_manager.gd
+scripts/feature/shop/shop_manager.gd
+scripts/game_flow/adventure_state_resource.gd
+scripts/game_flow/game_manager.gd
+scripts/game_flow/game_scene.gd
+scripts/ui/backpack_ui/backpack_interface.gd
+scripts/ui/main_menu.gd
+scripts/ui/map_ui/map_renderer.gd
+scripts/ui/map_ui/safe_house_interface.gd
+scripts/ui/pause_menu.gd
+scripts/ui/shop_ui/shop_interface.gd
+scripts/ui/ui_manager.gd
+---
+
+## Session End: 20260601_171526
+### Uncommitted Changes
+design/gdd/detailed_map/chapter1-map-funnel.md
+design/gdd/detailed_map/chapter1-map-generation-rules.md
+design/gdd/detailed_map/chapter1-map-loop.md
+production/session-logs/agent-audit.log
+production/session-logs/compaction-log.txt
+production/session-logs/session-log.md
+scenes/backpack/BackpackUI.tscn
+scenes/core/Game.tscn
+scenes/core/MainMenu.tscn
+scenes/core/PauseMenu.tscn
+scenes/map/SafeHouse.tscn
+scenes/shop/ShopOverlay.tscn
+scripts/feature/backpack/backpack_grid.gd
+scripts/feature/backpack/backpack_manager.gd
+scripts/feature/events/event_manager.gd
+scripts/feature/events/quest_manager.gd
+scripts/feature/map/map_generator.gd
+scripts/feature/map/node_interaction_manager.gd
+scripts/feature/shop/shop_manager.gd
+scripts/game_flow/adventure_state_resource.gd
+scripts/game_flow/game_manager.gd
+scripts/game_flow/game_scene.gd
+scripts/ui/backpack_ui/backpack_interface.gd
+scripts/ui/main_menu.gd
+scripts/ui/map_ui/map_renderer.gd
+scripts/ui/map_ui/safe_house_interface.gd
+scripts/ui/pause_menu.gd
+scripts/ui/shop_ui/shop_interface.gd
+scripts/ui/ui_manager.gd
+---
+
+## Session End: 20260601_172026
+### Uncommitted Changes
+design/gdd/detailed_map/chapter1-map-funnel.md
+design/gdd/detailed_map/chapter1-map-generation-rules.md
+design/gdd/detailed_map/chapter1-map-loop.md
+production/session-logs/agent-audit.log
+production/session-logs/compaction-log.txt
+production/session-logs/session-log.md
+scenes/backpack/BackpackUI.tscn
+scenes/core/Game.tscn
+scenes/core/MainMenu.tscn
+scenes/core/PauseMenu.tscn
+scenes/map/SafeHouse.tscn
+scenes/shop/ShopOverlay.tscn
+scripts/feature/backpack/backpack_grid.gd
+scripts/feature/backpack/backpack_manager.gd
+scripts/feature/events/event_manager.gd
+scripts/feature/events/quest_manager.gd
+scripts/feature/map/map_generator.gd
+scripts/feature/map/node_interaction_manager.gd
+scripts/feature/shop/shop_manager.gd
+scripts/game_flow/adventure_state_resource.gd
+scripts/game_flow/game_manager.gd
+scripts/game_flow/game_scene.gd
+scripts/ui/backpack_ui/backpack_interface.gd
+scripts/ui/main_menu.gd
+scripts/ui/map_ui/map_renderer.gd
+scripts/ui/map_ui/safe_house_interface.gd
+scripts/ui/pause_menu.gd
+scripts/ui/shop_ui/shop_interface.gd
+scripts/ui/ui_manager.gd
+---
+
+## Session End: 20260601_172440
+### Uncommitted Changes
+design/gdd/detailed_map/chapter1-map-funnel.md
+design/gdd/detailed_map/chapter1-map-generation-rules.md
+design/gdd/detailed_map/chapter1-map-loop.md
+production/session-logs/agent-audit.log
+production/session-logs/compaction-log.txt
+production/session-logs/session-log.md
+scenes/backpack/BackpackUI.tscn
+scenes/core/Game.tscn
+scenes/core/MainMenu.tscn
+scenes/core/PauseMenu.tscn
+scenes/map/SafeHouse.tscn
+scenes/shop/ShopOverlay.tscn
+scripts/feature/backpack/backpack_grid.gd
+scripts/feature/backpack/backpack_manager.gd
+scripts/feature/events/event_manager.gd
+scripts/feature/events/quest_manager.gd
+scripts/feature/map/map_generator.gd
+scripts/feature/map/node_interaction_manager.gd
+scripts/feature/shop/shop_manager.gd
+scripts/game_flow/adventure_state_resource.gd
+scripts/game_flow/game_manager.gd
+scripts/game_flow/game_scene.gd
+scripts/ui/backpack_ui/backpack_interface.gd
+scripts/ui/main_menu.gd
+scripts/ui/map_ui/map_renderer.gd
+scripts/ui/map_ui/safe_house_interface.gd
+scripts/ui/pause_menu.gd
+scripts/ui/shop_ui/shop_interface.gd
+scripts/ui/ui_manager.gd
+---
+
+## Session End: 20260601_173108
+### Uncommitted Changes
+design/gdd/detailed_map/chapter1-map-funnel.md
+design/gdd/detailed_map/chapter1-map-generation-rules.md
+design/gdd/detailed_map/chapter1-map-loop.md
+production/session-logs/agent-audit.log
+production/session-logs/compaction-log.txt
+production/session-logs/session-log.md
+scenes/backpack/BackpackUI.tscn
+scenes/core/Game.tscn
+scenes/core/MainMenu.tscn
+scenes/core/PauseMenu.tscn
+scenes/map/SafeHouse.tscn
+scenes/shop/ShopOverlay.tscn
+scripts/feature/backpack/backpack_grid.gd
+scripts/feature/backpack/backpack_manager.gd
+scripts/feature/events/event_manager.gd
+scripts/feature/events/quest_manager.gd
+scripts/feature/map/map_generator.gd
+scripts/feature/map/node_interaction_manager.gd
+scripts/feature/shop/shop_manager.gd
+scripts/game_flow/adventure_state_resource.gd
+scripts/game_flow/game_manager.gd
+scripts/game_flow/game_scene.gd
+scripts/ui/backpack_ui/backpack_interface.gd
+scripts/ui/main_menu.gd
+scripts/ui/map_ui/map_renderer.gd
+scripts/ui/map_ui/safe_house_interface.gd
+scripts/ui/pause_menu.gd
+scripts/ui/shop_ui/shop_interface.gd
+scripts/ui/ui_manager.gd
+---
+
+## Session End: 20260601_174627
+### Uncommitted Changes
+design/gdd/detailed_map/chapter1-map-funnel.md
+design/gdd/detailed_map/chapter1-map-generation-rules.md
+design/gdd/detailed_map/chapter1-map-loop.md
+production/session-logs/agent-audit.log
+production/session-logs/compaction-log.txt
+production/session-logs/session-log.md
+scenes/backpack/BackpackUI.tscn
+scenes/core/Game.tscn
+scenes/core/MainMenu.tscn
+scenes/core/PauseMenu.tscn
+scenes/map/SafeHouse.tscn
+scenes/shop/ShopOverlay.tscn
+scripts/feature/backpack/backpack_grid.gd
+scripts/feature/backpack/backpack_manager.gd
+scripts/feature/events/event_manager.gd
+scripts/feature/events/quest_manager.gd
+scripts/feature/map/map_generator.gd
+scripts/feature/map/node_interaction_manager.gd
+scripts/feature/shop/shop_manager.gd
+scripts/game_flow/adventure_state_resource.gd
+scripts/game_flow/game_manager.gd
+scripts/game_flow/game_scene.gd
+scripts/ui/backpack_ui/backpack_interface.gd
+scripts/ui/main_menu.gd
+scripts/ui/map_ui/map_renderer.gd
+scripts/ui/map_ui/safe_house_interface.gd
+scripts/ui/pause_menu.gd
+scripts/ui/shop_ui/shop_interface.gd
+scripts/ui/ui_manager.gd
+---
+
+## Session End: 20260601_174953
+### Uncommitted Changes
+design/gdd/detailed_map/chapter1-map-funnel.md
+design/gdd/detailed_map/chapter1-map-generation-rules.md
+design/gdd/detailed_map/chapter1-map-loop.md
+production/session-logs/agent-audit.log
+production/session-logs/compaction-log.txt
+production/session-logs/session-log.md
+scenes/backpack/BackpackUI.tscn
+scenes/core/Game.tscn
+scenes/core/MainMenu.tscn
+scenes/core/PauseMenu.tscn
+scenes/map/SafeHouse.tscn
+scenes/shop/ShopOverlay.tscn
+scripts/feature/backpack/backpack_grid.gd
+scripts/feature/backpack/backpack_manager.gd
+scripts/feature/events/event_manager.gd
+scripts/feature/events/quest_manager.gd
+scripts/feature/map/map_generator.gd
+scripts/feature/map/node_interaction_manager.gd
+scripts/feature/shop/shop_manager.gd
+scripts/game_flow/adventure_state_resource.gd
+scripts/game_flow/game_manager.gd
+scripts/game_flow/game_scene.gd
+scripts/ui/backpack_ui/backpack_interface.gd
+scripts/ui/main_menu.gd
+scripts/ui/map_ui/map_renderer.gd
+scripts/ui/map_ui/safe_house_interface.gd
+scripts/ui/pause_menu.gd
+scripts/ui/shop_ui/shop_interface.gd
+scripts/ui/ui_manager.gd
+---
+
+## Session End: 20260601_175430
+### Uncommitted Changes
+design/gdd/detailed_map/chapter1-map-funnel.md
+design/gdd/detailed_map/chapter1-map-generation-rules.md
+design/gdd/detailed_map/chapter1-map-loop.md
+production/session-logs/agent-audit.log
+production/session-logs/compaction-log.txt
+production/session-logs/session-log.md
+scenes/backpack/BackpackUI.tscn
+scenes/core/Game.tscn
+scenes/core/MainMenu.tscn
+scenes/core/PauseMenu.tscn
+scenes/map/SafeHouse.tscn
+scenes/shop/ShopOverlay.tscn
+scripts/feature/backpack/backpack_grid.gd
+scripts/feature/backpack/backpack_manager.gd
+scripts/feature/events/event_manager.gd
+scripts/feature/events/quest_manager.gd
+scripts/feature/map/map_generator.gd
+scripts/feature/map/node_interaction_manager.gd
+scripts/feature/shop/shop_manager.gd
+scripts/game_flow/adventure_state_resource.gd
+scripts/game_flow/game_manager.gd
+scripts/game_flow/game_scene.gd
+scripts/game_flow/save_load_manager.gd
+scripts/ui/backpack_ui/backpack_interface.gd
+scripts/ui/main_menu.gd
+scripts/ui/map_ui/map_renderer.gd
+scripts/ui/map_ui/safe_house_interface.gd
+scripts/ui/pause_menu.gd
+scripts/ui/shop_ui/shop_interface.gd
+scripts/ui/ui_manager.gd
+---
+
+## Session End: 20260601_180016
+### Uncommitted Changes
+design/gdd/detailed_map/chapter1-map-funnel.md
+design/gdd/detailed_map/chapter1-map-generation-rules.md
+design/gdd/detailed_map/chapter1-map-loop.md
+production/session-logs/agent-audit.log
+production/session-logs/compaction-log.txt
+production/session-logs/session-log.md
+scenes/backpack/BackpackUI.tscn
+scenes/core/Game.tscn
+scenes/core/MainMenu.tscn
+scenes/core/PauseMenu.tscn
+scenes/map/SafeHouse.tscn
+scenes/shop/ShopOverlay.tscn
+scripts/feature/backpack/backpack_grid.gd
+scripts/feature/backpack/backpack_manager.gd
+scripts/feature/events/event_manager.gd
+scripts/feature/events/quest_manager.gd
+scripts/feature/map/map_generator.gd
+scripts/feature/map/node_interaction_manager.gd
+scripts/feature/shop/shop_manager.gd
+scripts/game_flow/adventure_state_resource.gd
+scripts/game_flow/game_manager.gd
+scripts/game_flow/game_scene.gd
+scripts/game_flow/save_load_manager.gd
+scripts/ui/backpack_ui/backpack_interface.gd
+scripts/ui/main_menu.gd
+scripts/ui/map_ui/map_renderer.gd
+scripts/ui/map_ui/safe_house_interface.gd
+scripts/ui/pause_menu.gd
+scripts/ui/shop_ui/shop_interface.gd
+scripts/ui/ui_manager.gd
+---
+
+## Session End: 20260601_180245
+### Uncommitted Changes
+design/gdd/detailed_map/chapter1-map-funnel.md
+design/gdd/detailed_map/chapter1-map-generation-rules.md
+design/gdd/detailed_map/chapter1-map-loop.md
+production/session-logs/agent-audit.log
+production/session-logs/compaction-log.txt
+production/session-logs/session-log.md
+scenes/backpack/BackpackUI.tscn
+scenes/core/Game.tscn
+scenes/core/MainMenu.tscn
+scenes/core/PauseMenu.tscn
+scenes/map/SafeHouse.tscn
+scenes/shop/ShopOverlay.tscn
+scripts/feature/backpack/backpack_grid.gd
+scripts/feature/backpack/backpack_manager.gd
+scripts/feature/events/event_manager.gd
+scripts/feature/events/quest_manager.gd
+scripts/feature/map/map_generator.gd
+scripts/feature/map/node_interaction_manager.gd
+scripts/feature/shop/shop_manager.gd
+scripts/game_flow/adventure_state_resource.gd
+scripts/game_flow/game_manager.gd
+scripts/game_flow/game_scene.gd
+scripts/game_flow/save_load_manager.gd
+scripts/ui/backpack_ui/backpack_interface.gd
+scripts/ui/main_menu.gd
+scripts/ui/map_ui/map_renderer.gd
+scripts/ui/map_ui/safe_house_interface.gd
+scripts/ui/pause_menu.gd
+scripts/ui/shop_ui/shop_interface.gd
+scripts/ui/ui_manager.gd
+---
+
+## Session End: 20260601_180504
+### Uncommitted Changes
+design/gdd/detailed_map/chapter1-map-funnel.md
+design/gdd/detailed_map/chapter1-map-generation-rules.md
+design/gdd/detailed_map/chapter1-map-loop.md
+production/session-logs/agent-audit.log
+production/session-logs/compaction-log.txt
+production/session-logs/session-log.md
+scenes/backpack/BackpackUI.tscn
+scenes/core/Game.tscn
+scenes/core/MainMenu.tscn
+scenes/core/PauseMenu.tscn
+scenes/map/SafeHouse.tscn
+scenes/shop/ShopOverlay.tscn
+scripts/feature/backpack/backpack_grid.gd
+scripts/feature/backpack/backpack_manager.gd
+scripts/feature/events/event_manager.gd
+scripts/feature/events/quest_manager.gd
+scripts/feature/map/map_generator.gd
+scripts/feature/map/node_interaction_manager.gd
+scripts/feature/shop/shop_manager.gd
+scripts/game_flow/adventure_state_resource.gd
+scripts/game_flow/game_manager.gd
+scripts/game_flow/game_scene.gd
+scripts/game_flow/save_load_manager.gd
+scripts/ui/backpack_ui/backpack_interface.gd
+scripts/ui/main_menu.gd
+scripts/ui/map_ui/map_renderer.gd
+scripts/ui/map_ui/safe_house_interface.gd
+scripts/ui/pause_menu.gd
+scripts/ui/shop_ui/shop_interface.gd
+scripts/ui/ui_manager.gd
+---
+
+## Session End: 20260601_180739
+### Uncommitted Changes
+design/gdd/detailed_map/chapter1-map-funnel.md
+design/gdd/detailed_map/chapter1-map-generation-rules.md
+design/gdd/detailed_map/chapter1-map-loop.md
+production/session-logs/agent-audit.log
+production/session-logs/compaction-log.txt
+production/session-logs/session-log.md
+scenes/backpack/BackpackUI.tscn
+scenes/core/Game.tscn
+scenes/core/MainMenu.tscn
+scenes/core/PauseMenu.tscn
+scenes/map/SafeHouse.tscn
+scenes/shop/ShopOverlay.tscn
+scripts/feature/backpack/backpack_grid.gd
+scripts/feature/backpack/backpack_manager.gd
+scripts/feature/events/event_manager.gd
+scripts/feature/events/quest_manager.gd
+scripts/feature/map/map_generator.gd
+scripts/feature/map/node_interaction_manager.gd
+scripts/feature/shop/shop_manager.gd
+scripts/game_flow/adventure_state_resource.gd
+scripts/game_flow/game_manager.gd
+scripts/game_flow/game_scene.gd
+scripts/game_flow/save_load_manager.gd
+scripts/ui/backpack_ui/backpack_interface.gd
+scripts/ui/main_menu.gd
+scripts/ui/map_ui/map_renderer.gd
+scripts/ui/map_ui/safe_house_interface.gd
+scripts/ui/pause_menu.gd
+scripts/ui/shop_ui/shop_interface.gd
+scripts/ui/ui_manager.gd
+---
+
+## Session End: 20260601_180905
+### Uncommitted Changes
+design/gdd/detailed_map/chapter1-map-funnel.md
+design/gdd/detailed_map/chapter1-map-generation-rules.md
+design/gdd/detailed_map/chapter1-map-loop.md
+production/session-logs/agent-audit.log
+production/session-logs/compaction-log.txt
+production/session-logs/session-log.md
+scenes/backpack/BackpackUI.tscn
+scenes/core/Game.tscn
+scenes/core/MainMenu.tscn
+scenes/core/PauseMenu.tscn
+scenes/map/SafeHouse.tscn
+scenes/shop/ShopOverlay.tscn
+scripts/feature/backpack/backpack_grid.gd
+scripts/feature/backpack/backpack_manager.gd
+scripts/feature/events/event_manager.gd
+scripts/feature/events/quest_manager.gd
+scripts/feature/map/map_generator.gd
+scripts/feature/map/node_interaction_manager.gd
+scripts/feature/shop/shop_manager.gd
+scripts/game_flow/adventure_state_resource.gd
+scripts/game_flow/game_manager.gd
+scripts/game_flow/game_scene.gd
+scripts/game_flow/save_load_manager.gd
+scripts/ui/backpack_ui/backpack_interface.gd
+scripts/ui/main_menu.gd
+scripts/ui/map_ui/map_renderer.gd
+scripts/ui/map_ui/safe_house_interface.gd
+scripts/ui/pause_menu.gd
+scripts/ui/shop_ui/shop_interface.gd
+scripts/ui/ui_manager.gd
+---
+
+## Session End: 20260601_181006
+### Uncommitted Changes
+design/gdd/detailed_map/chapter1-map-funnel.md
+design/gdd/detailed_map/chapter1-map-generation-rules.md
+design/gdd/detailed_map/chapter1-map-loop.md
+production/session-logs/agent-audit.log
+production/session-logs/compaction-log.txt
+production/session-logs/session-log.md
+scenes/backpack/BackpackUI.tscn
+scenes/core/Game.tscn
+scenes/core/MainMenu.tscn
+scenes/core/PauseMenu.tscn
+scenes/map/SafeHouse.tscn
+scenes/shop/ShopOverlay.tscn
+scripts/feature/backpack/backpack_grid.gd
+scripts/feature/backpack/backpack_manager.gd
+scripts/feature/events/event_manager.gd
+scripts/feature/events/quest_manager.gd
+scripts/feature/map/map_generator.gd
+scripts/feature/map/node_interaction_manager.gd
+scripts/feature/shop/shop_manager.gd
+scripts/game_flow/adventure_state_resource.gd
+scripts/game_flow/game_manager.gd
+scripts/game_flow/game_scene.gd
+scripts/game_flow/save_load_manager.gd
+scripts/ui/backpack_ui/backpack_interface.gd
+scripts/ui/main_menu.gd
+scripts/ui/map_ui/map_renderer.gd
+scripts/ui/map_ui/safe_house_interface.gd
+scripts/ui/pause_menu.gd
+scripts/ui/shop_ui/shop_interface.gd
+scripts/ui/ui_manager.gd
+---
+
+## Session End: 20260601_181550
+### Uncommitted Changes
+design/gdd/detailed_map/chapter1-map-funnel.md
+design/gdd/detailed_map/chapter1-map-generation-rules.md
+design/gdd/detailed_map/chapter1-map-loop.md
+production/session-logs/agent-audit.log
+production/session-logs/compaction-log.txt
+production/session-logs/session-log.md
+scenes/backpack/BackpackUI.tscn
+scenes/core/Game.tscn
+scenes/core/MainMenu.tscn
+scenes/core/PauseMenu.tscn
+scenes/map/SafeHouse.tscn
+scenes/shop/ShopOverlay.tscn
+scripts/feature/backpack/backpack_grid.gd
+scripts/feature/backpack/backpack_manager.gd
+scripts/feature/events/event_manager.gd
+scripts/feature/events/quest_manager.gd
+scripts/feature/map/map_generator.gd
+scripts/feature/map/node_interaction_manager.gd
+scripts/feature/shop/shop_manager.gd
+scripts/game_flow/adventure_state_resource.gd
+scripts/game_flow/game_manager.gd
+scripts/game_flow/game_scene.gd
+scripts/game_flow/save_load_manager.gd
+scripts/ui/backpack_ui/backpack_interface.gd
+scripts/ui/main_menu.gd
+scripts/ui/map_ui/map_renderer.gd
+scripts/ui/map_ui/safe_house_interface.gd
+scripts/ui/pause_menu.gd
+scripts/ui/shop_ui/shop_interface.gd
+scripts/ui/ui_manager.gd
+---
+
+## Session End: 20260601_181644
+### Uncommitted Changes
+design/gdd/detailed_map/chapter1-map-funnel.md
+design/gdd/detailed_map/chapter1-map-generation-rules.md
+design/gdd/detailed_map/chapter1-map-loop.md
+production/session-logs/agent-audit.log
+production/session-logs/compaction-log.txt
+production/session-logs/session-log.md
+scenes/backpack/BackpackUI.tscn
+scenes/core/Game.tscn
+scenes/core/MainMenu.tscn
+scenes/core/PauseMenu.tscn
+scenes/map/SafeHouse.tscn
+scenes/shop/ShopOverlay.tscn
+scripts/feature/backpack/backpack_grid.gd
+scripts/feature/backpack/backpack_manager.gd
+scripts/feature/events/event_manager.gd
+scripts/feature/events/quest_manager.gd
+scripts/feature/map/map_generator.gd
+scripts/feature/map/node_interaction_manager.gd
+scripts/feature/shop/shop_manager.gd
+scripts/game_flow/adventure_state_resource.gd
+scripts/game_flow/game_manager.gd
+scripts/game_flow/game_scene.gd
+scripts/game_flow/save_load_manager.gd
+scripts/ui/backpack_ui/backpack_interface.gd
+scripts/ui/main_menu.gd
+scripts/ui/map_ui/map_renderer.gd
+scripts/ui/map_ui/safe_house_interface.gd
+scripts/ui/pause_menu.gd
+scripts/ui/shop_ui/shop_interface.gd
+scripts/ui/ui_manager.gd
+---
+
+## Session End: 20260601_181944
+### Uncommitted Changes
+design/gdd/detailed_map/chapter1-map-funnel.md
+design/gdd/detailed_map/chapter1-map-generation-rules.md
+design/gdd/detailed_map/chapter1-map-loop.md
+production/session-logs/agent-audit.log
+production/session-logs/compaction-log.txt
+production/session-logs/session-log.md
+scenes/backpack/BackpackUI.tscn
+scenes/core/Game.tscn
+scenes/core/MainMenu.tscn
+scenes/core/PauseMenu.tscn
+scenes/map/SafeHouse.tscn
+scenes/shop/ShopOverlay.tscn
+scripts/feature/backpack/backpack_grid.gd
+scripts/feature/backpack/backpack_manager.gd
+scripts/feature/events/event_manager.gd
+scripts/feature/events/quest_manager.gd
+scripts/feature/map/map_generator.gd
+scripts/feature/map/node_interaction_manager.gd
+scripts/feature/shop/shop_manager.gd
+scripts/game_flow/adventure_state_resource.gd
+scripts/game_flow/game_manager.gd
+scripts/game_flow/game_scene.gd
+scripts/game_flow/save_load_manager.gd
+scripts/ui/backpack_ui/backpack_interface.gd
+scripts/ui/main_menu.gd
+scripts/ui/map_ui/map_renderer.gd
+scripts/ui/map_ui/safe_house_interface.gd
+scripts/ui/pause_menu.gd
+scripts/ui/shop_ui/shop_interface.gd
+scripts/ui/ui_manager.gd
+---
+

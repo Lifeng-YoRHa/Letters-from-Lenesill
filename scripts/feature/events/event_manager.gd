@@ -108,7 +108,7 @@ func resolve_corpse_search(chapter: int) -> Dictionary:
 func _resolve_locked_box() -> Dictionary:
 	var box := ItemData.new()
 	box.id = &"password_box"
-	box.display_name = "Locked Box"
+	box.display_name = "密码箱"
 	box.item_type = GameEnums.ItemType.CONSUMABLE
 	box.width = 2
 	box.height = 2
