@@ -2,6 +2,7 @@ class_name SafeHouseInterface
 extends Control
 
 signal closed
+signal notes_requested
 signal rest_requested
 signal item_taken(item: ItemData, source: StringName)
 signal gold_taken(amount: int)
@@ -162,6 +163,10 @@ func _on_repair_weapon() -> void:
 
 func _on_close_pressed() -> void:
 	closed.emit()
+
+
+func _on_notes_pressed() -> void:
+	notes_requested.emit()
 
 
 func _ready() -> void:

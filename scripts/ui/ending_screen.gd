@@ -14,6 +14,8 @@ func show_ending(ending_type: StringName, stats: Dictionary) -> void:
 			_title_label.text = "真结局"
 		&"death":
 			_title_label.text = "游戏结束"
+		&"victory":
+			_title_label.text = "Victory"
 		_:
 			_title_label.text = "结局"
 

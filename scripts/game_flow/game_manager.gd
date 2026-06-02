@@ -20,6 +20,12 @@ signal combat_prepared(combat_manager: CombatManager)
 signal loot_generated(gold: int, items: Array[ItemData])
 signal player_died
 signal safe_house_prepared(node_id: StringName)
+signal event_presented(title: String, description: String, choices: Array)
+signal event_result_presented(title: String, description: String)
+signal password_box_opened(item: ItemData, stamina_current: int, stamina_max: int)
+signal password_box_hint(hint_text: String)
+signal password_box_reward_granted(reward_desc: String)
+signal stamina_changed(current_stamina: int, max_stamina: int)
 
 
 # === Public references (for UI layer access) ===
@@ -46,6 +52,23 @@ var current_combat_node_id: StringName = &""
 var current_interaction_node_id: StringName = &""
 var current_stamina: Stamina
 var non_road_nodes_visited: int = 0
+
+var _current_enemy_type: GameEnums.EnemyType = GameEnums.EnemyType.NORMAL
+var _current_event_type: StringName = &""
+var _current_password_box_item: ItemData = null
+var _last_gold_count: int = 0
+
+const EVENT_TITLES: Dictionary = {
+	&"theft":         "盗窃",
+	&"robbery":       "抢劫",
+	&"hitchhike":     "搭车",
+	&"corpse":        "尸体",
+	&"locked_box":    "密码箱",
+	&"destroyed_camp":"被摧毁的营地",
+	&"gambler":       "赌徒",
+	&"rogue_market":  "黑市",
+	&"dying_embers":  "余烬",
+}
 
 
 func _ready() -> void:
@@ -86,6 +109,10 @@ func _initialize_systems() -> void:
 	quest_manager.initialize(rng, map_state, backpack_manager, survivor_notes, relic_handler)
 	shop_manager = ShopManager.new()
 	shop_manager.initialize(rng, relic_handler, backpack_manager)
+
+	# Track gold changes for survivor notes
+	_last_gold_count = backpack_manager.gold_count
+	backpack_manager.gold_changed.connect(_on_gold_changed)
 
 	# Ending
 	ending_manager = EndingManager.new()
@@ -128,6 +155,10 @@ func start_new_adventure() -> void:
 	node_interaction_manager.reset_safe_houses()
 	_setup_chapter(current_chapter)
 	adventure_started.emit()
+	var starting_gold_bonus := survivor_notes.get_starting_gold_bonus()
+	if starting_gold_bonus > 0:
+		backpack_manager.add_gold(starting_gold_bonus)
+	_last_gold_count = backpack_manager.gold_count
 	_change_state(GameState.MAP_EXPLORATION)
 
 
@@ -148,6 +179,7 @@ func load_adventure(slot_index: int) -> bool:
 		print("LOAD WARN: adventure_layer is null, skipping state restore")
 
 	adventure_started.emit()
+	_last_gold_count = backpack_manager.gold_count
 
 	if slot.adventure_layer != null and not slot.adventure_layer.combat_snapshot.is_empty():
 		_restore_combat_from_snapshot(slot.adventure_layer.combat_snapshot)
@@ -318,6 +350,7 @@ func _restore_adventure_state(state: AdventureStateResource) -> void:
 	current_stamina = Stamina.new()
 	current_stamina.initialize(state.stamina_max)
 	current_stamina._current_stamina = state.stamina_current
+	_connect_stamina_signals()
 
 	node_manager.initialize(map_state, path_finder, current_stamina)
 	node_interaction_manager.initialize(map_state, node_manager, rng)
@@ -431,6 +464,9 @@ func _get_grid_by_type(grid_type: StringName) -> BackpackGrid:
 func _setup_chapter(chapter: int) -> void:
 	current_chapter = chapter
 
+	if chapter == 4:
+		survivor_notes.add_progress(&"martyr", 1)
+
 	# Generate map
 	var nodes := map_generator.generate(chapter)
 	map_state.initialize_from_graph(nodes, &"START")
@@ -439,6 +475,7 @@ func _setup_chapter(chapter: int) -> void:
 	# Create stamina for this chapter
 	var stamina := _create_stamina()
 	current_stamina = stamina
+	_connect_stamina_signals()
 	node_manager.initialize(map_state, path_finder, stamina)
 	node_interaction_manager.initialize(map_state, node_manager, rng)
 
@@ -462,7 +499,24 @@ func _create_stamina() -> Stamina:
 	return stamina
 
 
+func _connect_stamina_signals() -> void:
+	if current_stamina == null:
+		return
+	if current_stamina.stamina_changed.is_connected(_on_stamina_value_changed):
+		current_stamina.stamina_changed.disconnect(_on_stamina_value_changed)
+	current_stamina.stamina_changed.connect(_on_stamina_value_changed)
+	if current_stamina.max_stamina_changed.is_connected(_on_stamina_value_changed):
+		current_stamina.max_stamina_changed.disconnect(_on_stamina_value_changed)
+	current_stamina.max_stamina_changed.connect(_on_stamina_value_changed)
+
+
+func _on_stamina_value_changed(_new_value: int, _old_value: int) -> void:
+	stamina_changed.emit(current_stamina.current_stamina, current_stamina.max_stamina)
+
+
 func return_to_exploration() -> void:
+	if current_state == GameState.EVENT and current_interaction_node_id != &"":
+		node_interaction_manager.convert_node_to_road(current_interaction_node_id)
 	_change_state(GameState.MAP_EXPLORATION)
 
 
@@ -506,6 +560,7 @@ func _on_node_cleared(node_id: StringName) -> void:
 
 func _start_combat(node_id: StringName, enemy: EnemyData, enemy_type: GameEnums.EnemyType) -> void:
 	current_combat_node_id = node_id
+	_current_enemy_type = enemy_type
 	var deck := _create_default_deck()
 	current_combat_manager = CombatManager.new()
 	current_combat_manager.initialize(enemy, enemy_type, current_stamina, deck, backpack_manager, null, null, 3, rng)
@@ -516,6 +571,7 @@ func _start_combat(node_id: StringName, enemy: EnemyData, enemy_type: GameEnums.
 
 
 func _on_combat_triggered(node_id: StringName, enemy_type: GameEnums.EnemyType) -> void:
+	survivor_notes.add_progress(&"combat_master", 1)
 	_start_combat(node_id, _get_enemy_data(enemy_type), enemy_type)
 
 
@@ -536,6 +592,27 @@ func _on_shop_opened(node_id: StringName) -> void:
 	# TODO: open shop UI overlay
 
 
+func _on_gold_changed(new_amount: int) -> void:
+	var delta := new_amount - _last_gold_count
+	if delta > 0:
+		survivor_notes.add_progress(&"hoarder", delta)
+		survivor_notes.add_progress(&"miser", delta)
+	_last_gold_count = new_amount
+
+
+func notify_consumable_used(item_id: StringName, from_pocket: bool) -> void:
+	survivor_notes.add_progress(&"survival_expert", 1)
+	if from_pocket:
+		survivor_notes.add_progress(&"magician", 1)
+	match item_id:
+		&"energy_drink":
+			survivor_notes.add_progress(&"partner", 7 + survivor_notes.get_energy_drink_bonus())
+			survivor_notes.add_progress(&"spokesperson", 1)
+		&"flashlight":
+			survivor_notes.add_progress(&"electrician", 1)
+			survivor_notes.add_progress(&"adventurer", 1)
+
+
 func use_item_in_backpack(item: ItemData) -> bool:
 	if item.item_type != GameEnums.ItemType.CONSUMABLE:
 		return false
@@ -544,16 +621,21 @@ func use_item_in_backpack(item: ItemData) -> bool:
 			var bonus := survivor_notes.get_energy_drink_bonus()
 			current_stamina.restore(7 + bonus)
 			backpack_manager.remove_item(item)
+			notify_consumable_used(item.id, false)
 			return true
 		&"flashlight":
 			_use_flashlight_in_backpack()
 			backpack_manager.remove_item(item)
+			notify_consumable_used(item.id, false)
 			return true
 		&"stone", &"torch":
 			return false
 		&"whetstone":
 			return false
 		&"safe_house_key":
+			return false
+		&"password_box":
+			_open_password_box(item)
 			return false
 	return false
 
@@ -568,6 +650,65 @@ func _use_flashlight_in_backpack() -> void:
 	hidden_nodes.shuffle()
 	for i in range(mini(reveal_count, hidden_nodes.size())):
 		hidden_nodes[i].visibility = GameEnums.MapNodeVisibility.REVEALED
+
+
+func _open_password_box(item: ItemData) -> void:
+	var password: int = item.metadata.get("password", 0)
+	if password == 0:
+		password = rng.randi_range(10, 99)
+		item.metadata["password"] = password
+	_current_password_box_item = item
+	password_box_opened.emit(item, current_stamina.current_stamina, current_stamina.max_stamina)
+
+
+func submit_password_guess(guessed: int) -> void:
+	if _current_password_box_item == null:
+		return
+	if current_stamina.current_stamina <= 0:
+		return
+	current_stamina.deduct(1)
+	var actual: int = _current_password_box_item.metadata.get("password", 0)
+	if guessed == actual:
+		var reward := _grant_password_box_reward()
+		backpack_manager.remove_item(_current_password_box_item)
+		_current_password_box_item = null
+		password_box_reward_granted.emit(reward)
+	elif guessed > actual:
+		password_box_hint.emit("密码比 %d 小。" % guessed)
+	else:
+		password_box_hint.emit("密码比 %d 大。" % guessed)
+
+
+func _grant_password_box_reward() -> String:
+	var roll := rng.randf()
+	if roll < 0.40:
+		var key := ItemData.new()
+		key.id = &"safe_house_key"
+		key.display_name = "安全屋房卡"
+		key.item_type = GameEnums.ItemType.CONSUMABLE
+		key.width = 1
+		key.height = 1
+		backpack_manager.add_item(key)
+		return "安全屋房卡 ×1"
+	elif roll < 0.60:
+		backpack_manager.add_gold(20)
+		return "金币 ×20"
+	elif roll < 0.80:
+		var relic := ItemData.new()
+		relic.id = &"heart_of_hope"
+		relic.display_name = "希望之心"
+		relic.item_type = GameEnums.ItemType.RELIC
+		relic.width = 1
+		relic.height = 1
+		backpack_manager.add_item(relic)
+		return "已解锁信物 ×1"
+	elif roll < 0.95:
+		backpack_manager.add_gold(30)
+		return "金币 ×30"
+	elif roll < 0.975:
+		return "当前章节已解锁武器（待实现）"
+	else:
+		return "当前章节已解锁背包（待实现）"
 
 
 func _consume_safe_house_key() -> bool:
@@ -596,12 +737,119 @@ func _on_safe_house_opened(node_id: StringName) -> void:
 
 func _on_event_triggered(node_id: StringName, _event_type: StringName) -> void:
 	current_interaction_node_id = node_id
+	survivor_notes.add_progress(&"mischief_maker", 1)
 	_change_state(GameState.EVENT)
-	var event_type := event_manager.pick_event_type(current_chapter)
-	var outcome := event_manager.resolve_event(event_type, current_chapter)
-	# TODO: route outcome to event UI overlay
-	# TODO: if outcome has "choices", present them to player and call resolve_*_choice()
-	outcome  # suppress unused warning
+	var node := map_state.get_node_by_id(node_id)
+	var event_type := node.event_type if node != null and node.event_type != &"" else event_manager.pick_event_type(current_chapter)
+	_current_event_type = event_type
+	_present_event(event_type)
+
+
+func _present_event(event_type: StringName) -> void:
+	var title: String = EVENT_TITLES.get(event_type, "突发事件")
+
+	match event_type:
+		&"robbery":
+			event_presented.emit(title, "你遇到了劫匪！支付一半金币还是战斗？", ["支付一半金币", "战斗"])
+		&"hitchhike":
+			event_presented.emit(title, "一个陌生人愿意载你一程。支付2金币传送到安全位置。", ["支付2金币", "拒绝"])
+		&"corpse":
+			event_presented.emit(title, "你发现了一具尸体。要花费1体力搜索吗？", ["搜索", "离开"])
+		&"gambler":
+			event_presented.emit(title, "一个赌徒邀请你玩21点。下注1金币试试手气？", ["下注1金币", "拒绝"])
+		&"theft", &"locked_box", &"dying_embers":
+			var outcome := event_manager.resolve_event(event_type, current_chapter)
+			var msg := _format_event_result(event_type, outcome)
+			event_result_presented.emit(title, msg)
+		&"destroyed_camp":
+			# resolve 会触发 combat_triggered 信号，直接进入战斗
+			event_manager.resolve_event(event_type, current_chapter)
+		&"rogue_market":
+			# TODO: shop_opened_temporarily 信号未被连接，暂时展示提示
+			event_result_presented.emit(title, "你发现了一个临时黑市，但店主已经离开了。")
+		_:
+			event_result_presented.emit(title, "什么也没发生。")
+
+
+func _format_event_result(event_type: StringName, outcome: Dictionary) -> String:
+	match event_type:
+		&"theft":
+			if outcome.get("blocked", false):
+				return "徽章阻止了盗窃！"
+			var stolen: Array = outcome.get("stolen_items", [])
+			if stolen.is_empty():
+				return "小偷试图偷窃，但你身上没有东西可偷。"
+			var names: Array[String] = []
+			for item in stolen:
+				if item is ItemData:
+					names.append(item.display_name)
+			return "小偷盗走了你的：" + ", ".join(names)
+		&"locked_box":
+			if outcome.get("received_box", false):
+				return "你获得了一个密码箱！"
+			return "背包空间不足，无法携带密码箱。"
+		&"dying_embers":
+			var restored: int = outcome.get("stamina_restored", 0)
+			return "温暖的余烬恢复了%d点体力。" % restored
+		_:
+			return "事件已结算。"
+
+
+func resolve_event_choice(choice_index: int) -> void:
+	match _current_event_type:
+		&"robbery":
+			var choice := &"pay_half" if choice_index == 0 else &"fight"
+			var outcome := event_manager.resolve_robbery_choice(choice)
+			if choice == &"fight" and outcome.get("combat", false):
+				return
+			var title: String = EVENT_TITLES.get(_current_event_type, "突发事件")
+			var paid: int = outcome.get("paid", 0)
+			var msg := "你支付了%d金币，劫匪放你离开。" % paid
+			event_result_presented.emit(title, msg)
+		&"hitchhike":
+			if choice_index == 0:
+				var target := _find_random_teleport_target()
+				if target != &"":
+					# resolve_hitchhike_teleport emits teleport_requested, which _on_teleport_requested handles
+					event_manager.resolve_hitchhike_teleport(target)
+				var title: String = EVENT_TITLES.get(_current_event_type, "突发事件")
+				event_result_presented.emit(title, "你支付了2金币，被传送到了新的位置。")
+			else:
+				return_to_exploration()
+		&"corpse":
+			if choice_index == 0:
+				var outcome := event_manager.resolve_corpse_search(current_chapter)
+				var title: String = EVENT_TITLES.get(_current_event_type, "突发事件")
+				var gold: int = outcome.get("loot_gold", 0)
+				event_result_presented.emit(title, "你花费1体力搜索了尸体，发现了%d金币。" % gold)
+			else:
+				return_to_exploration()
+		&"gambler":
+			if choice_index == 0:
+				var outcome := event_manager.resolve_gambler_bet(1)
+				var title: String = EVENT_TITLES.get(_current_event_type, "突发事件")
+				var result: String = outcome.get("result", "")
+				var delta: int = outcome.get("gold_delta", 0)
+				var msg := ""
+				match result:
+					"win":  msg = "你赢了！获得%d金币。" % delta
+					"lose": msg = "你输了，失去了%d金币。" % abs(delta)
+					"push": msg = "平局，金币退还。"
+				event_result_presented.emit(title, msg)
+			else:
+				return_to_exploration()
+
+
+func _find_random_teleport_target() -> StringName:
+	var candidates: Array[MapNodeData] = []
+	for n in map_state.nodes.values():
+		var node := n as MapNodeData
+		if node.node_type != GameEnums.MapNodeType.BOSS and node.node_type != GameEnums.MapNodeType.START:
+			candidates.append(node)
+	if candidates.is_empty():
+		return &""
+	candidates.shuffle()
+	return candidates[0].id
 
 
 func _on_ruins_searched(node_id: StringName, search_count: int) -> void:
@@ -619,9 +867,7 @@ func _on_quest_triggered(_node_id: StringName, _quest_state: int) -> void:
 # === Signal Handlers: Event Outcomes ===
 
 func _on_teleport_requested(target_node_id: StringName) -> void:
-	# TODO: validate target is reachable / non-boss, then move player
-	# node_manager.move_to(target_node_id)
-	target_node_id  # suppress unused warning
+	node_manager.move_to(target_node_id)
 
 
 func _on_event_combat_triggered(enemy_type: GameEnums.EnemyType, _is_event_combat: bool) -> void:
@@ -721,7 +967,9 @@ func _try_death_save() -> bool:
 
 
 func _on_combat_ended(result: GameEnums.CombatPhase) -> void:
+	var was_boss: bool = _current_enemy_type == GameEnums.EnemyType.BOSS
 	current_combat_manager = null
+	_current_enemy_type = GameEnums.EnemyType.NORMAL
 
 	match result:
 		GameEnums.CombatPhase.VICTORY:
@@ -730,6 +978,11 @@ func _on_combat_ended(result: GameEnums.CombatPhase) -> void:
 
 			if current_stamina.current_stamina <= 0 and not _try_death_save():
 				player_died.emit()
+				return
+
+			if was_boss:
+				_change_state(GameState.ENDING)
+				adventure_ended.emit(&"victory")
 				return
 
 			var loot := _generate_combat_loot()
@@ -742,6 +995,7 @@ func _on_combat_ended(result: GameEnums.CombatPhase) -> void:
 				player_died.emit()
 
 		GameEnums.CombatPhase.FLED:
+			survivor_notes.add_progress(&"escape_master", 1)
 			if current_stamina.current_stamina <= 0:
 				if _try_death_save():
 					return_to_exploration()
@@ -774,8 +1028,13 @@ func _generate_combat_loot() -> Dictionary:
 	item.id = consumable_pool[picked_name]
 	item.display_name = picked_name
 	item.item_type = GameEnums.ItemType.CONSUMABLE
-	item.width = 1
-	item.height = 1
+	match item.id:
+		&"flashlight", &"torch":
+			item.width = 1
+			item.height = 2
+		_:
+			item.width = 1
+			item.height = 1
 	items.append(item)
 
 	return {"gold": gold, "items": items}

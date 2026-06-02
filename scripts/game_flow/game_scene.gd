@@ -7,6 +7,7 @@ extends Node
 const _CONFIRM_EXIT_MESSAGE: String = "The un-stored progress will be lost. Return to main menu anyway?"
 var _fade_tween: Tween
 var _exit_confirm_dialog: ConfirmationDialog = null
+var _notes_return_target: StringName = &""
 
 func _ready() -> void:
 	_ui_manager.initialize(_game_manager)
@@ -14,12 +15,27 @@ func _ready() -> void:
 	_game_manager.combat_prepared.connect(_on_combat_prepared)
 	_game_manager.chapter_started.connect(_on_chapter_started)
 	_game_manager.adventure_started.connect(_on_adventure_started)
+	_game_manager.adventure_ended.connect(_on_adventure_ended)
 	_game_manager.loot_generated.connect(_on_loot_generated)
 	_game_manager.player_died.connect(_on_player_died)
+	_game_manager.event_presented.connect(_on_event_presented)
+	_game_manager.event_result_presented.connect(_on_event_result_presented)
+	_game_manager.password_box_opened.connect(_on_password_box_opened)
+	_game_manager.password_box_hint.connect(_on_password_box_hint)
+	_game_manager.password_box_reward_granted.connect(_on_password_box_reward_granted)
+	_game_manager.stamina_changed.connect(_on_stamina_changed)
 	_connect_menu_signals()
 	_connect_overlay_signals()
 	_connect_save_slot_signals()
+	_initialize_survivor_notes_screen()
 	_ui_manager.show_screen("MainMenu")
+
+
+func _initialize_survivor_notes_screen() -> void:
+	var notes_screen := _ui_manager.get_screen("SurvivorNotesScreen") as SurvivorNotesScreen
+	if notes_screen != null:
+		notes_screen.back_pressed.connect(_on_survivor_notes_back_pressed)
+		notes_screen.optional_carry_toggled.connect(_on_survivor_notes_optional_carry_toggled)
 
 
 func _connect_menu_signals() -> void:
@@ -56,11 +72,6 @@ func _on_continue_pressed() -> void:
 	_ui_manager.show_screen("SaveSlotScreen")
 
 
-func _on_survivor_notes_pressed() -> void:
-	# TODO: show survivor notes screen
-	pass
-
-
 func _on_settings_pressed() -> void:
 	# TODO: show settings panel
 	pass
@@ -68,6 +79,28 @@ func _on_settings_pressed() -> void:
 
 func _on_exit_game_pressed() -> void:
 	get_tree().quit()
+
+
+func _on_survivor_notes_pressed() -> void:
+	_notes_return_target = &"MainMenu"
+	var notes_screen := _ui_manager.get_screen("SurvivorNotesScreen") as SurvivorNotesScreen
+	if notes_screen != null:
+		notes_screen.initialize(_game_manager.survivor_notes)
+	_ui_manager.show_screen("SurvivorNotesScreen")
+
+
+func _on_survivor_notes_back_pressed() -> void:
+	match _notes_return_target:
+		&"SafeHouse":
+			_ui_manager.show_screen("MapView")
+			_ui_manager.show_overlay("SafeHouse")
+		_:
+			_ui_manager.show_screen("MainMenu")
+	_notes_return_target = &""
+
+
+func _on_survivor_notes_optional_carry_toggled(enabled: bool) -> void:
+	_game_manager.survivor_notes.set_optional_carry(enabled)
 
 
 func _on_pause_save_pressed() -> void:
@@ -136,10 +169,12 @@ func _connect_overlay_signals() -> void:
 	var event := _ui_manager.get_overlay("EventOverlay") as EventInterface
 	if event != null:
 		event.closed.connect(_on_overlay_closed)
+		event.choice_made.connect(_on_event_choice_made)
 
 	var safe_house := _ui_manager.get_overlay("SafeHouse") as SafeHouseInterface
 	if safe_house != null:
 		safe_house.closed.connect(_on_overlay_closed)
+		safe_house.notes_requested.connect(_on_safe_house_notes_requested)
 		safe_house.rest_requested.connect(_on_safe_house_rest)
 		safe_house.item_taken.connect(_on_safe_house_item_taken)
 		safe_house.gold_taken.connect(_on_safe_house_gold_taken)
@@ -163,6 +198,11 @@ func _connect_overlay_signals() -> void:
 	if backpack != null:
 		backpack.closed.connect(_on_overlay_closed)
 		backpack.item_use_requested.connect(_on_backpack_item_use_requested)
+
+	var password_box := _ui_manager.get_overlay("PasswordBoxScreen") as PasswordBoxScreen
+	if password_box != null:
+		password_box.guess_submitted.connect(_on_password_guess_submitted)
+		password_box.closed.connect(_on_password_box_closed)
 
 
 func _on_backpack_item_use_requested(item: ItemData, _grid: BackpackGrid) -> void:
@@ -193,6 +233,55 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func _on_overlay_closed() -> void:
 	_game_manager.return_to_exploration()
+
+
+func _on_event_presented(title: String, description: String, choices: Array) -> void:
+	var event_ui := _ui_manager.get_overlay("EventOverlay") as EventInterface
+	if event_ui != null:
+		event_ui.show_event(title, description, choices)
+
+
+func _on_event_result_presented(title: String, description: String) -> void:
+	var event_ui := _ui_manager.get_overlay("EventOverlay") as EventInterface
+	if event_ui != null:
+		event_ui.show_result(title, description)
+
+
+func _on_event_choice_made(choice_index: int) -> void:
+	_game_manager.resolve_event_choice(choice_index)
+
+
+func _on_password_box_opened(_item: ItemData, stamina_current: int, stamina_max: int) -> void:
+	var pbox := _ui_manager.get_overlay("PasswordBoxScreen") as PasswordBoxScreen
+	if pbox != null:
+		pbox.show_screen(stamina_current, stamina_max)
+
+
+func _on_password_guess_submitted(password: int) -> void:
+	_game_manager.submit_password_guess(password)
+
+
+func _on_password_box_hint(hint_text: String) -> void:
+	var pbox := _ui_manager.get_overlay("PasswordBoxScreen") as PasswordBoxScreen
+	if pbox != null:
+		pbox.show_hint(hint_text)
+
+
+func _on_password_box_reward_granted(reward_desc: String) -> void:
+	var pbox := _ui_manager.get_overlay("PasswordBoxScreen") as PasswordBoxScreen
+	if pbox != null:
+		pbox.show_reward(reward_desc)
+
+
+func _on_password_box_closed() -> void:
+	_ui_manager.hide_overlay("PasswordBoxScreen")
+
+
+func _on_stamina_changed(current: int, max_stamina: int) -> void:
+	_update_map_hud()
+	var pbox := _ui_manager.get_overlay("PasswordBoxScreen") as PasswordBoxScreen
+	if pbox != null and pbox.visible:
+		pbox.update_stamina(current, max_stamina)
 
 
 func _on_pause_resume_pressed() -> void:
@@ -285,8 +374,14 @@ func _on_combat_prepared(_combat_manager: CombatManager) -> void:
 func _start_combat_ui(combat_manager: CombatManager) -> void:
 	var combat_interface := _ui_manager.get_overlay("CombatArena") as CombatInterface
 	if combat_interface != null:
+		if not combat_interface.pocket_item_used.is_connected(_on_pocket_item_used):
+			combat_interface.pocket_item_used.connect(_on_pocket_item_used)
 		combat_interface.initialize(combat_manager)
 		combat_interface.start()
+
+
+func _on_pocket_item_used(item_id: StringName) -> void:
+	_game_manager.notify_consumable_used(item_id, true)
 
 
 func _on_loot_generated(gold: int, items: Array[ItemData]) -> void:
@@ -323,6 +418,19 @@ func _on_player_died() -> void:
 	_ui_manager.show_overlay("EndingScreen")
 
 
+func _on_adventure_ended(ending_type: StringName) -> void:
+	if ending_type == &"victory":
+		_ui_manager.hide_overlay("CombatArena")
+		var ending := _ui_manager.get_overlay("EndingScreen") as EndingScreen
+		if ending != null:
+			if not ending.return_to_main_menu_pressed.is_connected(_on_return_to_main_menu):
+				ending.return_to_main_menu_pressed.connect(_on_return_to_main_menu)
+			ending.show_ending(&"victory",
+				{"narrative": "You have defeated the boss and cleared this area."}
+			)
+		_ui_manager.show_overlay("EndingScreen")
+
+
 func _on_state_changed(new_state: int, _old_state: int) -> void:
 	match new_state:
 		GameManager.GameState.MAIN_MENU:
@@ -343,6 +451,7 @@ func _on_state_changed(new_state: int, _old_state: int) -> void:
 			_update_map_hud()
 
 		GameManager.GameState.COMBAT:
+			_ui_manager.hide_overlay("EventOverlay")
 			_ui_manager.show_overlay("CombatArena")
 
 		GameManager.GameState.SHOP:
@@ -353,9 +462,6 @@ func _on_state_changed(new_state: int, _old_state: int) -> void:
 
 		GameManager.GameState.EVENT:
 			_ui_manager.show_overlay("EventOverlay")
-			var event_ui := _ui_manager.get_overlay("EventOverlay") as EventInterface
-			if event_ui != null:
-				event_ui.show_placeholder("事件功能开发中...")
 
 		GameManager.GameState.SAFE_HOUSE:
 			_ui_manager.show_overlay("SafeHouse")
@@ -372,6 +478,14 @@ func _on_state_changed(new_state: int, _old_state: int) -> void:
 
 		GameManager.GameState.ENDING:
 			_ui_manager.show_overlay("EndingScreen")
+
+
+func _on_safe_house_notes_requested() -> void:
+	_notes_return_target = &"SafeHouse"
+	var notes_screen := _ui_manager.get_screen("SurvivorNotesScreen") as SurvivorNotesScreen
+	if notes_screen != null:
+		notes_screen.initialize(_game_manager.survivor_notes)
+	_ui_manager.show_screen("SurvivorNotesScreen")
 
 
 func _on_safe_house_rest() -> void:

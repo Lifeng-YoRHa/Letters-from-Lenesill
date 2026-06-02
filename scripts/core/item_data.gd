@@ -8,6 +8,7 @@ extends Resource
 @export var height: int = 1
 @export var rotatable: bool = false
 @export var description: String = ""
+@export var metadata: Dictionary = {}
 
 
 func get_dimensions(rotated: bool = false) -> Vector2i:

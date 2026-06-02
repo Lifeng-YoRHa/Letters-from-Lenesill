@@ -27,6 +27,9 @@ func process_node_arrival(node_id: StringName) -> void:
 	var node := _map_state.get_node_by_id(node_id)
 	if node == null:
 		return
+	if node.visibility == GameEnums.MapNodeVisibility.CLEARED:
+		no_interaction.emit(node_id)
+		return
 
 	match node.node_type:
 		GameEnums.MapNodeType.NORMAL_COMBAT:
@@ -57,6 +60,13 @@ func process_node_arrival(node_id: StringName) -> void:
 		GameEnums.MapNodeType.ROAD, \
 		GameEnums.MapNodeType.START:
 			no_interaction.emit(node_id)
+
+
+func convert_node_to_road(node_id: StringName) -> void:
+	var node := _map_state.get_node_by_id(node_id)
+	if node == null:
+		return
+	node.node_type = GameEnums.MapNodeType.ROAD
 
 
 func record_ruins_search(node_id: StringName) -> void:
@@ -161,9 +171,13 @@ func _roll_scattered_item() -> ItemData:
 	elif roll < 0.84:
 		item.id = &"flashlight"
 		item.display_name = "手电筒"
+		item.width = 1
+		item.height = 2
 	elif roll < 0.96:
 		item.id = &"torch"
 		item.display_name = "火把"
+		item.width = 1
+		item.height = 2
 	else:
 		item.id = &"safe_house_key"
 		item.display_name = "安全屋房卡"

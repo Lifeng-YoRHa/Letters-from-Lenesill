@@ -124,6 +124,20 @@ grow_horizontal = 2
 grow_vertical = 0
 text = "休息（恢复全部体力）"
 
+[node name="NotesButton" type="Button" parent="Panel"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_bottom = 1.0
+offset_left = -190.0
+offset_top = 16.0
+offset_right = -90.0
+offset_bottom = 48.0
+grow_horizontal = 0
+grow_vertical = 2
+text = "查看笔记"
+
 [node name="CloseButton" type="Button" parent="Panel"]
 unique_name_in_owner = true
 layout_mode = 1
@@ -138,4 +152,5 @@ grow_horizontal = 0
 grow_vertical = 2
 text = "Close"
 
+[connection signal="pressed" from="Panel/NotesButton" to="." method="_on_notes_pressed"]
 [connection signal="pressed" from="Panel/CloseButton" to="." method="_on_close_pressed"]

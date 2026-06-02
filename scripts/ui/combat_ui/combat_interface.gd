@@ -1,6 +1,8 @@
 class_name CombatInterface
 extends Control
 
+signal pocket_item_used(item_id: StringName)
+
 @export var enemy_hp: int = 14
 @export var enemy_attack: int = 4
 @export var player_max_stamina: int = 12
@@ -387,6 +389,7 @@ func _on_pocket_item_clicked(event: InputEvent, item: ItemData, grid: BackpackGr
 		return
 
 	_apply_consumable_effect(item)
+	pocket_item_used.emit(item.id)
 	grid.remove(item)
 	if _backpack_manager != null:
 		_backpack_manager.item_removed.emit(item)

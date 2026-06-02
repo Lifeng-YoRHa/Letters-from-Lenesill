@@ -3,6 +3,7 @@ extends Resource
 
 @export var id: StringName
 @export var node_type: GameEnums.MapNodeType
+@export var event_type: StringName = &""
 @export var layer: int
 @export var slot_index: int
 @export var connections: Array[StringName] = []

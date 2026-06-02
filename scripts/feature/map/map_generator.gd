@@ -32,6 +32,12 @@ func _get_special_slots() -> Dictionary:
 	}
 
 
+const EVENT_TYPES: Array[StringName] = [
+	&"theft", &"robbery", &"hitchhike", &"corpse",
+	&"locked_box", &"destroyed_camp", &"gambler",
+	&"rogue_market", &"dying_embers",
+]
+
 func _get_random_pool() -> Array[GameEnums.MapNodeType]:
 	var pool: Array[GameEnums.MapNodeType] = []
 	for i in range(8):  pool.append(GameEnums.MapNodeType.NORMAL_COMBAT)
@@ -79,6 +85,8 @@ func _build_nodes(layers: Array[int], special_slots: Dictionary, random_pool: Ar
 			else:
 				if pool_idx < shuffled_pool.size():
 					node.node_type = shuffled_pool[pool_idx]
+					if node.node_type == GameEnums.MapNodeType.RANDOM_EVENT:
+						node.event_type = EVENT_TYPES[_rng.randi_range(0, EVENT_TYPES.size() - 1)]
 					pool_idx += 1
 				else:
 					node.node_type = GameEnums.MapNodeType.ROAD

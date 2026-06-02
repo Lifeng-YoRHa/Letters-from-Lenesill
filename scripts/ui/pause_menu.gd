@@ -3,7 +3,6 @@ extends Control
 
 signal resume_pressed
 signal save_pressed
-signal survivor_notes_pressed
 signal settings_pressed
 signal return_to_main_menu_pressed
 
@@ -13,10 +12,6 @@ func _on_resume_pressed() -> void:
 
 func _on_save_pressed() -> void:
 	save_pressed.emit()
-
-
-func _on_survivor_notes_pressed() -> void:
-	survivor_notes_pressed.emit()
 
 
 func _on_settings_pressed() -> void:

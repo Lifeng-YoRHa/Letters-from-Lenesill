@@ -356,6 +356,26 @@ func is_entry_written(entry_id: StringName) -> bool:
 	return entry.is_written
 
 
+func get_entry_ids() -> Array[StringName]:
+	var result: Array[StringName] = []
+	result.assign(_entries.keys())
+	return result
+
+
+func get_entry_display_data(entry_id: StringName) -> Dictionary:
+	var entry := _entries.get(entry_id) as Entry
+	if entry == null:
+		return {}
+	return {
+		"id": entry.id,
+		"description": entry.description,
+		"stages": entry.stages.duplicate(true),
+		"current_progress": entry.current_progress,
+		"completed_stage": entry.completed_stage,
+		"is_written": entry.is_written,
+	}
+
+
 func get_unlocked_relics() -> Array[StringName]:
 	return _unlocked_relics.duplicate()
 
