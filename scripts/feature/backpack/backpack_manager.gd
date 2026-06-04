@@ -20,6 +20,7 @@ var current_backpack_type: StringName = &"satchel"
 const MAX_GOLD: int = 99
 
 var _gold_item: ItemData = null
+var adventure_acquired_weapons: Array[StringName] = []
 
 
 func initialize() -> void:
@@ -89,9 +90,33 @@ func reset() -> void:
 	gold_count = 0
 	current_backpack_type = &"satchel"
 	_gold_item = null
+	adventure_acquired_weapons.clear()
 	_setup_backpack(current_backpack_type)
 	_setup_pockets()
 	_place_gold_item()
+
+
+func create_weapon_item(data: WeaponData) -> ItemData:
+	var item := ItemData.new()
+	item.id = data.id
+	item.display_name = data.display_name
+	item.item_type = GameEnums.ItemType.WEAPON
+	item.width = data.size.x
+	item.height = data.size.y
+	item.description = data.description
+	item.weapon_data = data
+	item.weapon_current_durability = data.max_durability
+	item.weapon_current_attack = data.attack
+	return item
+
+
+func has_weapon_in_adventure(weapon_id: StringName) -> bool:
+	return adventure_acquired_weapons.has(weapon_id)
+
+
+func acquire_weapon(weapon_id: StringName) -> void:
+	if not adventure_acquired_weapons.has(weapon_id):
+		adventure_acquired_weapons.append(weapon_id)
 
 
 func get_all_grids() -> Array[BackpackGrid]:
@@ -117,6 +142,8 @@ func can_fit_anywhere(item: ItemData) -> bool:
 func add_item(item: ItemData) -> bool:
 	if item.item_type == GameEnums.ItemType.WEAPON and equipped_weapon == null:
 		equipped_weapon = item
+		if item.weapon_data != null:
+			acquire_weapon(item.weapon_data.id)
 		weapon_equipped.emit(item)
 		return true
 
@@ -124,6 +151,8 @@ func add_item(item: ItemData) -> bool:
 		var placement := grid.find_placement(item)
 		if not placement.is_empty():
 			grid.place(item, placement.x, placement.y, placement.rotated)
+			if item.item_type == GameEnums.ItemType.WEAPON and item.weapon_data != null:
+				acquire_weapon(item.weapon_data.id)
 			item_added.emit(item)
 			return true
 	return false

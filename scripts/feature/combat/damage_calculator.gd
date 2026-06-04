@@ -30,9 +30,12 @@ func calculate_enemy_damage(
 	enemy_attack: int,
 	combat_state: CombatState,
 ) -> int:
+	var damage := enemy_attack
+	if combat_state.active_debuffs.has(GameEnums.DebuffType.WEAKNESS):
+		damage += 1
 	if combat_state.dodge_active:
-		return maxi(enemy_attack - combat_state.dodge_reduction, 0)
-	return enemy_attack
+		return maxi(damage - combat_state.dodge_reduction, 0)
+	return damage
 
 
 func calculate_last_effort_recovery(berserker_stage: int) -> int:

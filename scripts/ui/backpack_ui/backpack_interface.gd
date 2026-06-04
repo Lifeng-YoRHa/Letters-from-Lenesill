@@ -25,6 +25,7 @@ const ITEM_COLORS := {
 @onready var _use_button: Button = %UseButton
 @onready var _rotate_button: Button = %RotateButton
 @onready var _detail_button: Button = %DetailButton
+@onready var _backpack_close_button: Button = %BackpackCloseButton
 
 @onready var _detail_panel: PanelContainer = %DetailPanel
 @onready var _detail_name: Label = %NameLabel
@@ -43,7 +44,22 @@ func _ready() -> void:
 	_use_button.pressed.connect(_on_use_pressed)
 	_rotate_button.pressed.connect(_on_rotate_pressed)
 	_detail_button.pressed.connect(_on_detail_pressed)
+	_backpack_close_button.pressed.connect(_on_backpack_close_pressed)
 	_detail_close.pressed.connect(_on_detail_close_pressed)
+	visibility_changed.connect(_on_visibility_changed)
+
+
+func _on_visibility_changed() -> void:
+	if visible and _backpack_manager != null:
+		_refresh()
+
+
+func refresh() -> void:
+	_refresh()
+
+
+func _on_backpack_close_pressed() -> void:
+	closed.emit()
 
 
 func initialize(backpack_manager: BackpackManager) -> void:
@@ -179,7 +195,11 @@ func _update_weapon() -> void:
 	if _backpack_manager == null:
 		return
 	if _backpack_manager.equipped_weapon != null:
-		_weapon_label.text = "Weapon: %s" % _backpack_manager.equipped_weapon.display_name
+		var w := _backpack_manager.equipped_weapon
+		var dur := w.weapon_current_durability
+		var max_dur := w.get_weapon_max_durability()
+		var atk := w.get_weapon_attack()
+		_weapon_label.text = "Weapon: %s %d ATK %d/%d" % [w.display_name, atk, dur, max_dur]
 	else:
 		_weapon_label.text = "Weapon: None"
 
@@ -299,11 +319,19 @@ func _hide_detail_panel() -> void:
 
 
 func _get_item_effect_text(item: ItemData) -> String:
+	if item.item_type == GameEnums.ItemType.WEAPON and item.weapon_data != null:
+		var trait_desc := ""
+		match item.weapon_data.special_trait_id:
+			&"extinguisher_boost": trait_desc = "\n特性：火把伤害+10"
+			&"hammer_heavy": trait_desc = "\n特性：武器攻击消耗+1体力"
+			&"baton_light": trait_desc = "\n特性：武器攻击消耗-1体力"
+			&"chainsaw_irreparable": trait_desc = "\n特性：耐久无法回复"
+		return "攻击力：%d\n耐久：%d/%d%s" % [item.get_weapon_attack(), item.weapon_current_durability, item.get_weapon_max_durability(), trait_desc]
 	match item.id:
-		&"energy_drink": return "恢复 7 点体力（可通过幸存者笔记提升）"
+		&"energy_drink": return "恢复 6 点体力（可通过幸存者笔记提升）"
 		&"stone": return "消耗 2 点体力，逃离当前战斗"
-		&"torch": return "消耗 2 点体力，对敌人造成 30 点伤害"
-		&"whetstone": return "恢复 3 点武器耐久（可通过幸存者笔记提升）"
+		&"torch": return "消耗 2 点体力，对敌人造成 20 点伤害"
+		&"whetstone": return "恢复 3 点武器耐久，降低 1 点攻击力（不低于 4）（可通过幸存者笔记提升）"
 		&"flashlight": return "揭示 2 个随机隐藏节点的类型（可通过幸存者笔记提升）"
 		&"safe_house_key": return "打开安全屋"
 		_: return "效果未知"

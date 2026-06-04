@@ -14,6 +14,7 @@ signal analyze_toggled(active: bool)
 signal last_effort_toggled(used: bool)
 signal extra_action_toggled(active: bool)
 signal boss_emergency_heal_toggled(used: bool)
+signal skip_next_player_turn_toggled(active: bool)
 
 var enemy_data: EnemyData:
 	get:
@@ -51,6 +52,10 @@ var active_debuffs: Array[GameEnums.DebuffType]:
 	get:
 		return _active_debuffs.duplicate()
 
+var trembling_effects: Array[GameEnums.ActionCardEffect]:
+	get:
+		return _trembling_effects.duplicate()
+
 var courage_active: bool:
 	get:
 		return _courage_active
@@ -79,6 +84,10 @@ var boss_emergency_heal_used: bool:
 	get:
 		return _boss_emergency_heal_used
 
+var skip_next_player_turn: bool:
+	get:
+		return _skip_next_player_turn
+
 var _enemy_data: EnemyData
 var _encounter_type: GameEnums.EnemyType
 var _combat_phase: GameEnums.CombatPhase
@@ -88,6 +97,7 @@ var _activated_cards: Array[ActionCardData] = []
 var _actions_used_this_turn: int = 0
 var _max_actions_this_turn: int = 3
 var _active_debuffs: Array[GameEnums.DebuffType] = []
+var _trembling_effects: Array[GameEnums.ActionCardEffect] = []
 var _courage_active: bool = false
 var _dodge_active: bool = false
 var _dodge_reduction: int = 4
@@ -95,6 +105,7 @@ var _analyze_active: bool = false
 var _last_effort_used: bool = false
 var _extra_action_next_turn: bool = false
 var _boss_emergency_heal_used: bool = false
+var _skip_next_player_turn: bool = false
 
 
 func initialize(enemy: EnemyData, encounter: GameEnums.EnemyType) -> void:
@@ -112,8 +123,10 @@ func initialize(enemy: EnemyData, encounter: GameEnums.EnemyType) -> void:
 	_last_effort_used = false
 	_extra_action_next_turn = false
 	_boss_emergency_heal_used = false
+	_skip_next_player_turn = false
 	_activated_cards.clear()
 	_active_debuffs.clear()
+	_trembling_effects.clear()
 
 
 func set_phase(phase: GameEnums.CombatPhase) -> void:
@@ -165,6 +178,10 @@ func remove_debuff(debuff: GameEnums.DebuffType) -> void:
 	debuff_removed.emit(debuff)
 
 
+func set_trembling_effects(effects: Array[GameEnums.ActionCardEffect]) -> void:
+	_trembling_effects = effects.duplicate()
+
+
 func set_courage_active(active: bool) -> void:
 	_courage_active = active
 	courage_toggled.emit(active)
@@ -194,6 +211,11 @@ func set_extra_action_next_turn(active: bool) -> void:
 func set_boss_emergency_heal_used(used: bool) -> void:
 	_boss_emergency_heal_used = used
 	boss_emergency_heal_toggled.emit(used)
+
+
+func set_skip_next_player_turn(active: bool) -> void:
+	_skip_next_player_turn = active
+	skip_next_player_turn_toggled.emit(active)
 
 
 func get_remaining_actions() -> int:

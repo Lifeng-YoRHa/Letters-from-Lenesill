@@ -2,11 +2,11 @@ class_name CombatInterface
 extends Control
 
 signal pocket_item_used(item_id: StringName)
+signal backpack_open_requested
 
 @export var enemy_hp: int = 14
 @export var enemy_attack: int = 4
 @export var player_max_stamina: int = 12
-@export var weapon_attack_power: int = 7
 @export var activated_card_count: int = 3
 
 const ITEM_COLORS := {
@@ -62,6 +62,10 @@ func start() -> void:
 	_update_ui()
 
 
+func refresh() -> void:
+	_update_ui()
+
+
 func _setup_test_combat() -> void:
 	_enemy_data = EnemyData.new()
 	_enemy_data.id = &"test_enemy"
@@ -92,32 +96,8 @@ func _make_test_deck() -> Array[ActionCardData]:
 	weapon.display_name = "Weapon Attack"
 	weapon.stamina_cost = 1
 	weapon.effect = GameEnums.ActionCardEffect.WEAPON_ATTACK
-	weapon.base_value = weapon_attack_power
+	weapon.base_value = _get_weapon_attack_power()
 	deck.append(weapon)
-
-	var heavy := ActionCardData.new()
-	heavy.id = &"heavy_strike"
-	heavy.display_name = "Heavy Strike"
-	heavy.stamina_cost = 1
-	heavy.effect = GameEnums.ActionCardEffect.UNARMED_ATTACK
-	heavy.base_value = 4
-	deck.append(heavy)
-
-	var quick := ActionCardData.new()
-	quick.id = &"quick_jab"
-	quick.display_name = "Quick Jab"
-	quick.stamina_cost = 1
-	quick.effect = GameEnums.ActionCardEffect.UNARMED_ATTACK
-	quick.base_value = 2
-	deck.append(quick)
-
-	var bash := ActionCardData.new()
-	bash.id = &"bash"
-	bash.display_name = "Bash"
-	bash.stamina_cost = 1
-	bash.effect = GameEnums.ActionCardEffect.UNARMED_ATTACK
-	bash.base_value = 3
-	deck.append(bash)
 
 	var dodge := ActionCardData.new()
 	dodge.id = &"dodge"
@@ -140,10 +120,32 @@ func _make_test_deck() -> Array[ActionCardData]:
 	flee.effect = GameEnums.ActionCardEffect.FLEE
 	deck.append(flee)
 
+	var search_backpack := ActionCardData.new()
+	search_backpack.id = &"search_backpack"
+	search_backpack.display_name = "Search Backpack"
+	search_backpack.stamina_cost = 1
+	search_backpack.effect = GameEnums.ActionCardEffect.SEARCH_BACKPACK
+	deck.append(search_backpack)
+
+	var analyze := ActionCardData.new()
+	analyze.id = &"analyze_countermeasure"
+	analyze.display_name = "Analyze Countermeasure"
+	analyze.stamina_cost = 1
+	analyze.effect = GameEnums.ActionCardEffect.ANALYZE_COUNTERMEASURE
+	deck.append(analyze)
+
+	var adjust_breathing := ActionCardData.new()
+	adjust_breathing.id = &"adjust_breathing"
+	adjust_breathing.display_name = "Adjust Breathing"
+	adjust_breathing.stamina_cost = 1
+	adjust_breathing.effect = GameEnums.ActionCardEffect.ADJUST_BREATHING
+	deck.append(adjust_breathing)
+
 	return deck
 
 
 func _connect_signals() -> void:
+	_safe_connect(_combat_manager.combat_started, _on_combat_started)
 	_safe_connect(_combat_manager.player_turn_started, _on_player_turn_started)
 	_safe_connect(_combat_manager.enemy_turn_started, _on_enemy_turn_started)
 	_safe_connect(_combat_manager.enemy_action_resolved, _on_enemy_action_resolved)
@@ -162,12 +164,64 @@ func _safe_connect(sig: Signal, callable: Callable) -> void:
 	sig.connect(callable)
 
 
+func _on_combat_started() -> void:
+	_log_label.text = ""
+	if _combat_manager != null:
+		for debuff in _combat_manager.combat_state.active_debuffs:
+			_log("受到负面情绪：%s" % _debuff_name(debuff))
+
+
 func _update_ui() -> void:
 	_update_stamina_display(_stamina.current_stamina)
 	_update_enemy_hp_display(_combat_manager.combat_state.enemy_current_hp)
 	_phase_label.text = _phase_name(_combat_manager.combat_state.combat_phase)
-	_weapon_label.text = "Weapon: %d ATK" % weapon_attack_power
+	_update_weapon_display()
 	_render_pockets()
+
+
+func _update_weapon_display() -> void:
+	if _backpack_manager == null or _backpack_manager.equipped_weapon == null:
+		_weapon_label.text = "Weapon: None"
+		return
+	var w := _backpack_manager.equipped_weapon
+	var atk := w.get_weapon_attack()
+	var dur := w.weapon_current_durability
+	var max_dur := w.get_weapon_max_durability()
+	var name_text := w.display_name
+	_weapon_label.text = "Weapon: %s %d ATK %d/%d" % [name_text, atk, dur, max_dur]
+
+
+func _get_weapon_attack_power() -> int:
+	if _backpack_manager == null or _backpack_manager.equipped_weapon == null:
+		return 7
+	return _backpack_manager.equipped_weapon.get_weapon_attack()
+
+
+func _get_weapon_cost_modifier() -> int:
+	if _backpack_manager == null or _backpack_manager.equipped_weapon == null:
+		return 0
+	var weapon_trait := _backpack_manager.equipped_weapon.get_weapon_trait_id()
+	match weapon_trait:
+		&"hammer_heavy": return 1
+		&"baton_light": return -1
+		_:
+			return 0
+
+
+func _consume_weapon_durability() -> void:
+	if _backpack_manager == null or _backpack_manager.equipped_weapon == null:
+		return
+	var w := _backpack_manager.equipped_weapon
+	w.weapon_current_durability = maxi(w.weapon_current_durability - 1, 0)
+	_update_weapon_display()
+	if w.weapon_current_durability <= 0:
+		_update_card_buttons(_combat_manager.combat_state.activated_cards)
+
+
+func _is_weapon_attack_available() -> bool:
+	if _backpack_manager == null or _backpack_manager.equipped_weapon == null:
+		return true
+	return _backpack_manager.equipped_weapon.weapon_current_durability > 0
 
 
 func _update_stamina_display(current: int) -> void:
@@ -219,10 +273,14 @@ func _update_card_buttons(cards: Array[ActionCardData]) -> void:
 	for card in cards:
 		var btn := Button.new()
 		var name_text := card.display_name
-		var cost_text := "(%d)" % card.stamina_cost
+		var display_cost := _get_card_effective_cost(card)
+		var cost_text := "(%d)" % display_cost
 		btn.text = "%s\n%s" % [name_text, cost_text]
 		btn.custom_minimum_size = Vector2(100, 60)
 		btn.pressed.connect(func() -> void: _on_card_clicked(card))
+		if card.effect == GameEnums.ActionCardEffect.WEAPON_ATTACK and not _is_weapon_attack_available():
+			btn.disabled = true
+			btn.text = "%s\n[BROKEN]" % name_text
 		_card_container.add_child(btn)
 
 
@@ -232,17 +290,27 @@ func _on_card_clicked(card: ActionCardData) -> void:
 		return
 
 	_combat_manager.record_card_played(card)
-	_stamina.deduct(card.stamina_cost)
+
+	var actual_cost := _get_card_effective_cost(card)
+	if _combat_manager.combat_state.analyze_active:
+		actual_cost = maxi(actual_cost - 3, 0)
+		_combat_manager.combat_state.set_analyze_active(false)
+		_log("Analyze countermeasure: next card cost reduced to %d" % actual_cost)
+
+	_stamina.deduct(actual_cost)
 
 	match card.effect:
 		GameEnums.ActionCardEffect.UNARMED_ATTACK:
-			var damage := card.base_value
-			if _combat_manager.combat_state.courage_active:
-				damage += 2
-			_combat_manager.deal_damage_to_enemy(damage)
+			var actual_dmg := _combat_manager.resolve_player_attack(card.base_value)
+			_log_attack_result(actual_dmg, "空手攻击")
 
 		GameEnums.ActionCardEffect.WEAPON_ATTACK:
-			_combat_manager.deal_damage_to_enemy(weapon_attack_power)
+			if not _is_weapon_attack_available():
+				_log("Weapon is broken! Cannot use weapon attack.")
+				return
+			var actual_dmg := _combat_manager.resolve_player_attack(_get_weapon_attack_power())
+			_consume_weapon_durability()
+			_log_attack_result(actual_dmg, "武器攻击")
 
 		GameEnums.ActionCardEffect.DODGE:
 			_combat_manager.combat_state.set_dodge_active(true, 4)
@@ -255,6 +323,18 @@ func _on_card_clicked(card: ActionCardData) -> void:
 		GameEnums.ActionCardEffect.FLEE:
 			_combat_manager.flee()
 			return
+
+		GameEnums.ActionCardEffect.SEARCH_BACKPACK:
+			_log("Opened backpack")
+			backpack_open_requested.emit()
+
+		GameEnums.ActionCardEffect.ANALYZE_COUNTERMEASURE:
+			_combat_manager.combat_state.set_analyze_active(true)
+			_log("Analyze countermeasure active: next card cost -3")
+
+		GameEnums.ActionCardEffect.ADJUST_BREATHING:
+			_combat_manager.combat_state.set_extra_action_next_turn(true)
+			_log("Adjusted breathing: +1 action next turn")
 
 		_:
 			_log("Card effect not implemented in demo")
@@ -400,8 +480,8 @@ func _on_pocket_item_clicked(event: InputEvent, item: ItemData, grid: BackpackGr
 func _apply_consumable_effect(item: ItemData) -> void:
 	match item.id:
 		&"energy_drink":
-			_stamina.restore(7)
-			_log("Used Energy Drink: restored 7 stamina")
+			_stamina.restore(6)
+			_log("Used Energy Drink: restored 6 stamina")
 		&"stone":
 			_stamina.deduct(2)
 			_log("Used Stone: spent 2 stamina to flee")
@@ -410,14 +490,51 @@ func _apply_consumable_effect(item: ItemData) -> void:
 			_log("Whetstone: weapon repair not yet implemented")
 		&"torch":
 			_stamina.deduct(2)
-			_combat_manager.deal_damage_to_enemy(30)
-			_log("Used Torch: spent 2 stamina, dealt 30 damage")
+			var torch_dmg := 20
+			if _backpack_manager != null and _backpack_manager.equipped_weapon != null:
+				if _backpack_manager.equipped_weapon.get_weapon_trait_id() == &"extinguisher_boost":
+					torch_dmg += 10
+					_log("Extinguisher boost: torch damage +10")
+			_combat_manager.deal_damage_to_enemy(torch_dmg)
+			_log("Used Torch: spent 2 stamina, dealt %d damage" % torch_dmg)
 		&"flashlight":
 			_log("Flashlight cannot be used in combat")
 		&"safe_house_key":
 			_log("Safe House Key cannot be used in combat")
 		_:
 			_log("Unknown consumable effect")
+
+
+func _get_card_effective_cost(card: ActionCardData) -> int:
+	var cost := card.stamina_cost
+	if card.effect == GameEnums.ActionCardEffect.WEAPON_ATTACK:
+		cost += _get_weapon_cost_modifier()
+	if _combat_manager != null and _combat_manager.combat_state.trembling_effects.has(card.effect):
+		cost += 1
+	return cost
+
+
+func _log_attack_result(damage: int, attack_name: String) -> void:
+	if damage == 0 and _combat_manager.combat_state.active_debuffs.has(GameEnums.DebuffType.DELIRIUM):
+		_log("%s：谵妄发作，攻击未命中！" % attack_name)
+	else:
+		_log("%s造成了 %d 点伤害" % [attack_name, damage])
+		if _combat_manager.combat_state.active_debuffs.has(GameEnums.DebuffType.MADNESS) and damage > 0:
+			_log("癫狂：你因狂怒失去了1点体力")
+
+
+func _debuff_name(debuff: GameEnums.DebuffType) -> String:
+	match debuff:
+		GameEnums.DebuffType.COWARDICE:   return "怯懦"
+		GameEnums.DebuffType.WEAKNESS:    return "虚弱"
+		GameEnums.DebuffType.BLEEDING:    return "出血"
+		GameEnums.DebuffType.TREMBLING:   return "颤抖"
+		GameEnums.DebuffType.MADNESS:     return "癫狂"
+		GameEnums.DebuffType.DELIRIUM:    return "谵妄"
+		GameEnums.DebuffType.DESPAIR:     return "绝望"
+		GameEnums.DebuffType.DULLNESS:    return "呆滞"
+		GameEnums.DebuffType.HESITATION:  return "迟疑"
+		_: return "未知"
 
 
 func _abbreviate(name: String) -> String:

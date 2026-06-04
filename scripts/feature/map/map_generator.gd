@@ -9,16 +9,19 @@ func initialize(rng: RandomNumberGenerator = null) -> void:
 	_rng = rng if rng != null else RandomNumberGenerator.new()
 
 
-func generate(chapter: int) -> Array[MapNodeData]:
+func generate(chapter: int, difficulty_level: int = 0) -> Array[MapNodeData]:
 	_chapter = chapter
 	var special_slots := _get_special_slots()
 	var random_pool := _get_random_pool()
 	var variant := _rng.randi_range(0, 2)
+	var nodes: Array[MapNodeData]
 	match variant:
-		0: return _build_chapter1_ver1(special_slots, random_pool)
-		1: return _build_chapter1_ver2(special_slots, random_pool)
-		2: return _build_chapter1_ver3(special_slots, random_pool)
-	return _build_chapter1_ver1(special_slots, random_pool)
+		0: nodes = _build_chapter1_ver1(special_slots, random_pool)
+		1: nodes = _build_chapter1_ver2(special_slots, random_pool)
+		2: nodes = _build_chapter1_ver3(special_slots, random_pool)
+		_: nodes = _build_chapter1_ver1(special_slots, random_pool)
+	_apply_difficulty_level_effects(nodes, chapter, difficulty_level)
+	return nodes
 
 
 func _get_special_slots() -> Dictionary:
@@ -46,6 +49,20 @@ func _get_random_pool() -> Array[GameEnums.MapNodeType]:
 	for i in range(3):  pool.append(GameEnums.MapNodeType.RUINS)
 	for i in range(6):  pool.append(GameEnums.MapNodeType.ROAD)
 	return pool
+
+
+func _apply_difficulty_level_effects(nodes: Array[MapNodeData], chapter: int, difficulty_level: int) -> void:
+	if difficulty_level < 1:
+		return
+	# Difficulty 1+: replace one ROAD node with HARD_COMBAT in chapters 1-2
+	if chapter <= 2:
+		var road_nodes: Array[MapNodeData] = []
+		for node in nodes:
+			if node.node_type == GameEnums.MapNodeType.ROAD:
+				road_nodes.append(node)
+		if road_nodes.size() > 0:
+			var idx := _rng.randi_range(0, road_nodes.size() - 1)
+			road_nodes[idx].node_type = GameEnums.MapNodeType.HARD_COMBAT
 
 
 func _build_nodes(layers: Array[int], special_slots: Dictionary, random_pool: Array[GameEnums.MapNodeType]) -> Array[MapNodeData]:

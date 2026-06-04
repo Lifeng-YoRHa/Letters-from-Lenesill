@@ -1,0 +1,65 @@
+[gd_resource type="Resource" script_class="LootTable" load_steps=9 format=3]
+
+[ext_resource type="Script" path="res://scripts/core/loot_table.gd" id="1_lt"]
+[ext_resource type="Script" path="res://scripts/core/loot_entry.gd" id="1_le"]
+
+[sub_resource type="Resource" id="LootEntry_gold"]
+script = ExtResource("1_le")
+loot_type = 0
+item_id = &""
+min_quantity = 40
+max_quantity = 40
+weight = 1.0
+
+[sub_resource type="Resource" id="LootEntry_whetstone"]
+script = ExtResource("1_le")
+loot_type = 1
+item_id = &"whetstone"
+min_quantity = 1
+max_quantity = 1
+weight = 23.0
+
+[sub_resource type="Resource" id="LootEntry_stone"]
+script = ExtResource("1_le")
+loot_type = 1
+item_id = &"stone"
+min_quantity = 1
+max_quantity = 1
+weight = 8.0
+
+[sub_resource type="Resource" id="LootEntry_energy_drink"]
+script = ExtResource("1_le")
+loot_type = 1
+item_id = &"energy_drink"
+min_quantity = 1
+max_quantity = 1
+weight = 32.0
+
+[sub_resource type="Resource" id="LootEntry_flashlight"]
+script = ExtResource("1_le")
+loot_type = 1
+item_id = &"flashlight"
+min_quantity = 1
+max_quantity = 1
+weight = 17.0
+
+[sub_resource type="Resource" id="LootEntry_torch"]
+script = ExtResource("1_le")
+loot_type = 1
+item_id = &"torch"
+min_quantity = 1
+max_quantity = 1
+weight = 20.0
+
+[sub_resource type="Resource" id="LootEntry_relic"]
+script = ExtResource("1_le")
+loot_type = 2
+item_id = &""
+min_quantity = 1
+max_quantity = 1
+weight = 1.0
+
+[resource]
+script = ExtResource("1_lt")
+id = &"boss_hatred"
+entries = Array[ExtResource("1_le")]([SubResource("LootEntry_gold"), SubResource("LootEntry_whetstone"), SubResource("LootEntry_stone"), SubResource("LootEntry_energy_drink"), SubResource("LootEntry_flashlight"), SubResource("LootEntry_torch"), SubResource("LootEntry_relic")])

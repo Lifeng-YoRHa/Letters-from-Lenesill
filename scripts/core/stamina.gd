@@ -55,3 +55,10 @@ func set_max_stamina(new_max: int) -> void:
 		var old: int = _current_stamina
 		_current_stamina = _max_stamina
 		stamina_changed.emit(_current_stamina, old)
+
+
+func increase_max(amount: int) -> void:
+	if amount <= 0:
+		return
+	set_max_stamina(_max_stamina + amount)
+	restore(amount)

@@ -15,12 +15,12 @@ signal weapon_repaired
 @onready var _close_button: Button = %CloseButton
 
 var _state: SafeHouseState
-var _has_weapon: bool = false
+var _equipped_weapon: ItemData = null
 
 
-func initialize(state: SafeHouseState, has_weapon: bool) -> void:
+func initialize(state: SafeHouseState, equipped_weapon: ItemData = null) -> void:
 	_state = state
-	_has_weapon = has_weapon
+	_equipped_weapon = equipped_weapon
 	_refresh()
 
 
@@ -121,17 +121,26 @@ func _refresh_anvil() -> void:
 	if old_btn != null:
 		old_btn.queue_free()
 
-	if _state.anvil_uses_remaining > 0 and _has_weapon:
-		var repair_btn := Button.new()
-		repair_btn.name = "RepairButton"
-		repair_btn.text = "修复武器"
-		repair_btn.pressed.connect(_on_repair_weapon)
-		parent.add_child(repair_btn)
-	elif _state.anvil_uses_remaining > 0 and not _has_weapon:
+	if _state.anvil_uses_remaining <= 0:
+		return
+	if _equipped_weapon == null:
 		var no_weapon := Label.new()
 		no_weapon.name = "RepairButton"
 		no_weapon.text = "（未装备武器）"
 		parent.add_child(no_weapon)
+		return
+	if _equipped_weapon.is_chainsaw():
+		var no_repair := Label.new()
+		no_repair.name = "RepairButton"
+		no_repair.text = "（柴油电锯不可修复）"
+		parent.add_child(no_repair)
+		return
+
+	var repair_btn := Button.new()
+	repair_btn.name = "RepairButton"
+	repair_btn.text = "修复武器"
+	repair_btn.pressed.connect(_on_repair_weapon)
+	parent.add_child(repair_btn)
 
 
 func _on_take_fridge_item(item: ItemData) -> void:

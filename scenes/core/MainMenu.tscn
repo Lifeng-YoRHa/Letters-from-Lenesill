@@ -35,6 +35,7 @@ text = "兰奈希尔的信件"
 horizontal_alignment = 1
 
 [node name="MenuContainer" type="VBoxContainer" parent="."]
+unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -87,6 +88,108 @@ grow_vertical = 0
 theme_override_font_sizes/font_size = 14
 text = "v0.1.0"
 horizontal_alignment = 1
+
+[node name="DifficultySelector" type="ColorRect" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.75)
+
+[node name="Panel" type="Panel" parent="DifficultySelector"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -200.0
+offset_top = -220.0
+offset_right = 200.0
+offset_bottom = 220.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TitleLabel" type="Label" parent="DifficultySelector/Panel"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -180.0
+offset_top = 16.0
+offset_right = 180.0
+offset_bottom = 56.0
+grow_horizontal = 2
+theme_override_font_sizes/font_size = 28
+text = "选择难度等级"
+horizontal_alignment = 1
+
+[node name="ButtonsContainer" type="HBoxContainer" parent="DifficultySelector/Panel"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -180.0
+offset_top = -40.0
+offset_right = 180.0
+offset_bottom = 40.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 16
+alignment = 1
+
+[node name="LeftButton" type="Button" parent="DifficultySelector/Panel/ButtonsContainer"]
+layout_mode = 2
+text = "<"
+
+[node name="DifficultyLabel" type="Label" parent="DifficultySelector/Panel/ButtonsContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "难度 0 — 无特殊效果"
+horizontal_alignment = 1
+
+[node name="RightButton" type="Button" parent="DifficultySelector/Panel/ButtonsContainer"]
+layout_mode = 2
+text = ">"
+
+[node name="StartButton" type="Button" parent="DifficultySelector/Panel"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -80.0
+offset_top = 60.0
+offset_right = 80.0
+offset_bottom = 100.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "开始冒险"
+
+[node name="BackButton" type="Button" parent="DifficultySelector/Panel"]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -60.0
+offset_top = -48.0
+offset_right = 60.0
+offset_bottom = -16.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "返回"
 
 [connection signal="pressed" from="MenuContainer/NewAdventureButton" to="." method="_on_new_adventure_pressed"]
 [connection signal="pressed" from="MenuContainer/ContinueButton" to="." method="_on_continue_pressed"]

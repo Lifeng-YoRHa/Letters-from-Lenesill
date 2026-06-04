@@ -1,20 +1,21 @@
 [gd_resource type="Resource" script_class="EnemyData" load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://scripts/core/enemy_data.gd" id="1_ed"]
-[ext_resource type="Resource" path="res://data/loot_tables/boss_sorrow.tres" id="1_lt"]
+[ext_resource type="Resource" path="res://data/loot_tables/boss_numbness.tres" id="1_lt"]
 
 [resource]
 script = ExtResource("1_ed")
-id = &"sorrow"
-display_name = "哀伤"
+id = &"numbness"
+display_name = "麻木"
 enemy_type = 2
-chapter = 1
-base_hp = 80
-base_attack = 4
-special_mechanic_id = &"heal_per_turn"
+chapter = 4
+base_hp = 240
+base_attack = 6
+special_mechanic_id = &"skip_player_turn"
 mechanic_params = {
-"heal": 5
+"tier1_hp": 160,
+"tier2_hp": 80
 }
-assigned_debuffs = Array[int]([8])
+assigned_debuffs = Array[int]([1, 7])
 loot_table = ExtResource("1_lt")
 spawn_weight = 0.0

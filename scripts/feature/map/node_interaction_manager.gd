@@ -6,6 +6,7 @@ signal boss_combat_triggered(node_id: StringName, boss_data: EnemyData)
 signal shop_opened(node_id: StringName)
 signal safe_house_opened(node_id: StringName)
 signal event_triggered(node_id: StringName, event_type: StringName)
+signal ruins_entered(node_id: StringName, search_count: int, stamina_cost: int)
 signal ruins_searched(node_id: StringName, search_count: int)
 signal quest_triggered(node_id: StringName, quest_state: int)
 signal no_interaction(node_id: StringName)
@@ -52,7 +53,8 @@ func process_node_arrival(node_id: StringName) -> void:
 
 		GameEnums.MapNodeType.RUINS:
 			var count: int = _ruins_search_counters.get(node_id, 0) as int
-			ruins_searched.emit(node_id, count)
+			var stamina_cost := count + 1
+			ruins_entered.emit(node_id, count, stamina_cost)
 
 		GameEnums.MapNodeType.QUEST:
 			quest_triggered.emit(node_id, 0)
@@ -69,9 +71,10 @@ func convert_node_to_road(node_id: StringName) -> void:
 	node.node_type = GameEnums.MapNodeType.ROAD
 
 
-func record_ruins_search(node_id: StringName) -> void:
+func record_ruins_search(node_id: StringName) -> int:
 	var count: int = _ruins_search_counters.get(node_id, 0) as int
 	_ruins_search_counters[node_id] = count + 1
+	return count + 1
 
 
 func mark_node_cleared(node_id: StringName) -> void:

@@ -60,6 +60,11 @@ func start_combat() -> void:
 		return
 	_is_active = true
 	combat_started.emit()
+	if _combat_state.active_debuffs.has(GameEnums.DebuffType.DESPAIR):
+		_player_stamina.deduct(6)
+		if _player_stamina.current_stamina <= 0:
+			_end_combat(GameEnums.CombatPhase.DEFEAT)
+			return
 	_start_round(1)
 
 
@@ -74,8 +79,27 @@ func start_player_turn() -> Array[ActionCardData]:
 	_combat_state.set_phase(GameEnums.CombatPhase.PLAYER_TURN)
 	_combat_state.set_actions_used(0)
 
+	var base_actions := 3
+	if _combat_state.active_debuffs.has(GameEnums.DebuffType.DULLNESS):
+		base_actions -= 1
+	if _combat_state.extra_action_next_turn:
+		base_actions += 1
+		_combat_state.set_extra_action_next_turn(false)
+	_combat_state.set_max_actions(base_actions)
+
 	var activated := _select_activated_cards()
 	_combat_state.set_activated_cards(activated)
+
+	if _combat_state.active_debuffs.has(GameEnums.DebuffType.TREMBLING):
+		var unique_effects := _extract_unique_effects(activated)
+		unique_effects.shuffle()
+		var selected: Array[GameEnums.ActionCardEffect] = []
+		for i in range(mini(3, unique_effects.size())):
+			selected.append(unique_effects[i])
+		_combat_state.set_trembling_effects(selected)
+	else:
+		_combat_state.set_trembling_effects([])
+
 	player_turn_started.emit(activated.duplicate())
 
 	return activated.duplicate()
@@ -115,6 +139,18 @@ func deal_damage_to_enemy(amount: int) -> void:
 
 	if new_hp <= 0:
 		_end_combat(GameEnums.CombatPhase.VICTORY)
+
+
+func resolve_player_attack(base_damage: int) -> int:
+	if not _is_active:
+		return 0
+	var delirium_triggered := _rng.randf() < 0.1 and _combat_state.active_debuffs.has(GameEnums.DebuffType.DELIRIUM)
+	var reduction := _enemy_ai.get_enemy_damage_reduction(_combat_state.enemy_data, _combat_state)
+	var damage := _damage_calculator.calculate_player_damage(base_damage, _combat_state, reduction, 0, delirium_triggered)
+	deal_damage_to_enemy(damage)
+	if damage > 0 and _combat_state.active_debuffs.has(GameEnums.DebuffType.MADNESS):
+		apply_damage_to_player(1)
+	return damage
 
 
 func apply_damage_to_player(amount: int) -> void:
@@ -158,8 +194,19 @@ func resolve_enemy_turn() -> void:
 	var action := _enemy_ai.decide_turn_action(_combat_state.enemy_data, _combat_state)
 	enemy_action_resolved.emit(action)
 
-	if action.is_emergency_heal:
+	# Apply self-damage first (e.g., Boss Envy)
+	if action.self_damage > 0:
+		_combat_state.damage_enemy(action.self_damage)
+		if _combat_state.enemy_current_hp <= 0:
+			_end_combat(GameEnums.CombatPhase.VICTORY)
+			return
+
+	# Apply self-heal (e.g., Boss Sorrow heal-per-turn)
+	if action.self_heal > 0:
 		heal_enemy(action.self_heal)
+
+	if action.is_emergency_heal:
+		_combat_state.set_boss_emergency_heal_used(true)
 	else:
 		for i in range(action.attack_count):
 			var raw_dmg := action.damage_to_player
@@ -169,6 +216,10 @@ func resolve_enemy_turn() -> void:
 				_combat_state.set_dodge_active(false)
 			if not _is_active:
 				return
+
+	# Handle skip-next-player-turn (e.g., Boss Numbness)
+	if action.skip_next_player_turn:
+		_combat_state.set_skip_next_player_turn(true)
 
 	_start_next_round()
 
@@ -195,7 +246,19 @@ func record_card_played(card: ActionCardData) -> void:
 
 func _start_round(number: int) -> void:
 	_combat_state.start_round(number)
+	if _combat_state.active_debuffs.has(GameEnums.DebuffType.BLEEDING):
+		_player_stamina.deduct(1)
+		if _player_stamina.current_stamina <= 0:
+			_end_combat(GameEnums.CombatPhase.DEFEAT)
+			return
 	round_started.emit(number)
+	if number == 1 and _combat_state.active_debuffs.has(GameEnums.DebuffType.HESITATION):
+		_start_enemy_turn()
+		return
+	if _combat_state.skip_next_player_turn:
+		_combat_state.set_skip_next_player_turn(false)
+		_start_enemy_turn()
+		return
 	start_player_turn()
 
 
@@ -209,6 +272,16 @@ func _start_next_round() -> void:
 		return
 	var next_round := _combat_state.round_number + 1
 	_start_round(next_round)
+
+
+func _extract_unique_effects(cards: Array[ActionCardData]) -> Array[GameEnums.ActionCardEffect]:
+	var seen := {}
+	var result: Array[GameEnums.ActionCardEffect] = []
+	for card in cards:
+		if not seen.has(card.effect):
+			seen[card.effect] = true
+			result.append(card.effect)
+	return result
 
 
 func _select_activated_cards() -> Array[ActionCardData]:

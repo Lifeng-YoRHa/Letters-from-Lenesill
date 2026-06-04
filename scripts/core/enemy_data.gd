@@ -10,4 +10,5 @@ extends Resource
 @export var special_mechanic_id: StringName
 @export var assigned_debuffs: Array[GameEnums.DebuffType]
 @export var loot_table: LootTable
+@export var mechanic_params: Dictionary = {}
 @export var spawn_weight: float

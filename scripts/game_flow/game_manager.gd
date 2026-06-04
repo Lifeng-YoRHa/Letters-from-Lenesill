@@ -18,14 +18,18 @@ signal adventure_started()
 signal adventure_ended(ending_type: StringName)
 signal combat_prepared(combat_manager: CombatManager)
 signal loot_generated(gold: int, items: Array[ItemData])
+signal ruins_loot_generated(gold: int, items: Array[ItemData])
 signal player_died
 signal safe_house_prepared(node_id: StringName)
+signal safe_house_denied(description: String)
 signal event_presented(title: String, description: String, choices: Array)
 signal event_result_presented(title: String, description: String)
 signal password_box_opened(item: ItemData, stamina_current: int, stamina_max: int)
 signal password_box_hint(hint_text: String)
 signal password_box_reward_granted(reward_desc: String)
 signal stamina_changed(current_stamina: int, max_stamina: int)
+signal nodes_revealed(node_ids: Array[StringName])
+signal ruins_prompted(node_id: StringName, search_count: int, stamina_cost: int)
 
 
 # === Public references (for UI layer access) ===
@@ -58,6 +62,11 @@ var _current_event_type: StringName = &""
 var _current_password_box_item: ItemData = null
 var _last_gold_count: int = 0
 
+# Boss flee/return tracking: node_id -> {hp: int, emergency_heal_used: bool}
+var _boss_encounters: Dictionary = {}
+
+var current_difficulty_level: int = 0
+
 const EVENT_TITLES: Dictionary = {
 	&"theft":         "盗窃",
 	&"robbery":       "抢劫",
@@ -68,6 +77,15 @@ const EVENT_TITLES: Dictionary = {
 	&"gambler":       "赌徒",
 	&"rogue_market":  "黑市",
 	&"dying_embers":  "余烬",
+}
+
+const BACKPACK_UNLOCK_CHAPTERS: Dictionary = {
+	&"satchel":                 1,
+	&"student_backpack":        1,
+	&"travel_backpack":         2,
+	&"padlocked_laptop_bag":    3,
+	&"marching_backpack":       4,
+	&"oversized_backpack":      5,
 }
 
 
@@ -131,7 +149,7 @@ func _connect_signals() -> void:
 	node_interaction_manager.shop_opened.connect(_on_shop_opened)
 	node_interaction_manager.safe_house_opened.connect(_on_safe_house_opened)
 	node_interaction_manager.event_triggered.connect(_on_event_triggered)
-	node_interaction_manager.ruins_searched.connect(_on_ruins_searched)
+	node_interaction_manager.ruins_entered.connect(_on_ruins_entered)
 	node_interaction_manager.quest_triggered.connect(_on_quest_triggered)
 
 	# Event outcomes
@@ -148,9 +166,10 @@ func _connect_signals() -> void:
 
 # === Public API ===
 
-func start_new_adventure() -> void:
+func start_new_adventure(difficulty_level: int = 0) -> void:
 	current_chapter = 1
 	non_road_nodes_visited = 0
+	current_difficulty_level = clampi(difficulty_level, 0, 4)
 	backpack_manager.reset()
 	node_interaction_manager.reset_safe_houses()
 	_setup_chapter(current_chapter)
@@ -159,7 +178,34 @@ func start_new_adventure() -> void:
 	if starting_gold_bonus > 0:
 		backpack_manager.add_gold(starting_gold_bonus)
 	_last_gold_count = backpack_manager.gold_count
+	_grant_starting_weapon()
+	_apply_difficulty_level_starting_effects()
 	_change_state(GameState.MAP_EXPLORATION)
+
+
+func _grant_starting_weapon() -> void:
+	var fruit_knife := WeaponData.new()
+	fruit_knife.id = &"fruit_knife"
+	fruit_knife.display_name = "水果刀"
+	fruit_knife.attack = 6
+	fruit_knife.max_durability = 4
+	fruit_knife.size = Vector2i(1, 2)
+	fruit_knife.unlock_chapter = 1
+	fruit_knife.description = "即使是十指不沾阳春水的家庭也会有"
+	var weapon_item := backpack_manager.create_weapon_item(fruit_knife)
+	backpack_manager.add_item(weapon_item)
+
+
+func _apply_difficulty_level_starting_effects() -> void:
+	if current_difficulty_level >= 3:
+		for i in range(2):
+			var trash := ItemData.new()
+			trash.id = &"trash"
+			trash.display_name = "垃圾"
+			trash.item_type = GameEnums.ItemType.CONSUMABLE
+			trash.width = 1
+			trash.height = 1
+			backpack_manager.add_item(trash)
 
 
 func load_adventure(slot_index: int) -> bool:
@@ -258,6 +304,14 @@ func _serialize_backpack_items() -> Array[Dictionary]:
 	result.append_array(_serialize_grid_items(backpack_manager.primary_grid, &"primary"))
 	for i in range(backpack_manager.secondary_grids.size()):
 		result.append_array(_serialize_grid_items(backpack_manager.secondary_grids[i], &"secondary_%d" % i))
+	if backpack_manager.equipped_weapon != null:
+		result.append({
+			"item": backpack_manager.equipped_weapon,
+			"grid_type": &"equipped",
+			"x": 0,
+			"y": 0,
+			"rotated": false,
+		})
 	return result
 
 
@@ -367,7 +421,11 @@ func _restore_adventure_state(state: AdventureStateResource) -> void:
 		if not (item is ItemData):
 			print("RESTORE SKIP: backpack item not ItemData, type=", typeof(item))
 			continue
-		var grid := _get_grid_by_type(entry.get("grid_type", &""))
+		var grid_type = entry.get("grid_type", &"")
+		if grid_type == &"equipped":
+			backpack_manager.equipped_weapon = item
+			continue
+		var grid := _get_grid_by_type(grid_type)
 		if grid != null:
 			grid.place(item, entry.get("x", 0), entry.get("y", 0), entry.get("rotated", false))
 			placed_count += 1
@@ -382,7 +440,7 @@ func _restore_adventure_state(state: AdventureStateResource) -> void:
 			placed_count += 1
 	print("RESTORE: placed ", placed_count, " items")
 
-	if state.equipped_weapon_id != &"":
+	if backpack_manager.equipped_weapon == null and state.equipped_weapon_id != &"":
 		for item in backpack_manager.get_total_items():
 			if item.id == state.equipped_weapon_id:
 				backpack_manager.equipped_weapon = item
@@ -468,7 +526,7 @@ func _setup_chapter(chapter: int) -> void:
 		survivor_notes.add_progress(&"martyr", 1)
 
 	# Generate map
-	var nodes := map_generator.generate(chapter)
+	var nodes := map_generator.generate(chapter, current_difficulty_level)
 	map_state.initialize_from_graph(nodes, &"START")
 	path_finder.initialize(map_state)
 
@@ -495,6 +553,9 @@ func _setup_chapter(chapter: int) -> void:
 func _create_stamina() -> Stamina:
 	var stamina := Stamina.new()
 	var max_stamina := 12 + relic_handler.get_max_stamina_bonus() + survivor_notes.get_max_stamina_bonus()
+	if current_difficulty_level >= 2:
+		max_stamina -= 2
+		max_stamina = maxi(max_stamina, 1)
 	stamina.initialize(max_stamina)
 	return stamina
 
@@ -566,6 +627,23 @@ func _start_combat(node_id: StringName, enemy: EnemyData, enemy_type: GameEnums.
 	current_combat_manager.initialize(enemy, enemy_type, current_stamina, deck, backpack_manager, null, null, 3, rng)
 	current_combat_manager.card_played.connect(_on_card_played)
 	current_combat_manager.combat_ended.connect(_on_combat_ended)
+
+	if enemy_type == GameEnums.EnemyType.HARD:
+		var debuff := event_manager.generate_hard_combat_debuff(current_chapter, current_difficulty_level)
+		current_combat_manager.combat_state.add_debuff(debuff)
+
+	if enemy_type == GameEnums.EnemyType.BOSS:
+		for debuff in enemy.assigned_debuffs:
+			current_combat_manager.combat_state.add_debuff(debuff)
+		# Restore half of lost HP on re-entry
+		var record: Dictionary = _boss_encounters.get(node_id, {})
+		if not record.is_empty():
+			var prev_hp: int = record.get("hp", enemy.base_hp)
+			var heal: int = (enemy.base_hp - prev_hp) / 2
+			if heal > 0:
+				current_combat_manager.heal_enemy(heal)
+			current_combat_manager.combat_state.set_boss_emergency_heal_used(record.get("emergency_heal_used", false))
+
 	combat_prepared.emit(current_combat_manager)
 	_change_state(GameState.COMBAT)
 
@@ -606,7 +684,7 @@ func notify_consumable_used(item_id: StringName, from_pocket: bool) -> void:
 		survivor_notes.add_progress(&"magician", 1)
 	match item_id:
 		&"energy_drink":
-			survivor_notes.add_progress(&"partner", 7 + survivor_notes.get_energy_drink_bonus())
+			survivor_notes.add_progress(&"partner", 6 + survivor_notes.get_energy_drink_bonus())
 			survivor_notes.add_progress(&"spokesperson", 1)
 		&"flashlight":
 			survivor_notes.add_progress(&"electrician", 1)
@@ -614,33 +692,71 @@ func notify_consumable_used(item_id: StringName, from_pocket: bool) -> void:
 
 
 func use_item_in_backpack(item: ItemData) -> bool:
+	if item.item_type == GameEnums.ItemType.WEAPON:
+		return backpack_manager.equip_weapon(item)
 	if item.item_type != GameEnums.ItemType.CONSUMABLE:
 		return false
+
+	var in_combat := current_state == GameState.COMBAT and current_combat_manager != null
+	if in_combat and not current_combat_manager.consume_action():
+		return false
+
 	match item.id:
 		&"energy_drink":
 			var bonus := survivor_notes.get_energy_drink_bonus()
-			current_stamina.restore(7 + bonus)
+			current_stamina.restore(6 + bonus)
 			backpack_manager.remove_item(item)
 			notify_consumable_used(item.id, false)
 			return true
 		&"flashlight":
-			_use_flashlight_in_backpack()
+			if in_combat:
+				return false
+			var revealed := _use_flashlight_in_backpack()
+			backpack_manager.remove_item(item)
+			notify_consumable_used(item.id, false)
+			nodes_revealed.emit(revealed)
+			return true
+		&"stone":
+			if in_combat:
+				current_stamina.deduct(2)
+				current_combat_manager.flee()
+				backpack_manager.remove_item(item)
+				notify_consumable_used(item.id, false)
+				return true
+			return false
+		&"torch":
+			if in_combat:
+				current_stamina.deduct(2)
+				current_combat_manager.deal_damage_to_enemy(20)
+				backpack_manager.remove_item(item)
+				notify_consumable_used(item.id, false)
+				return true
+			return false
+		&"whetstone":
+			if in_combat:
+				return false
+			var wpn := backpack_manager.equipped_weapon
+			if wpn == null or wpn.weapon_data == null:
+				return false
+			if wpn.is_chainsaw():
+				return false
+			var repair_bonus := survivor_notes.get_whetstone_bonus()
+			var repair_amount := 3 + repair_bonus
+			wpn.weapon_current_durability = mini(wpn.weapon_current_durability + repair_amount, wpn.get_weapon_max_durability())
+			wpn.weapon_current_attack = maxi(wpn.weapon_current_attack - 1, 4)
 			backpack_manager.remove_item(item)
 			notify_consumable_used(item.id, false)
 			return true
-		&"stone", &"torch":
-			return false
-		&"whetstone":
-			return false
 		&"safe_house_key":
 			return false
 		&"password_box":
-			_open_password_box(item)
+			if not in_combat:
+				_open_password_box(item)
 			return false
 	return false
 
 
-func _use_flashlight_in_backpack() -> void:
+func _use_flashlight_in_backpack() -> Array[StringName]:
 	var hidden_nodes: Array[MapNodeData] = []
 	for n in map_state.nodes.values():
 		var node := n as MapNodeData
@@ -648,8 +764,11 @@ func _use_flashlight_in_backpack() -> void:
 			hidden_nodes.append(node)
 	var reveal_count := 2 + survivor_notes.get_flashlight_reveal_bonus()
 	hidden_nodes.shuffle()
+	var revealed: Array[StringName] = []
 	for i in range(mini(reveal_count, hidden_nodes.size())):
 		hidden_nodes[i].visibility = GameEnums.MapNodeVisibility.REVEALED
+		revealed.append(hidden_nodes[i].id)
+	return revealed
 
 
 func _open_password_box(item: ItemData) -> void:
@@ -721,7 +840,7 @@ func _consume_safe_house_key() -> bool:
 
 func _on_safe_house_opened(node_id: StringName) -> void:
 	if not _consume_safe_house_key():
-		print("需要安全屋房卡才能进入")
+		safe_house_denied.emit("需要安全屋房卡才能进入。\n\n安全屋房卡可在废墟搜刮或黑市商人处获得。")
 		return
 
 	current_interaction_node_id = node_id
@@ -752,7 +871,10 @@ func _present_event(event_type: StringName) -> void:
 		&"robbery":
 			event_presented.emit(title, "你遇到了劫匪！支付一半金币还是战斗？", ["支付一半金币", "战斗"])
 		&"hitchhike":
-			event_presented.emit(title, "一个陌生人愿意载你一程。支付2金币传送到安全位置。", ["支付2金币", "拒绝"])
+			if backpack_manager != null and backpack_manager.gold_count < 2:
+				event_presented.emit(title, "一个陌生人愿意载你一程，但你没有足够的金币（需要2金币）。", ["拒绝"])
+			else:
+				event_presented.emit(title, "一个陌生人愿意载你一程。支付2金币传送到安全位置。", ["支付2金币", "拒绝"])
 		&"corpse":
 			event_presented.emit(title, "你发现了一具尸体。要花费1体力搜索吗？", ["搜索", "离开"])
 		&"gambler":
@@ -808,6 +930,10 @@ func resolve_event_choice(choice_index: int) -> void:
 			event_result_presented.emit(title, msg)
 		&"hitchhike":
 			if choice_index == 0:
+				if backpack_manager != null and backpack_manager.gold_count < 2:
+					var h_title: String = EVENT_TITLES.get(_current_event_type, "突发事件")
+					event_result_presented.emit(h_title, "金币不足，无法支付车费。")
+					return
 				var target := _find_random_teleport_target()
 				if target != &"":
 					# resolve_hitchhike_teleport emits teleport_requested, which _on_teleport_requested handles
@@ -852,12 +978,86 @@ func _find_random_teleport_target() -> StringName:
 	return candidates[0].id
 
 
-func _on_ruins_searched(node_id: StringName, search_count: int) -> void:
-	node_interaction_manager.record_ruins_search(node_id)
+func _get_available_weapons(chapter: int) -> Array[WeaponData]:
+	var weapons: Array[WeaponData] = []
+	var dir := DirAccess.open("res://data/weapons/")
+	if dir != null:
+		dir.list_dir_begin()
+		var file_name := dir.get_next()
+		while file_name != "":
+			if file_name.ends_with(".tres"):
+				var weapon := load("res://data/weapons/" + file_name) as WeaponData
+				if weapon != null and weapon.unlock_chapter <= chapter:
+					weapons.append(weapon)
+			file_name = dir.get_next()
+	return weapons
+
+
+func _get_available_backpacks(chapter: int) -> Array[StringName]:
+	var backpacks: Array[StringName] = []
+	for bp_type in BACKPACK_UNLOCK_CHAPTERS.keys():
+		if BACKPACK_UNLOCK_CHAPTERS[bp_type] <= chapter:
+			backpacks.append(bp_type)
+	return backpacks
+
+
+func _on_ruins_entered(node_id: StringName, search_count: int, stamina_cost: int) -> void:
+	current_interaction_node_id = node_id
+	var actual_cost := stamina_cost
+	if relic_handler != null and relic_handler.is_ruins_search_cost_reduced():
+		actual_cost = maxi(1, actual_cost - 1)
+	ruins_prompted.emit(node_id, search_count, actual_cost)
+
+
+func perform_ruins_search(node_id: StringName) -> void:
+	var new_count := node_interaction_manager.record_ruins_search(node_id)
+	var search_count := new_count - 1  # 0-based for resolve_ruins_search
 	survivor_notes.add_progress(&"scavenger", 1)
-	if search_count >= 1:
-		# TODO: second search triggers loot roll from EventManager / loot system
-		pass
+
+	# Calculate and deduct stamina cost
+	var stamina_cost := new_count
+	if relic_handler != null and relic_handler.is_ruins_search_cost_reduced():
+		stamina_cost = maxi(1, stamina_cost - 1)
+	current_stamina.deduct(stamina_cost)
+
+	# Death check before rolling rewards
+	if current_stamina.current_stamina <= 0:
+		player_died.emit()
+		return
+
+	# Roll rewards
+	var unlocked_relics := survivor_notes.get_unlocked_relics()
+	var available_weapons := _get_available_weapons(current_chapter)
+	var available_backpacks := _get_available_backpacks(current_chapter)
+
+	var outcome := event_manager.resolve_ruins_search(
+		search_count,
+		current_chapter,
+		unlocked_relics,
+		available_weapons,
+		available_backpacks
+	)
+
+	# Apply rewards
+	var gold: int = outcome.get("gold", 0)
+	var items: Array[ItemData] = outcome.get("items", []) as Array[ItemData]
+	var backpack_reward: StringName = outcome.get("backpack_reward", &"")
+
+	if gold > 0:
+		backpack_manager.add_gold(gold)
+
+	for item in items:
+		backpack_manager.add_item(item)
+
+	if backpack_reward != &"" and backpack_manager.current_backpack_type != backpack_reward:
+		var _discarded := backpack_manager.swap_backpack(backpack_reward)
+		# Discarded items are lost; could emit a signal if needed in future
+
+	# Convert to road after 3rd search
+	if outcome.get("exhausted", false):
+		node_interaction_manager.convert_node_to_road(node_id)
+
+	ruins_loot_generated.emit(gold, items)
 
 
 func _on_quest_triggered(_node_id: StringName, _quest_state: int) -> void:
@@ -902,14 +1102,6 @@ func _create_default_deck() -> Array[ActionCardData]:
 	weapon.base_value = 7
 	deck.append(weapon)
 
-	var heavy := ActionCardData.new()
-	heavy.id = &"heavy_strike"
-	heavy.display_name = "Heavy Strike"
-	heavy.stamina_cost = 1
-	heavy.effect = GameEnums.ActionCardEffect.UNARMED_ATTACK
-	heavy.base_value = 4
-	deck.append(heavy)
-
 	var dodge := ActionCardData.new()
 	dodge.id = &"dodge"
 	dodge.display_name = "Dodge"
@@ -931,28 +1123,88 @@ func _create_default_deck() -> Array[ActionCardData]:
 	flee.effect = GameEnums.ActionCardEffect.FLEE
 	deck.append(flee)
 
+	var search_backpack := ActionCardData.new()
+	search_backpack.id = &"search_backpack"
+	search_backpack.display_name = "Search Backpack"
+	search_backpack.stamina_cost = 1
+	search_backpack.effect = GameEnums.ActionCardEffect.SEARCH_BACKPACK
+	deck.append(search_backpack)
+
+	var analyze := ActionCardData.new()
+	analyze.id = &"analyze_countermeasure"
+	analyze.display_name = "Analyze Countermeasure"
+	analyze.stamina_cost = 1
+	analyze.effect = GameEnums.ActionCardEffect.ANALYZE_COUNTERMEASURE
+	deck.append(analyze)
+
+	var adjust_breathing := ActionCardData.new()
+	adjust_breathing.id = &"adjust_breathing"
+	adjust_breathing.display_name = "Adjust Breathing"
+	adjust_breathing.stamina_cost = 1
+	adjust_breathing.effect = GameEnums.ActionCardEffect.ADJUST_BREATHING
+	deck.append(adjust_breathing)
+
 	return deck
 
 
 func _get_enemy_data(enemy_type: GameEnums.EnemyType) -> EnemyData:
+	if enemy_type == GameEnums.EnemyType.BOSS:
+		return _get_boss_data(current_chapter)
+
 	var enemy := EnemyData.new()
 	match enemy_type:
 		GameEnums.EnemyType.NORMAL:
 			enemy.id = &"normal_enemy"
 			enemy.display_name = "Normal Enemy"
-			enemy.base_hp = 14
-			enemy.base_attack = 4
 		GameEnums.EnemyType.HARD:
 			enemy.id = &"hard_enemy"
 			enemy.display_name = "Hard Enemy"
-			enemy.base_hp = 20
-			enemy.base_attack = 6
-		GameEnums.EnemyType.BOSS:
-			enemy.id = &"boss_enemy"
-			enemy.display_name = "Boss"
-			enemy.base_hp = 50
-			enemy.base_attack = 10
+
+	var stats := event_manager.generate_enemy_stats(enemy_type, current_chapter)
+	enemy.base_hp = stats.hp
+	enemy.base_attack = stats.attack
+	enemy.special_mechanic_id = stats.mechanic
 	enemy.enemy_type = enemy_type
+	return enemy
+
+
+func _get_boss_data(chapter: int) -> EnemyData:
+	var boss_ids := {
+		1: &"sorrow",
+		2: &"envy",
+		3: &"hatred",
+		4: &"numbness",
+		5: &"origin",
+	}
+	var boss_id: StringName = boss_ids.get(chapter, &"sorrow")
+	var path := "res://data/bosses/%s.tres" % boss_id
+	if ResourceLoader.exists(path):
+		var data := load(path) as EnemyData
+		if data != null:
+			return data
+
+	# Fallback
+	var enemy := EnemyData.new()
+	enemy.id = boss_id
+	enemy.display_name = "Boss"
+	enemy.enemy_type = GameEnums.EnemyType.BOSS
+	enemy.chapter = chapter
+	match chapter:
+		1:
+			enemy.base_hp = 80
+			enemy.base_attack = 4
+		2:
+			enemy.base_hp = 130
+			enemy.base_attack = 5
+		3:
+			enemy.base_hp = 190
+			enemy.base_attack = 6
+		4:
+			enemy.base_hp = 240
+			enemy.base_attack = 6
+		5:
+			enemy.base_hp = 300
+			enemy.base_attack = 7
 	return enemy
 
 
@@ -968,6 +1220,7 @@ func _try_death_save() -> bool:
 
 func _on_combat_ended(result: GameEnums.CombatPhase) -> void:
 	var was_boss: bool = _current_enemy_type == GameEnums.EnemyType.BOSS
+	var enemy_type := _current_enemy_type
 	current_combat_manager = null
 	_current_enemy_type = GameEnums.EnemyType.NORMAL
 
@@ -981,11 +1234,14 @@ func _on_combat_ended(result: GameEnums.CombatPhase) -> void:
 				return
 
 			if was_boss:
-				_change_state(GameState.ENDING)
-				adventure_ended.emit(&"victory")
+				_boss_encounters.erase(current_combat_node_id)
+				if current_chapter == 4:
+					# TODO: false ending check via ending_manager
+					pass
+				_handle_boss_victory()
 				return
 
-			var loot := _generate_combat_loot()
+			var loot := _generate_combat_loot(enemy_type)
 			loot_generated.emit(loot.gold, loot.items)
 
 		GameEnums.CombatPhase.DEFEAT:
@@ -996,6 +1252,10 @@ func _on_combat_ended(result: GameEnums.CombatPhase) -> void:
 
 		GameEnums.CombatPhase.FLED:
 			survivor_notes.add_progress(&"escape_master", 1)
+			if was_boss:
+				_record_boss_flee_state()
+				_retreat_to_nearest_safe_house()
+				return
 			if current_stamina.current_stamina <= 0:
 				if _try_death_save():
 					return_to_exploration()
@@ -1011,33 +1271,58 @@ func _on_combat_ended(result: GameEnums.CombatPhase) -> void:
 				return_to_exploration()
 
 
-func _generate_combat_loot() -> Dictionary:
-	var gold := rng.randi_range(5, 15)
-	var items: Array[ItemData] = []
-
-	var consumable_pool: Dictionary = {
-		"能量饮料": &"energy_drink",
-		"手电筒": &"flashlight",
-		"火把": &"torch",
-		"磨刀石": &"whetstone",
-		"石头": &"stone",
+func _record_boss_flee_state() -> void:
+	if current_combat_manager == null or current_combat_manager.combat_state == null:
+		return
+	var cs := current_combat_manager.combat_state
+	_boss_encounters[current_combat_node_id] = {
+		"hp": cs.enemy_current_hp,
+		"emergency_heal_used": cs.boss_emergency_heal_used,
 	}
-	var picked_name: String = consumable_pool.keys()[rng.randi_range(0, consumable_pool.size() - 1)]
 
-	var item := ItemData.new()
-	item.id = consumable_pool[picked_name]
-	item.display_name = picked_name
-	item.item_type = GameEnums.ItemType.CONSUMABLE
-	match item.id:
-		&"flashlight", &"torch":
-			item.width = 1
-			item.height = 2
-		_:
-			item.width = 1
-			item.height = 1
-	items.append(item)
 
-	return {"gold": gold, "items": items}
+func _retreat_to_nearest_safe_house() -> void:
+	var nearest: StringName = &""
+	for node_id in node_interaction_manager._safe_house_states.keys():
+		nearest = node_id
+		break
+	if nearest != &"" and map_state != null:
+		map_state.player_node_id = nearest
+		map_state.previous_node_id = nearest
+	return_to_exploration()
+
+
+func _handle_boss_victory() -> void:
+	# Restore stamina to full and increase max by 1
+	current_stamina.restore(current_stamina.max_stamina)
+	current_stamina.increase_max(1)
+
+	# TODO: show loot screen with backpack rewards, then proceed
+	# For now: auto-grant simplified rewards and transition to next chapter or ending
+	if current_chapter >= 5:
+		_change_state(GameState.ENDING)
+		adventure_ended.emit(&"true_ending")
+		return
+
+	# Grant gold and consumables (simplified — full loot logic TBD in UI layer)
+	var gold_rewards := {1: 20, 2: 30, 3: 40, 4: 50, 5: 0}
+	var gold: int = gold_rewards.get(current_chapter, 0)
+	if gold > 0:
+		backpack_manager.add_gold(gold)
+
+	# TODO: grant random backpack (ch1), random weapon (ch2), relics, safe house keys
+	# Transition to next chapter after backpack sorting
+	_setup_chapter(current_chapter + 1)
+	_change_state(GameState.MAP_EXPLORATION)
+
+
+func _generate_combat_loot(enemy_type: GameEnums.EnemyType) -> Dictionary:
+	return event_manager.resolve_combat_loot(
+		enemy_type,
+		current_chapter,
+		survivor_notes.get_unlocked_relics(),
+		relic_handler.get_held_relics()
+	)
 
 
 func _on_card_played(card: ActionCardData) -> void:

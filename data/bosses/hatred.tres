@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="EnemyData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/core/enemy_data.gd" id="1_ed"]
+[ext_resource type="Resource" path="res://data/loot_tables/boss_hatred.tres" id="1_lt"]
+
+[resource]
+script = ExtResource("1_ed")
+id = &"hatred"
+display_name = "仇恨"
+enemy_type = 2
+chapter = 3
+base_hp = 190
+base_attack = 6
+special_mechanic_id = &"hp_tiered_attack_up"
+mechanic_params = {
+"tier1_hp": 140,
+"tier1_bonus": 1,
+"tier2_hp": 80,
+"tier2_bonus": 2,
+"tier3_hp": 20,
+"tier3_bonus": 3
+}
+assigned_debuffs = Array[int]([4, 5])
+loot_table = ExtResource("1_lt")
+spawn_weight = 0.0

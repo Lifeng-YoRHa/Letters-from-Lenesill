@@ -33,6 +33,20 @@ func initialize(rng: RandomNumberGenerator, relic_handler: RelicHandler, backpac
 	_backpack_manager = backpack_manager
 
 
+const _WEAPON_DEFINITIONS: Array[Dictionary] = [
+	{"id": &"fruit_knife",          "name": "水果刀",       "attack": 6,  "durability": 4,  "size": Vector2i(1, 2), "chapter": 1, "trait": &""},
+	{"id": &"kitchen_knife",        "name": "菜刀",         "attack": 9,  "durability": 5,  "size": Vector2i(2, 2), "chapter": 1, "trait": &""},
+	{"id": &"decorative_katana",   "name": "装饰用武士刀",  "attack": 15, "durability": 3,  "size": Vector2i(1, 5), "chapter": 1, "trait": &""},
+	{"id": &"iron_rod",            "name": "铁棍",         "attack": 8,  "durability": 8,  "size": Vector2i(1, 4), "chapter": 2, "trait": &""},
+	{"id": &"fire_extinguisher",  "name": "灭火器",       "attack": 7,  "durability": 9,  "size": Vector2i(2, 3), "chapter": 2, "trait": &"extinguisher_boost"},
+	{"id": &"mason_hammer",        "name": "石工锤",       "attack": 18, "durability": 8,  "size": Vector2i(2, 5), "chapter": 3, "trait": &"hammer_heavy"},
+	{"id": &"diesel_chainsaw",    "name": "柴油电锯",     "attack": 20, "durability": 7,  "size": Vector2i(3, 4), "chapter": 3, "trait": &"chainsaw_irreparable"},
+	{"id": &"crowbar",            "name": "撬棍",         "attack": 12, "durability": 9,  "size": Vector2i(1, 5), "chapter": 4, "trait": &""},
+	{"id": &"expandable_baton",  "name": "甩棍",         "attack": 13, "durability": 10, "size": Vector2i(1, 4), "chapter": 4, "trait": &"baton_light"},
+	{"id": &"military_dagger",   "name": "军用匕首",     "attack": 18, "durability": 10, "size": Vector2i(1, 3), "chapter": 4, "trait": &""},
+]
+
+
 func generate_stock(chapter: int, has_lost_letter_quest: bool = false, lost_letter_price: int = 0) -> void:
 	current_chapter = chapter
 	slots = []
@@ -133,13 +147,37 @@ func _generate_variable_slot_4(chapter: int) -> ShopSlot:
 		var price := _rng.randi_range(25, 30) + (chapter - 1) * 2
 		return ShopSlot.new(relic, 1, price, 12)
 	else:
-		# Weapon placeholder
-		var weapon := ItemData.new()
-		weapon.id = &"weapon_placeholder"
-		weapon.display_name = "武器"
-		weapon.item_type = GameEnums.ItemType.WEAPON
-		var price := 20 + chapter * 6
-		return ShopSlot.new(weapon, 1, price, 10)
+		# Weapon
+		var weapon_item := _generate_weapon_for_shop(chapter)
+		if weapon_item != null:
+			var price := 20 + chapter * 6 + weapon_item.weapon_data.attack
+			return ShopSlot.new(weapon_item, 1, price, weapon_item.weapon_data.attack)
+		# Fallback: no available weapon, roll torch instead
+		var torch := _create_consumable(&"torch", "火把", 1, 2, GameEnums.ConsumableEffect.DEAL_DAMAGE)
+		torch.rotatable = true
+		var qty := _rng.randi_range(1, 2)
+		var t_price := _roll_price(chapter, [6, 7], [7, 8], [9, 10], [10, 11], [12, 13])
+		return ShopSlot.new(torch, qty, t_price, 4)
+
+
+func _generate_weapon_for_shop(chapter: int) -> ItemData:
+	var candidates: Array[Dictionary] = []
+	for def in _WEAPON_DEFINITIONS:
+		if def["chapter"] <= chapter:
+			if _backpack_manager != null and not _backpack_manager.has_weapon_in_adventure(def["id"]):
+				candidates.append(def)
+	if candidates.is_empty():
+		return null
+	var chosen := candidates[_rng.randi_range(0, candidates.size() - 1)]
+	var wdata := WeaponData.new()
+	wdata.id = chosen["id"]
+	wdata.display_name = chosen["name"]
+	wdata.attack = chosen["attack"]
+	wdata.max_durability = chosen["durability"]
+	wdata.size = chosen["size"]
+	wdata.unlock_chapter = chosen["chapter"]
+	wdata.special_trait_id = chosen["trait"]
+	return _backpack_manager.create_weapon_item(wdata)
 
 
 func _generate_variable_slot_5(chapter: int) -> ShopSlot:
@@ -211,8 +249,12 @@ func purchase(slot_index: int) -> bool:
 func get_sell_price(item: ItemData) -> int:
 	match item.item_type:
 		GameEnums.ItemType.WEAPON:
-			# sell_price = weapon_attack + floor(2 * current_durability / max_durability)
-			return item.get_meta("attack", 0) + 1
+			if item.weapon_data == null:
+				return 1
+			var atk := item.get_weapon_attack()
+			var max_dur := item.get_weapon_max_durability()
+			var dur_ratio := 0.0 if max_dur <= 0 else float(item.weapon_current_durability) / float(max_dur)
+			return atk + int(floor(2.0 * dur_ratio))
 		GameEnums.ItemType.RELIC:
 			return 12
 		GameEnums.ItemType.CONSUMABLE:

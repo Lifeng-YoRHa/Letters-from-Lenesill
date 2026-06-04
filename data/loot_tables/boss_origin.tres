@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="LootTable" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/core/loot_table.gd" id="1_lt"]
+
+[resource]
+script = ExtResource("1_lt")
+id = &"boss_origin"
+entries = Array[ExtResource("1_le")]([])

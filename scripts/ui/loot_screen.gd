@@ -12,13 +12,17 @@ signal loot_abandoned
 
 var _gold: int = 0
 var _items: Array[ItemData] = []
+var _title: String = "战斗胜利！"
+
+func set_title(title: String) -> void:
+	_title = title
 
 func show_loot(gold: int, items: Array[ItemData]) -> void:
 	_gold = gold
 	_items = items
 	visible = true
 
-	_title_label.text = "战斗胜利！"
+	_title_label.text = _title
 	_gold_label.text = "获得金币: %d" % gold
 
 	for child in _item_list.get_children():

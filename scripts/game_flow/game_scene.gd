@@ -8,6 +8,9 @@ const _CONFIRM_EXIT_MESSAGE: String = "The un-stored progress will be lost. Retu
 var _fade_tween: Tween
 var _exit_confirm_dialog: ConfirmationDialog = null
 var _notes_return_target: StringName = &""
+var _ruins_choice_callback: Callable
+var _ruins_closed_callback: Callable
+var _safe_house_closed_cb: Callable
 
 func _ready() -> void:
 	_ui_manager.initialize(_game_manager)
@@ -17,6 +20,7 @@ func _ready() -> void:
 	_game_manager.adventure_started.connect(_on_adventure_started)
 	_game_manager.adventure_ended.connect(_on_adventure_ended)
 	_game_manager.loot_generated.connect(_on_loot_generated)
+	_game_manager.ruins_loot_generated.connect(_on_ruins_loot_generated)
 	_game_manager.player_died.connect(_on_player_died)
 	_game_manager.event_presented.connect(_on_event_presented)
 	_game_manager.event_result_presented.connect(_on_event_result_presented)
@@ -24,6 +28,9 @@ func _ready() -> void:
 	_game_manager.password_box_hint.connect(_on_password_box_hint)
 	_game_manager.password_box_reward_granted.connect(_on_password_box_reward_granted)
 	_game_manager.stamina_changed.connect(_on_stamina_changed)
+	_game_manager.nodes_revealed.connect(_on_nodes_revealed)
+	_game_manager.ruins_prompted.connect(_on_ruins_prompted)
+	_game_manager.safe_house_denied.connect(_on_safe_house_denied)
 	_connect_menu_signals()
 	_connect_overlay_signals()
 	_connect_save_slot_signals()
@@ -41,7 +48,8 @@ func _initialize_survivor_notes_screen() -> void:
 func _connect_menu_signals() -> void:
 	var main_menu: MainMenu = _ui_manager.get_screen("MainMenu")
 	if main_menu != null:
-		main_menu.new_adventure_pressed.connect(_on_new_adventure_pressed)
+		main_menu.difficulty_selected.connect(_on_difficulty_selected)
+		main_menu.difficulty_cancelled.connect(_on_difficulty_cancelled)
 		main_menu.continue_pressed.connect(_on_continue_pressed)
 		main_menu.survivor_notes_pressed.connect(_on_survivor_notes_pressed)
 		main_menu.settings_pressed.connect(_on_settings_pressed)
@@ -59,6 +67,14 @@ func _refresh_main_menu_resume() -> void:
 			has_any_save = true
 			break
 	main_menu.set_resume_available(has_any_save)
+
+
+func _on_difficulty_selected(level: int) -> void:
+	_game_manager.start_new_adventure(level)
+
+
+func _on_difficulty_cancelled() -> void:
+	pass
 
 
 func _on_new_adventure_pressed() -> void:
@@ -196,8 +212,12 @@ func _connect_overlay_signals() -> void:
 
 	var backpack := _ui_manager.get_overlay("BackpackUI") as BackpackInterface
 	if backpack != null:
-		backpack.closed.connect(_on_overlay_closed)
+		backpack.closed.connect(_on_backpack_closed)
 		backpack.item_use_requested.connect(_on_backpack_item_use_requested)
+
+	if _game_manager.backpack_manager != null:
+		_game_manager.backpack_manager.weapon_equipped.connect(_on_weapon_equipped_in_combat)
+		_game_manager.backpack_manager.weapon_unequipped.connect(_on_weapon_unequipped_in_combat)
 
 	var password_box := _ui_manager.get_overlay("PasswordBoxScreen") as PasswordBoxScreen
 	if password_box != null:
@@ -207,8 +227,8 @@ func _connect_overlay_signals() -> void:
 
 func _on_backpack_item_use_requested(item: ItemData, _grid: BackpackGrid) -> void:
 	var ok := _game_manager.use_item_in_backpack(item)
-	if not ok:
-		pass
+	if ok and _game_manager.current_state == GameManager.GameState.COMBAT:
+		_ui_manager.hide_overlay("BackpackUI")
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -219,6 +239,9 @@ func _unhandled_input(event: InputEvent) -> void:
 					if _ui_manager.is_overlay_open("BackpackUI"):
 						_ui_manager.hide_overlay("BackpackUI")
 					else:
+						var backpack_ui := _ui_manager.get_overlay("BackpackUI") as BackpackInterface
+						if backpack_ui != null:
+							backpack_ui.refresh()
 						_ui_manager.show_overlay("BackpackUI")
 			KEY_P:
 				if not _ui_manager.is_overlay_open("PauseMenu"):
@@ -233,6 +256,16 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func _on_overlay_closed() -> void:
 	_game_manager.return_to_exploration()
+
+
+func _on_backpack_closed() -> void:
+	_ui_manager.hide_overlay("BackpackUI")
+	if _game_manager.current_state == GameManager.GameState.COMBAT:
+		var combat_interface := _ui_manager.get_overlay("CombatArena") as CombatInterface
+		if combat_interface != null:
+			combat_interface.refresh()
+	elif _game_manager.current_state == GameManager.GameState.MAP_EXPLORATION:
+		_game_manager.return_to_exploration()
 
 
 func _on_event_presented(title: String, description: String, choices: Array) -> void:
@@ -367,6 +400,68 @@ func _update_map_hud() -> void:
 	)
 
 
+func _on_nodes_revealed(node_ids: Array[StringName]) -> void:
+	var map_renderer := _ui_manager.get_screen("MapView") as MapRenderer
+	if map_renderer == null:
+		return
+	for node_id in node_ids:
+		map_renderer.refresh_node(node_id)
+	map_renderer.refresh_connections()
+
+
+func _on_ruins_prompted(node_id: StringName, _search_count: int, stamina_cost: int) -> void:
+	var event_ui := _ui_manager.get_overlay("EventOverlay") as EventInterface
+	if event_ui == null:
+		return
+
+	var desc := "此处是一处废墟，是否消耗 %d 点体力进行搜索？" % stamina_cost
+	event_ui.show_event("废墟搜刮", desc, ["搜索", "离开"])
+
+	if event_ui.choice_made.is_connected(_on_event_choice_made):
+		event_ui.choice_made.disconnect(_on_event_choice_made)
+
+	_ruins_choice_callback = func(index: int) -> void:
+		if event_ui.choice_made.is_connected(_ruins_choice_callback):
+			event_ui.choice_made.disconnect(_ruins_choice_callback)
+		if event_ui.closed.is_connected(_ruins_closed_callback):
+			event_ui.closed.disconnect(_ruins_closed_callback)
+		if not event_ui.choice_made.is_connected(_on_event_choice_made):
+			event_ui.choice_made.connect(_on_event_choice_made)
+		_ui_manager.hide_overlay("EventOverlay")
+		if index == 0:
+			_game_manager.perform_ruins_search(node_id)
+
+	_ruins_closed_callback = func() -> void:
+		if event_ui.choice_made.is_connected(_ruins_choice_callback):
+			event_ui.choice_made.disconnect(_ruins_choice_callback)
+		if event_ui.closed.is_connected(_ruins_closed_callback):
+			event_ui.closed.disconnect(_ruins_closed_callback)
+		if not event_ui.choice_made.is_connected(_on_event_choice_made):
+			event_ui.choice_made.connect(_on_event_choice_made)
+
+	event_ui.choice_made.connect(_ruins_choice_callback)
+	if not event_ui.closed.is_connected(_ruins_closed_callback):
+		event_ui.closed.connect(_ruins_closed_callback)
+	_ui_manager.show_overlay("EventOverlay")
+
+
+func _on_safe_house_denied(description: String) -> void:
+	var event_ui := _ui_manager.get_overlay("EventOverlay") as EventInterface
+	if event_ui == null:
+		return
+
+	event_ui.show_result("无法进入", description)
+
+	_safe_house_closed_cb = func() -> void:
+		if event_ui.closed.is_connected(_safe_house_closed_cb):
+			event_ui.closed.disconnect(_safe_house_closed_cb)
+		_ui_manager.hide_overlay("EventOverlay")
+
+	if not event_ui.closed.is_connected(_safe_house_closed_cb):
+		event_ui.closed.connect(_safe_house_closed_cb)
+	_ui_manager.show_overlay("EventOverlay")
+
+
 func _on_combat_prepared(_combat_manager: CombatManager) -> void:
 	_start_combat_ui(_combat_manager)
 
@@ -376,8 +471,27 @@ func _start_combat_ui(combat_manager: CombatManager) -> void:
 	if combat_interface != null:
 		if not combat_interface.pocket_item_used.is_connected(_on_pocket_item_used):
 			combat_interface.pocket_item_used.connect(_on_pocket_item_used)
+		if not combat_interface.backpack_open_requested.is_connected(_on_combat_backpack_opened):
+			combat_interface.backpack_open_requested.connect(_on_combat_backpack_opened)
 		combat_interface.initialize(combat_manager)
 		combat_interface.start()
+
+
+func _on_combat_backpack_opened() -> void:
+	var backpack_ui := _ui_manager.get_overlay("BackpackUI") as BackpackInterface
+	if backpack_ui != null:
+		backpack_ui.refresh()
+	_ui_manager.show_overlay("BackpackUI")
+
+
+func _on_weapon_equipped_in_combat(_weapon: ItemData) -> void:
+	if _game_manager.current_state == GameManager.GameState.COMBAT:
+		if _ui_manager.is_overlay_open("BackpackUI"):
+			_ui_manager.hide_overlay("BackpackUI")
+
+
+func _on_weapon_unequipped_in_combat(_weapon: ItemData) -> void:
+	pass
 
 
 func _on_pocket_item_used(item_id: StringName) -> void:
@@ -388,11 +502,32 @@ func _on_loot_generated(gold: int, items: Array[ItemData]) -> void:
 	_ui_manager.hide_overlay("CombatArena")
 	var loot_screen := _ui_manager.get_overlay("LootScreen") as LootScreen
 	if loot_screen != null:
-		if not loot_screen.loot_taken.is_connected(_on_loot_taken):
-			loot_screen.loot_taken.connect(_on_loot_taken)
-		if not loot_screen.loot_abandoned.is_connected(_on_loot_abandoned):
-			loot_screen.loot_abandoned.connect(_on_loot_abandoned)
+		_disconnect_all_loot_handlers(loot_screen)
+		loot_screen.loot_taken.connect(_on_loot_taken)
+		loot_screen.loot_abandoned.connect(_on_loot_abandoned)
+		loot_screen.set_title("战斗胜利！")
 		loot_screen.show_loot(gold, items)
+
+
+func _on_ruins_loot_generated(gold: int, items: Array[ItemData]) -> void:
+	var loot_screen := _ui_manager.get_overlay("LootScreen") as LootScreen
+	if loot_screen != null:
+		_disconnect_all_loot_handlers(loot_screen)
+		loot_screen.loot_taken.connect(_on_ruins_loot_dismissed)
+		loot_screen.loot_abandoned.connect(_on_ruins_loot_abandoned)
+		loot_screen.set_title("废墟搜刮")
+		loot_screen.show_loot(gold, items)
+
+
+func _disconnect_all_loot_handlers(loot_screen: LootScreen) -> void:
+	if loot_screen.loot_taken.is_connected(_on_loot_taken):
+		loot_screen.loot_taken.disconnect(_on_loot_taken)
+	if loot_screen.loot_taken.is_connected(_on_ruins_loot_dismissed):
+		loot_screen.loot_taken.disconnect(_on_ruins_loot_dismissed)
+	if loot_screen.loot_abandoned.is_connected(_on_loot_abandoned):
+		loot_screen.loot_abandoned.disconnect(_on_loot_abandoned)
+	if loot_screen.loot_abandoned.is_connected(_on_ruins_loot_abandoned):
+		loot_screen.loot_abandoned.disconnect(_on_ruins_loot_abandoned)
 
 
 func _on_loot_taken(gold: int, items: Array[ItemData]) -> void:
@@ -403,6 +538,14 @@ func _on_loot_taken(gold: int, items: Array[ItemData]) -> void:
 
 
 func _on_loot_abandoned() -> void:
+	_game_manager.return_to_exploration()
+
+
+func _on_ruins_loot_dismissed(_gold: int, _items: Array[ItemData]) -> void:
+	_game_manager.return_to_exploration()
+
+
+func _on_ruins_loot_abandoned() -> void:
 	_game_manager.return_to_exploration()
 
 
@@ -470,8 +613,8 @@ func _on_state_changed(new_state: int, _old_state: int) -> void:
 				var node_id := _game_manager.current_interaction_node_id
 				var scholar_stage := _game_manager.survivor_notes.get_entry_completed_stage(&"scholar")
 				var state := _game_manager.node_interaction_manager.get_or_create_safe_house_state(node_id, _game_manager.current_chapter, scholar_stage)
-				var has_weapon := _game_manager.backpack_manager.equipped_weapon != null
-				safe.initialize(state, has_weapon)
+				var equipped_weapon := _game_manager.backpack_manager.equipped_weapon
+				safe.initialize(state, equipped_weapon)
 
 		GameManager.GameState.CHAPTER_TRANSITION:
 			_ui_manager.show_overlay("ChapterTransition")
@@ -506,5 +649,17 @@ func _on_safe_house_gold_taken(amount: int) -> void:
 
 
 func _on_safe_house_weapon_repaired() -> void:
-	# TODO: 接入武器耐久系统（当前无耐久度，先占位）
-	pass
+	var wpn := _game_manager.backpack_manager.equipped_weapon
+	if wpn == null or wpn.weapon_data == null:
+		return
+	if wpn.is_chainsaw():
+		return
+	wpn.weapon_current_durability = wpn.get_weapon_max_durability()
+	var safe_house := _ui_manager.get_overlay("SafeHouseUI") as SafeHouseInterface
+	if safe_house != null:
+		safe_house.initialize(_game_manager.node_interaction_manager.get_or_create_safe_house_state(
+			_game_manager.current_interaction_node_id,
+			_game_manager.current_chapter,
+			_game_manager.survivor_notes.get_scholar_stage()
+		), wpn)
+	_update_map_hud()
