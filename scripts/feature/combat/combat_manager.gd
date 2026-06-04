@@ -11,6 +11,7 @@ signal enemy_took_damage(amount: int, remaining_hp: int)
 signal action_consumed(used: int, max_actions: int)
 signal round_started(round_number: int)
 signal card_played(card: ActionCardData)
+signal last_effort_executed()
 
 var combat_state: CombatState:
 	get:
@@ -30,6 +31,8 @@ var _full_deck: Array[ActionCardData]
 var _activated_card_count: int
 var _rng: RandomNumberGenerator
 var _is_active: bool = false
+var _can_use_last_effort: bool = true
+var _last_effort_recovery_bonus: int = 0
 
 
 func initialize(
@@ -41,7 +44,9 @@ func initialize(
 	enemy_ai: EnemyAI = null,
 	damage_calculator: DamageCalculator = null,
 	activated_card_count: int = 3,
-	rng: RandomNumberGenerator = null
+	rng: RandomNumberGenerator = null,
+	can_use_last_effort: bool = true,
+	last_effort_recovery_bonus: int = 0
 ) -> void:
 	_combat_state = CombatState.new()
 	_combat_state.initialize(enemy, encounter_type)
@@ -53,6 +58,10 @@ func initialize(
 	_activated_card_count = activated_card_count
 	_rng = rng if rng != null else RandomNumberGenerator.new()
 	_is_active = false
+	_can_use_last_effort = can_use_last_effort
+	_last_effort_recovery_bonus = last_effort_recovery_bonus
+	if not _can_use_last_effort:
+		_combat_state.set_last_effort_used(true)
 
 
 func start_combat() -> void:
@@ -151,6 +160,65 @@ func resolve_player_attack(base_damage: int) -> int:
 	if damage > 0 and _combat_state.active_debuffs.has(GameEnums.DebuffType.MADNESS):
 		apply_damage_to_player(1)
 	return damage
+
+
+func is_last_effort_available(cost: int, effect: GameEnums.ActionCardEffect) -> bool:
+	if not _is_active:
+		return false
+	if _combat_state.last_effort_used:
+		return false
+	if cost < _player_stamina.current_stamina:
+		return false
+	if effect != GameEnums.ActionCardEffect.UNARMED_ATTACK and effect != GameEnums.ActionCardEffect.WEAPON_ATTACK:
+		return false
+	return true
+
+
+func is_last_effort_torch_available(cost: int) -> bool:
+	if not _is_active:
+		return false
+	if _combat_state.last_effort_used:
+		return false
+	if cost < _player_stamina.current_stamina:
+		return false
+	return true
+
+
+func execute_last_effort_attack(base_damage: int) -> void:
+	if not _is_active:
+		return
+	_combat_state.set_last_effort_used(true)
+	last_effort_executed.emit()
+	var delirium_triggered := _rng.randf() < 0.1 and _combat_state.active_debuffs.has(GameEnums.DebuffType.DELIRIUM)
+	var reduction := _enemy_ai.get_enemy_damage_reduction(_combat_state.enemy_data, _combat_state)
+	var damage := _damage_calculator.calculate_player_damage(base_damage, _combat_state, reduction, 0, delirium_triggered)
+	_combat_state.damage_enemy(damage)
+	var new_hp := _combat_state.enemy_current_hp
+	enemy_took_damage.emit(damage, new_hp)
+	if new_hp <= 0:
+		var recovery := _damage_calculator.calculate_last_effort_recovery(_last_effort_recovery_bonus)
+		_player_stamina.restore(recovery)
+		_end_combat(GameEnums.CombatPhase.VICTORY)
+	else:
+		if damage > 0 and _combat_state.active_debuffs.has(GameEnums.DebuffType.MADNESS):
+			apply_damage_to_player(1)
+		_end_combat(GameEnums.CombatPhase.DEFEAT)
+
+
+func execute_last_effort_torch(damage: int) -> void:
+	if not _is_active:
+		return
+	_combat_state.set_last_effort_used(true)
+	last_effort_executed.emit()
+	_combat_state.damage_enemy(damage)
+	var new_hp := _combat_state.enemy_current_hp
+	enemy_took_damage.emit(damage, new_hp)
+	if new_hp <= 0:
+		var recovery := _damage_calculator.calculate_last_effort_recovery(_last_effort_recovery_bonus)
+		_player_stamina.restore(recovery)
+		_end_combat(GameEnums.CombatPhase.VICTORY)
+	else:
+		_end_combat(GameEnums.CombatPhase.DEFEAT)
 
 
 func apply_damage_to_player(amount: int) -> void:

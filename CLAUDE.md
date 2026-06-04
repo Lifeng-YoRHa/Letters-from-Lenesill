@@ -68,7 +68,11 @@ See `docs/COLLABORATIVE-DESIGN-PRINCIPLE.md` for full protocol and examples.
 - Before writing any GDD section that involves game mechanics, search the `游戏说明书` folder for the relevant topic file.
 - If no matching file is found, ask the user which file to reference — **do not invent rules that do not exist in the design documents**.
 - This applies to: quest mechanics, reward tables, node behaviors, combat formulas, item properties, map generation rules, and any other gameplay-affecting specification.
+- Before making ANY autonomous code implementation or feature addition (especially UI systems, new game features, or file modifications), explicitly confirm with the user. Never self-initiate implementations based on diary notes or prior session context without fresh confirmation.
 
 ## Agent Delegation
 - When delegating implementation work to Task Agents, always verify the agent produced actual file output. If an agent only returns analysis/design without code, implement directly rather than re-delegating.
 - For complex multi-file implementations, prefer doing the work directly rather than delegating to a sub-agent.
+
+## Command Specify
+- use extreme caution with Bash operations on paths containing Chinese characters. Prefer PowerShell for file operations, or verify encoding handling to avoid deletion failures.

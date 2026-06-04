@@ -134,6 +134,13 @@ func get_all_slot_status() -> Array[Dictionary]:
 			if slot != null:
 				info["last_saved_at"] = slot.last_saved_at
 				info["has_adventure"] = slot.adventure_layer != null
+				if slot.adventure_layer != null:
+					var adv: AdventureStateResource = slot.adventure_layer
+					info["chapter"] = adv.chapter
+					info["stamina_current"] = adv.stamina_current
+					info["stamina_max"] = adv.stamina_max
+					info["gold"] = adv.gold
+					info["last_effort_available"] = not adv.last_effort_used
 		result.append(info)
 	return result
 

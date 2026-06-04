@@ -26,3 +26,4 @@ extends Resource
 @export var safe_house_states: Array[Dictionary] = []
 @export var boss_hp: int = 0
 @export var boss_emergency_heal_used: bool = false
+@export var last_effort_used: bool = false

@@ -61,6 +61,7 @@ var _current_enemy_type: GameEnums.EnemyType = GameEnums.EnemyType.NORMAL
 var _current_event_type: StringName = &""
 var _current_password_box_item: ItemData = null
 var _last_gold_count: int = 0
+var _last_effort_used_this_chapter: bool = false
 
 # Boss flee/return tracking: node_id -> {hp: int, emergency_heal_used: bool}
 var _boss_encounters: Dictionary = {}
@@ -295,6 +296,7 @@ func _build_adventure_state() -> AdventureStateResource:
 	state.event_assignments = {}
 	state.ruins_search_counters = node_interaction_manager._ruins_search_counters.duplicate()
 	state.safe_house_states = _serialize_safe_house_states()
+	state.last_effort_used = _last_effort_used_this_chapter
 
 	return state
 
@@ -476,6 +478,7 @@ func _restore_adventure_state(state: AdventureStateResource) -> void:
 		shop_manager._stock_by_node[node_id] = slots
 
 	node_interaction_manager._ruins_search_counters = state.ruins_search_counters.duplicate()
+	_last_effort_used_this_chapter = state.last_effort_used
 	node_interaction_manager._safe_house_states.clear()
 	for entry in state.safe_house_states:
 		var sh_state := SafeHouseState.new()
@@ -521,6 +524,7 @@ func _get_grid_by_type(grid_type: StringName) -> BackpackGrid:
 
 func _setup_chapter(chapter: int) -> void:
 	current_chapter = chapter
+	_last_effort_used_this_chapter = false
 
 	if chapter == 4:
 		survivor_notes.add_progress(&"martyr", 1)
@@ -552,7 +556,7 @@ func _setup_chapter(chapter: int) -> void:
 
 func _create_stamina() -> Stamina:
 	var stamina := Stamina.new()
-	var max_stamina := 12 + relic_handler.get_max_stamina_bonus() + survivor_notes.get_max_stamina_bonus()
+	var max_stamina := 16 + relic_handler.get_max_stamina_bonus() + survivor_notes.get_max_stamina_bonus()
 	if current_difficulty_level >= 2:
 		max_stamina -= 2
 		max_stamina = maxi(max_stamina, 1)
@@ -623,10 +627,13 @@ func _start_combat(node_id: StringName, enemy: EnemyData, enemy_type: GameEnums.
 	current_combat_node_id = node_id
 	_current_enemy_type = enemy_type
 	var deck := _create_default_deck()
+	var can_use_last_effort := not _last_effort_used_this_chapter
+	var last_effort_bonus := survivor_notes.get_last_effort_recovery_bonus()
 	current_combat_manager = CombatManager.new()
-	current_combat_manager.initialize(enemy, enemy_type, current_stamina, deck, backpack_manager, null, null, 3, rng)
+	current_combat_manager.initialize(enemy, enemy_type, current_stamina, deck, backpack_manager, null, null, 3, rng, can_use_last_effort, last_effort_bonus)
 	current_combat_manager.card_played.connect(_on_card_played)
 	current_combat_manager.combat_ended.connect(_on_combat_ended)
+	current_combat_manager.last_effort_executed.connect(_on_last_effort_executed)
 
 	if enemy_type == GameEnums.EnemyType.HARD:
 		var debuff := event_manager.generate_hard_combat_debuff(current_chapter, current_difficulty_level)
@@ -1216,6 +1223,10 @@ func _try_death_save() -> bool:
 			current_stamina.restore(deficit)
 		return true
 	return false
+
+
+func _on_last_effort_executed() -> void:
+	_last_effort_used_this_chapter = true
 
 
 func _on_combat_ended(result: GameEnums.CombatPhase) -> void:

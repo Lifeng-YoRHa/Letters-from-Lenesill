@@ -6,7 +6,7 @@ signal backpack_open_requested
 
 @export var enemy_hp: int = 14
 @export var enemy_attack: int = 4
-@export var player_max_stamina: int = 12
+@export var player_max_stamina: int = 16
 @export var activated_card_count: int = 3
 
 const ITEM_COLORS := {
@@ -297,6 +297,24 @@ func _on_card_clicked(card: ActionCardData) -> void:
 		_combat_manager.combat_state.set_analyze_active(false)
 		_log("Analyze countermeasure: next card cost reduced to %d" % actual_cost)
 
+	# Last effort check for attack cards
+	if _combat_manager.is_last_effort_available(actual_cost, card.effect):
+		_log("最后一搏！")
+		match card.effect:
+			GameEnums.ActionCardEffect.UNARMED_ATTACK:
+				_combat_manager.execute_last_effort_attack(card.base_value)
+				_log_attack_result(card.base_value, "空手攻击（最后一搏）")
+			GameEnums.ActionCardEffect.WEAPON_ATTACK:
+				if not _is_weapon_attack_available():
+					_log("Weapon is broken! Cannot use weapon attack.")
+					return
+				var dmg := _get_weapon_attack_power()
+				_consume_weapon_durability()
+				_combat_manager.execute_last_effort_attack(dmg)
+				_log_attack_result(dmg, "武器攻击（最后一搏）")
+		_update_ui()
+		return
+
 	_stamina.deduct(actual_cost)
 
 	match card.effect:
@@ -489,14 +507,19 @@ func _apply_consumable_effect(item: ItemData) -> void:
 		&"whetstone":
 			_log("Whetstone: weapon repair not yet implemented")
 		&"torch":
-			_stamina.deduct(2)
 			var torch_dmg := 20
 			if _backpack_manager != null and _backpack_manager.equipped_weapon != null:
 				if _backpack_manager.equipped_weapon.get_weapon_trait_id() == &"extinguisher_boost":
 					torch_dmg += 10
 					_log("Extinguisher boost: torch damage +10")
-			_combat_manager.deal_damage_to_enemy(torch_dmg)
-			_log("Used Torch: spent 2 stamina, dealt %d damage" % torch_dmg)
+			if _combat_manager.is_last_effort_torch_available(2):
+				_log("最后一搏！")
+				_combat_manager.execute_last_effort_torch(torch_dmg)
+				_log("Used Torch (last effort): dealt %d damage" % torch_dmg)
+			else:
+				_stamina.deduct(2)
+				_combat_manager.deal_damage_to_enemy(torch_dmg)
+				_log("Used Torch: spent 2 stamina, dealt %d damage" % torch_dmg)
 		&"flashlight":
 			_log("Flashlight cannot be used in combat")
 		&"safe_house_key":

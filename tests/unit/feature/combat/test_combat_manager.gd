@@ -326,3 +326,107 @@ func test_boss_emergency_heal_triggers_on_enemy_turn():
 	assert_int(manager.combat_state.enemy_current_hp).is_equal(64)
 	assert_bool(manager.is_combat_active()).is_true()
 	assert_int(manager.combat_state.combat_phase).is_equal(GameEnums.CombatPhase.PLAYER_TURN)
+
+
+func test_last_effort_unarmed_attack_kills_enemy_restores_stamina():
+	var enemy := _make_enemy(3, 4)
+	var stamina := _make_stamina(1)
+	var deck := _make_deck(8)
+	var manager := _make_manager(enemy, stamina, deck)
+
+	var spy := {"result": -1, "executed": false}
+	manager.combat_ended.connect(func(r: GameEnums.CombatPhase): spy.result = r)
+	manager.last_effort_executed.connect(func(): spy.executed = true)
+
+	manager.start_combat()
+	assert_bool(manager.is_last_effort_available(1, GameEnums.ActionCardEffect.UNARMED_ATTACK)).is_true()
+	manager.execute_last_effort_attack(3)
+
+	assert_bool(spy.executed).is_true()
+	assert_int(spy.result).is_equal(GameEnums.CombatPhase.VICTORY)
+	assert_int(stamina.current_stamina).is_equal(2)
+	assert_bool(manager.combat_state.last_effort_used).is_true()
+	assert_bool(manager.is_combat_active()).is_false()
+
+
+func test_last_effort_unarmed_attack_fails_triggers_defeat():
+	var enemy := _make_enemy(10, 4)
+	var stamina := _make_stamina(1)
+	var deck := _make_deck(8)
+	var manager := _make_manager(enemy, stamina, deck)
+
+	var spy := {"result": -1}
+	manager.combat_ended.connect(func(r: GameEnums.CombatPhase): spy.result = r)
+
+	manager.start_combat()
+	manager.execute_last_effort_attack(3)
+
+	assert_int(spy.result).is_equal(GameEnums.CombatPhase.DEFEAT)
+	assert_bool(manager.is_combat_active()).is_false()
+
+
+func test_last_effort_torch_kills_enemy_restores_stamina():
+	var enemy := _make_enemy(20, 4)
+	var stamina := _make_stamina(2)
+	var deck := _make_deck(8)
+	var manager := _make_manager(enemy, stamina, deck)
+
+	var spy := {"result": -1, "executed": false}
+	manager.combat_ended.connect(func(r: GameEnums.CombatPhase): spy.result = r)
+	manager.last_effort_executed.connect(func(): spy.executed = true)
+
+	manager.start_combat()
+	assert_bool(manager.is_last_effort_torch_available(2)).is_true()
+	manager.execute_last_effort_torch(20)
+
+	assert_bool(spy.executed).is_true()
+	assert_int(spy.result).is_equal(GameEnums.CombatPhase.VICTORY)
+	assert_int(stamina.current_stamina).is_equal(2)
+	assert_bool(manager.is_combat_active()).is_false()
+
+
+func test_last_effort_not_available_when_cost_less_than_stamina():
+	var enemy := _make_enemy(20, 4)
+	var stamina := _make_stamina(5)
+	var deck := _make_deck(8)
+	var manager := _make_manager(enemy, stamina, deck)
+
+	manager.start_combat()
+	assert_bool(manager.is_last_effort_available(1, GameEnums.ActionCardEffect.UNARMED_ATTACK)).is_false()
+	assert_bool(manager.is_last_effort_torch_available(2)).is_false()
+
+
+func test_last_effort_not_available_for_non_attack_cards():
+	var enemy := _make_enemy(20, 4)
+	var stamina := _make_stamina(1)
+	var deck := _make_deck(8)
+	var manager := _make_manager(enemy, stamina, deck)
+
+	manager.start_combat()
+	assert_bool(manager.is_last_effort_available(1, GameEnums.ActionCardEffect.DODGE)).is_false()
+	assert_bool(manager.is_last_effort_available(1, GameEnums.ActionCardEffect.FLEE)).is_false()
+
+
+func test_last_effort_not_available_when_disabled():
+	var enemy := _make_enemy(3, 4)
+	var stamina := _make_stamina(1)
+	var deck := _make_deck(8)
+	var manager := CombatManager.new()
+	manager.initialize(enemy, GameEnums.EnemyType.NORMAL, stamina, deck, null, null, null, 3, null, false, 0)
+
+	manager.start_combat()
+	assert_bool(manager.is_last_effort_available(1, GameEnums.ActionCardEffect.UNARMED_ATTACK)).is_false()
+	assert_bool(manager.combat_state.last_effort_used).is_true()
+
+
+func test_last_effort_recovery_bonus_applies_and_caps():
+	var enemy := _make_enemy(3, 4)
+	var stamina := _make_stamina(1)
+	var deck := _make_deck(8)
+	var manager := CombatManager.new()
+	manager.initialize(enemy, GameEnums.EnemyType.NORMAL, stamina, deck, null, null, null, 3, null, true, 2)
+
+	manager.start_combat()
+	manager.execute_last_effort_attack(3)
+
+	assert_int(stamina.current_stamina).is_equal(4)

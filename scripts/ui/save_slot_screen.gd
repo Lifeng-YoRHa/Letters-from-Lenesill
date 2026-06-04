@@ -98,7 +98,13 @@ func _open_confirm_for_slot(slot_index: int) -> void:
 
 	var last_saved: int = info.get("last_saved_at", 0)
 	var datetime := Time.get_datetime_string_from_unix_time(last_saved) if last_saved > 0 else "未知时间"
-	_confirm_info_label.text = "槽位 %d — %s\n\n要做什么？" % [slot_index + 1, datetime]
+	var chapter: int = info.get("chapter", 1)
+	var stamina_cur: int = info.get("stamina_current", 0)
+	var stamina_max: int = info.get("stamina_max", 0)
+	var gold: int = info.get("gold", 0)
+	var last_effort: String = "可用" if info.get("last_effort_available", true) else "已消耗"
+	var detail := "章节：第%d章\n体力：%d / %d\n金币：%d\n最后一搏：%s" % [chapter, stamina_cur, stamina_max, gold, last_effort]
+	_confirm_info_label.text = "槽位 %d — %s\n\n%s\n\n要做什么？" % [slot_index + 1, datetime, detail]
 	_confirm_panel.visible = true
 
 
